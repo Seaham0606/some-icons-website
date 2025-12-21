@@ -103,17 +103,16 @@ body {
   padding: 24px;
   overflow-y: auto;
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(120px, 120px));
   gap: 12px;
   align-content: start;
+  justify-content: start;
 }
 
-/* Limit to max 10 columns - switch to fixed 10 columns at large viewport sizes */
-/* Calculation: 10 columns (120px) + 9 gaps (12px) + padding (48px) = 1356px for main area */
-/* Plus sidebar (320px) = 1676px total viewport */
-@media (min-width: 1676px) {
+/* At larger viewports, allow up to 10 columns with flexible sizing */
+@media (min-width: 1320px) {
   .icon-grid {
-    grid-template-columns: repeat(10, 1fr);
+    grid-template-columns: repeat(10, minmax(120px, 1fr));
   }
 }
 
@@ -205,6 +204,7 @@ select:focus {
 
 /* Icon card */
 .card {
+  width: 100%;
   aspect-ratio: 1 / 1;
   border-radius: 10px;
   background: #fff;
