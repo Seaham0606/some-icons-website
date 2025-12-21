@@ -103,16 +103,16 @@ body {
   padding: 24px;
   overflow-y: auto;
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(120px, 120px));
+  grid-template-columns: repeat(auto-fill, 120px);
   gap: 12px;
   align-content: start;
   justify-content: start;
 }
 
-/* At larger viewports, allow up to 10 columns with flexible sizing */
+/* At larger viewports, allow up to 10 columns */
 @media (min-width: 1320px) {
   .icon-grid {
-    grid-template-columns: repeat(10, minmax(120px, 1fr));
+    grid-template-columns: repeat(10, 120px);
   }
 }
 
@@ -204,8 +204,8 @@ select:focus {
 
 /* Icon card */
 .card {
-  width: 100%;
-  aspect-ratio: 1 / 1;
+  width: 120px;
+  height: 120px;
   border-radius: 10px;
   background: #fff;
   border: 1px solid rgba(0, 0, 0, 0.06);
@@ -218,6 +218,7 @@ select:focus {
   overflow: hidden;
   transition: all 0.2s;
   position: relative;
+  flex-shrink: 0;
 }
 
 .card:hover {
