@@ -4,50 +4,60 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Some Icons</title>
-    <link rel="stylesheet" href="styles.css" />
+    <link rel="stylesheet" href="assets/css/site.css" />
   </head>
 
   <body>
-    <div class="header">
-      <h1>Some Icons</h1>
-      <p>A clean, lightweight outline icon set designed for modern interfaces</p>
-    </div>
-
-    <div class="app">
-      <div class="topbar">
-        <div class="search-wrapper">
-          <div class="search-icon" id="search-icon"></div>
-          <input id="search" placeholder="Search icons" />
+    <div class="layout">
+      <aside class="sidebar">
+        <div class="sidebar-section">
+          <h1>Some Icons</h1>
+          <p>A clean, lightweight outline icon set designed for modern interfaces</p>
         </div>
 
-        <div class="controls">
-          <div class="select-wrapper">
-            <select id="style">
-              <option value="outline" selected>Outline</option>
-              <option value="filled">Filled</option>
-            </select>
-            <div class="select-icon" id="style-icon"></div>
-          </div>
-
-          <div class="select-wrapper">
-            <select id="category">
-              <option value="all">All icons</option>
-            </select>
-            <div class="select-icon" id="category-icon"></div>
+        <div class="sidebar-section">
+          <div class="search-wrapper">
+            <div class="search-icon" id="search-icon"></div>
+            <input id="search" placeholder="Search icons" />
           </div>
         </div>
-      </div>
 
-      <div class="content">
-        <div id="grid" class="grid"></div>
-      </div>
+        <div class="sidebar-section">
+          <div class="controls">
+            <div class="select-wrapper">
+              <select id="style">
+                <option value="outline" selected>Outline</option>
+                <option value="filled">Filled</option>
+              </select>
+              <div class="select-icon" id="style-icon"></div>
+            </div>
+
+            <div class="select-wrapper">
+              <select id="category">
+                <option value="all">All icons</option>
+              </select>
+              <div class="select-icon" id="category-icon"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="sidebar-section">
+          <div class="customization-panel">
+            <!-- Placeholder for future icon customization functions -->
+          </div>
+        </div>
+
+        <div class="sidebar-footer">
+          <div class="footer-content" id="footer-content"></div>
+        </div>
+      </aside>
+
+      <main class="main">
+        <div id="grid" class="icon-grid"></div>
+      </main>
     </div>
 
     <div class="toast" id="toast"></div>
-
-    <footer class="footer">
-      <div class="footer-content" id="footer-content"></div>
-    </footer>
 
     <script src="script.js"></script>
   </body>
