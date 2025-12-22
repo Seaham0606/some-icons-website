@@ -3,7 +3,7 @@ const BASE_URL = "https://raw.githubusercontent.com/Seaham0606/some-icons-cdn/ma
 let ICONS = [];
 
 const elSearch = document.getElementById("search");
-const elStyle = document.getElementById("style");
+const elStyleControl = document.getElementById("style-control");
 const elCategory = document.getElementById("category");
 const elGrid = document.getElementById("grid");
 const elToast = document.getElementById("toast");
@@ -12,6 +12,12 @@ const elColorPicker = document.getElementById("color-picker");
 
 const svgCache = new Map();
 let selectedColor = "#000000";
+
+function getStyleValue() {
+  if (!elStyleControl) return "outline";
+  const activeButton = elStyleControl.querySelector(".segment-button.active");
+  return activeButton ? activeButton.dataset.value : "outline";
+}
 
 function uniq(arr) {
   return Array.from(new Set(arr)).sort();
@@ -210,7 +216,7 @@ function render() {
   const filtered = ICONS.filter((icon) => {
     if (!q && elCategory.value !== "all" && icon.category !== elCategory.value)
       return false;
-    if (!icon.files?.[elStyle.value])
+    if (!icon.files?.[getStyleValue()])
       return false;
     return matches(icon, q);
   });
@@ -218,7 +224,7 @@ function render() {
   elGrid.innerHTML = "";
 
   filtered.forEach((icon) => {
-    const style = elStyle.value;
+    const style = getStyleValue();
     const card = document.createElement("div");
     card.className = "card";
     card.title = icon.id;
@@ -259,8 +265,26 @@ function render() {
 }
 
 elSearch.oninput = render;
-elStyle.onchange = render;
 elCategory.onchange = render;
+
+// Style control handler
+if (elStyleControl) {
+  elStyleControl.addEventListener("click", (e) => {
+    if (e.target.classList.contains("segment-button")) {
+      const value = e.target.dataset.value;
+      
+      // Remove active class from all buttons
+      elStyleControl.querySelectorAll(".segment-button").forEach(btn => {
+        btn.classList.remove("active");
+      });
+      
+      // Add active class to clicked button
+      e.target.classList.add("active");
+      
+      render();
+    }
+  });
+}
 
 // Color input handlers
 elColorInput.addEventListener("input", (e) => {

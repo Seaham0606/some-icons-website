@@ -4,6 +4,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Some Icons</title>
+    <link rel="stylesheet" href="assets/css/colors.css" />
     <link rel="stylesheet" href="assets/css/site.css" />
   </head>
 
@@ -11,32 +12,34 @@
     <div class="layout">
       <aside class="sidebar">
         <div class="sidebar-section">
-          <h1>Some Icons</h1>
-          <p>A clean, lightweight outline icon set designed for modern interfaces</p>
-        </div>
-
-        <div class="sidebar-section">
-          <div class="search-wrapper">
-            <div class="search-icon" id="search-icon"></div>
-            <input id="search" placeholder="Search icons" />
-          </div>
+          <img src="assets/images/logo-some-icons-full.svg" alt="Some Icons" class="logo" />
         </div>
 
         <div class="sidebar-section">
           <div class="controls">
-            <div class="select-wrapper">
-              <select id="style">
-                <option value="outline" selected>Outline</option>
-                <option value="filled">Filled</option>
-              </select>
-              <div class="select-icon" id="style-icon"></div>
+            <div class="customization-item">
+              <div class="search-wrapper">
+                <div class="search-icon" id="search-icon"></div>
+                <input id="search" placeholder="Search icons" />
+              </div>
             </div>
 
-            <div class="select-wrapper">
-              <select id="category">
-                <option value="all">All icons</option>
-              </select>
-              <div class="select-icon" id="category-icon"></div>
+            <div class="customization-item">
+              <label class="customization-label">Style</label>
+              <div class="segmented-control" id="style-control">
+                <button class="segment-button active" data-value="outline">Outline</button>
+                <button class="segment-button" data-value="filled">Filled</button>
+              </div>
+            </div>
+
+            <div class="customization-item">
+              <label for="category" class="customization-label">Category</label>
+              <div class="select-wrapper">
+                <select id="category">
+                  <option value="all">All icons</option>
+                </select>
+                <div class="select-icon" id="category-icon"></div>
+              </div>
             </div>
           </div>
         </div>
@@ -81,7 +84,7 @@
 
         <div class="sidebar-section">
           <div class="export-panel">
-            <h3 class="export-title">Export Icons</h3>
+            <h3 class="export-title">Export</h3>
             
             <div class="export-item">
               <label class="export-label">Icon size</label>

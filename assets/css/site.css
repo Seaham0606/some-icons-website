@@ -46,17 +46,10 @@ body {
   padding-top: 32px;
 }
 
-.sidebar-section h1 {
-  margin: 0 0 8px 0;
-  font-size: 24px;
-  font-weight: 600;
-}
-
-.sidebar-section p {
-  margin: 0;
-  color: #666;
-  font-size: 14px;
-  line-height: 1.5;
+.sidebar-section .logo {
+  height: 24px;
+  width: auto;
+  display: block;
 }
 
 .sidebar-footer {
@@ -117,6 +110,7 @@ body {
 .color-input-container {
   position: relative;
   flex: 1;
+  height: 40px;
 }
 
 .color-input {
@@ -234,19 +228,20 @@ body {
   padding: 0;
   border: none;
   background: #fff;
-  color: #111;
+  color: #aaaaaa;
   font: inherit;
   font-size: 14px;
   font-weight: 600;
   cursor: pointer;
-  transition: background-color 0.2s;
+  transition: background-color 0.2s, color 0.2s;
   position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
-#format-control .segment-button {
+#format-control .segment-button,
+#style-control .segment-button {
   flex: 1;
   width: auto;
 }
@@ -261,6 +256,7 @@ body {
 
 .segment-button.active {
   background: rgba(0, 0, 0, 0.06);
+  color: #111;
 }
 
 .segment-button.active:hover {
@@ -394,6 +390,7 @@ select:focus {
 /* Search field with icon */
 .search-wrapper {
   position: relative;
+  height: 40px;
 }
 
 .search-wrapper .search-icon {
@@ -415,6 +412,7 @@ select:focus {
 .select-wrapper {
   position: relative;
   margin-bottom: 8px;
+  height: 40px;
 }
 
 .select-wrapper:last-child {
@@ -445,7 +443,7 @@ select:focus {
 .controls {
   display: flex;
   flex-direction: column;
-  gap: 0;
+  gap: 20px;
 }
 
 /* Icon card */
@@ -571,10 +569,6 @@ select:focus {
 
   .sidebar-section:first-child {
     padding-top: 24px;
-  }
-
-  .sidebar-section h1 {
-    font-size: 20px;
   }
 }
 

@@ -1,0 +1,190 @@
+/* Color Tokens from Figma */
+:root {
+  --color-red-900: rgb(62, 14, 14);
+  --color-red-800: rgb(84, 29, 29);
+  --color-red-700: rgb(127, 57, 57);
+  --color-red-600: rgb(169, 86, 86);
+  --color-red-500: rgb(212, 114, 114);
+  --color-red-400: rgb(255, 143, 143);
+  --color-red-300: rgb(255, 165, 165);
+  --color-red-200: rgb(255, 188, 188);
+  --color-red-100: rgb(255, 210, 210);
+  --color-red-50: rgb(255, 233, 233);
+  --color-red-25: rgb(255, 244, 244);
+
+  --color-orange-900: rgb(71, 29, 13);
+  --color-orange-800: rgb(92, 44, 26);
+  --color-orange-700: rgb(133, 73, 51);
+  --color-orange-600: rgb(173, 103, 77);
+  --color-orange-500: rgb(214, 132, 102);
+  --color-orange-400: rgb(255, 162, 128);
+  --color-orange-300: rgb(255, 181, 153);
+  --color-orange-200: rgb(255, 199, 179);
+  --color-orange-100: rgb(255, 218, 204);
+  --color-orange-50: rgb(255, 236, 230);
+  --color-orange-25: rgb(255, 246, 242);
+
+  --color-yellow-900: rgb(62, 47, 10);
+  --color-yellow-800: rgb(84, 65, 20);
+  --color-yellow-700: rgb(127, 101, 41);
+  --color-yellow-600: rgb(169, 137, 61);
+  --color-yellow-500: rgb(212, 173, 82);
+  --color-yellow-400: rgb(255, 209, 102);
+  --color-yellow-300: rgb(255, 218, 133);
+  --color-yellow-200: rgb(255, 227, 163);
+  --color-yellow-100: rgb(255, 237, 194);
+  --color-yellow-50: rgb(255, 246, 224);
+  --color-yellow-25: rgb(255, 250, 240);
+
+  --color-green-900: rgb(38, 59, 18);
+  --color-green-800: rgb(52, 78, 28);
+  --color-green-700: rgb(82, 116, 50);
+  --color-green-600: rgb(111, 153, 71);
+  --color-green-500: rgb(141, 191, 93);
+  --color-green-400: rgb(170, 229, 114);
+  --color-green-300: rgb(187, 234, 142);
+  --color-green-200: rgb(204, 239, 170);
+  --color-green-100: rgb(221, 245, 199);
+  --color-green-50: rgb(238, 250, 227);
+  --color-green-25: rgb(246, 252, 241);
+
+  --color-pine-900: rgb(21, 59, 48);
+  --color-pine-800: rgb(33, 78, 64);
+  --color-pine-700: rgb(55, 114, 97);
+  --color-pine-600: rgb(78, 151, 129);
+  --color-pine-500: rgb(100, 187, 162);
+  --color-pine-400: rgb(123, 224, 194);
+  --color-pine-300: rgb(149, 230, 206);
+  --color-pine-200: rgb(176, 236, 218);
+  --color-pine-100: rgb(202, 243, 231);
+  --color-pine-50: rgb(229, 249, 243);
+  --color-pine-25: rgb(242, 252, 249);
+
+  --color-teal-900: rgb(15, 55, 59);
+  --color-teal-800: rgb(28, 75, 79);
+  --color-teal-700: rgb(53, 115, 121);
+  --color-teal-600: rgb(77, 156, 162);
+  --color-teal-500: rgb(102, 196, 204);
+  --color-teal-400: rgb(127, 236, 245);
+  --color-teal-300: rgb(153, 240, 247);
+  --color-teal-200: rgb(178, 244, 249);
+  --color-teal-100: rgb(204, 247, 251);
+  --color-teal-50: rgb(229, 251, 253);
+  --color-teal-25: rgb(242, 253, 254);
+
+  --color-blue-900: rgb(13, 48, 81);
+  --color-blue-800: rgb(26, 64, 101);
+  --color-blue-700: rgb(51, 97, 139);
+  --color-blue-600: rgb(77, 129, 178);
+  --color-blue-500: rgb(102, 162, 216);
+  --color-blue-400: rgb(128, 194, 255);
+  --color-blue-300: rgb(153, 206, 255);
+  --color-blue-200: rgb(179, 218, 255);
+  --color-blue-100: rgb(204, 231, 255);
+  --color-blue-50: rgb(230, 243, 255);
+  --color-blue-25: rgb(242, 249, 255);
+
+  --color-purple-900: rgb(49, 18, 92);
+  --color-purple-800: rgb(66, 34, 109);
+  --color-purple-700: rgb(99, 65, 145);
+  --color-purple-600: rgb(131, 95, 180);
+  --color-purple-500: rgb(164, 126, 216);
+  --color-purple-400: rgb(197, 157, 251);
+  --color-purple-300: rgb(209, 177, 252);
+  --color-purple-200: rgb(220, 196, 253);
+  --color-purple-100: rgb(232, 216, 253);
+  --color-purple-50: rgb(243, 235, 254);
+  --color-purple-25: rgb(249, 245, 255);
+
+  --color-pink-900: rgb(76, 17, 66);
+  --color-pink-800: rgb(96, 34, 86);
+  --color-pink-700: rgb(136, 67, 125);
+  --color-pink-600: rgb(175, 101, 163);
+  --color-pink-500: rgb(215, 134, 202);
+  --color-pink-400: rgb(255, 168, 241);
+  --color-pink-300: rgb(255, 185, 244);
+  --color-pink-200: rgb(255, 203, 247);
+  --color-pink-100: rgb(255, 220, 249);
+  --color-pink-50: rgb(255, 238, 252);
+  --color-pink-25: rgb(255, 246, 254);
+
+  /* Grayscale Tokens */
+  --color-white: #FFFFFF;
+  --color-gray-1: #010101;
+  --color-gray-25: #060606;
+  --color-gray-50: #0D0D0D;
+  --color-gray-75: #131313;
+  --color-gray-100: #1A1A1A;
+  --color-gray-200: #262626;
+  --color-gray-300: #333333;
+  --color-gray-400: #4D4D4D;
+  --color-gray-500: #666666;
+  --color-gray-600: #808080;
+  --color-gray-700: #999999;
+  --color-gray-800: #B3B3B3;
+  --color-gray-850: #CCCCCC;
+  --color-gray-900: #E6E6E6;
+  --color-gray-925: #ECECEC;
+  --color-gray-950: #F2F2F2;
+  --color-gray-975: #F9F9F9;
+  --color-gray-999: #FEFEFE;
+  --color-black: #000000;
+
+  /* Semantic Color Tokens - Light Mode (default) */
+  --color-background-primary: var(--color-white);
+  --color-text-primary: var(--color-black);
+  --color-item-primary: var(--color-black);
+  
+  --color-text-secondary: var(--color-gray-700);
+  --color-text-tertiary: var(--color-gray-400);
+  --color-text-inverse: var(--color-white);
+  
+  --color-background: var(--color-white);
+  --color-background-hover: rgba(0, 0, 0, 0.03);
+  --color-background-active: rgba(0, 0, 0, 0.06);
+  
+  --color-border: var(--color-gray-200);
+  --color-border-subtle: rgba(0, 0, 0, 0.06);
+  
+  --color-primary: var(--color-blue-400);
+  --color-primary-hover: var(--color-blue-500);
+  
+  --color-focus: var(--color-blue-400);
+}
+
+/* Dark Mode */
+[data-theme="dark"] {
+  --color-background-primary: var(--color-black);
+  --color-text-primary: var(--color-white);
+  --color-item-primary: var(--color-white);
+  
+  --color-text-secondary: var(--color-gray-300);
+  --color-text-tertiary: var(--color-gray-500);
+  --color-text-inverse: var(--color-black);
+  
+  --color-background: var(--color-black);
+  --color-background-hover: rgba(255, 255, 255, 0.03);
+  --color-background-active: rgba(255, 255, 255, 0.06);
+  
+  --color-border: var(--color-gray-800);
+  --color-border-subtle: rgba(255, 255, 255, 0.06);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-background-primary: var(--color-black);
+    --color-text-primary: var(--color-white);
+    --color-item-primary: var(--color-white);
+    
+    --color-text-secondary: var(--color-gray-300);
+    --color-text-tertiary: var(--color-gray-500);
+    --color-text-inverse: var(--color-black);
+    
+    --color-background: var(--color-black);
+    --color-background-hover: rgba(255, 255, 255, 0.03);
+    --color-background-active: rgba(255, 255, 255, 0.06);
+    
+    --color-border: var(--color-gray-800);
+    --color-border-subtle: rgba(255, 255, 255, 0.06);
+  }
+}
