@@ -81,12 +81,255 @@ body {
   text-decoration: underline;
 }
 
-/* Customization panel placeholder */
+/* Customization panel */
 .customization-panel {
-  min-height: 120px;
-  background: rgba(0, 0, 0, 0.02);
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.customization-title {
+  margin: 0 0 4px 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: #111;
+}
+
+.customization-item {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.customization-label {
+  font-size: 13px;
+  font-weight: 500;
+  color: #aaaaaa;
+  padding-left: 2px;
+}
+
+.color-input-wrapper {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.color-input-container {
+  position: relative;
+  flex: 1;
+}
+
+.color-input {
+  width: 100%;
+  height: 40px;
+  padding: 8px 36px 8px 12px;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  background: #fff;
+  font: inherit;
+  font-size: 14px;
+  font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+}
+
+.color-input:focus {
+  outline: none;
+  border-color: #5DB0FC;
+  border-width: 2px;
+}
+
+.color-reset-icon {
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 24px;
+  height: 24px;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  opacity: 0.5;
+  transition: opacity 0.2s, filter 0.2s;
+  pointer-events: auto;
+}
+
+.color-reset-icon:hover {
+  opacity: 1;
+  filter: brightness(0) saturate(100%) invert(27%) sepia(100%) saturate(7472%) hue-rotate(0deg) brightness(100%) contrast(100%);
+}
+
+.color-reset-icon img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  pointer-events: none;
+}
+
+.color-picker {
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  background: #fff;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.color-picker::-webkit-color-swatch-wrapper {
+  padding: 0;
+}
+
+.color-picker::-webkit-color-swatch {
+  border: none;
   border-radius: 8px;
-  border: 1px dashed rgba(0, 0, 0, 0.1);
+}
+
+.color-picker::-moz-color-swatch {
+  border: none;
+  border-radius: 8px;
+}
+
+/* Export panel */
+.export-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.export-title {
+  margin: 0 0 4px 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: #111;
+}
+
+.export-item {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.export-label {
+  font-size: 13px;
+  font-weight: 500;
+  color: #aaaaaa;
+  padding-left: 2px;
+}
+
+/* Segmented control */
+.segmented-control {
+  display: flex;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  overflow: hidden;
+  background: #fff;
+}
+
+.segment-button {
+  flex: 0 0 auto;
+  width: 48px;
+  height: 40px;
+  padding: 0;
+  border: none;
+  background: #fff;
+  color: #111;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#format-control .segment-button {
+  flex: 1;
+  width: auto;
+}
+
+.segment-button:not(:last-child) {
+  border-right: 1px solid #ddd;
+}
+
+.segment-button:hover {
+  background: rgba(0, 0, 0, 0.02);
+}
+
+.segment-button.active {
+  background: rgba(0, 0, 0, 0.06);
+}
+
+.segment-button.active:hover {
+  background: rgba(0, 0, 0, 0.08);
+}
+
+.size-control-wrapper {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.custom-size-input {
+  flex: 1;
+  height: 40px;
+  padding: 0 8px;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  background: #fff;
+  color: #111;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  text-align: center;
+  appearance: textfield;
+  -moz-appearance: textfield;
+}
+
+.custom-size-input::-webkit-outer-spin-button,
+.custom-size-input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.custom-size-input:focus {
+  outline: none;
+  border-color: #5DB0FC;
+  border-width: 2px;
+}
+
+.custom-size-input::placeholder {
+  color: #999;
+  font-weight: 400;
+}
+
+/* Export button */
+.export-button {
+  width: 100%;
+  height: 40px;
+  padding: 8px 16px;
+  border: none;
+  border-radius: 10px;
+  background: #5DB0FC;
+  color: #111;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s, transform 0.1s;
+  margin-top: 4px;
+}
+
+.export-button:hover {
+  background: #4a9de8;
+  transform: translateY(-1px);
+}
+
+.export-button:active {
+  transform: translateY(0);
 }
 
 /* Main content area */

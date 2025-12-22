@@ -43,7 +43,74 @@
 
         <div class="sidebar-section">
           <div class="customization-panel">
-            <!-- Placeholder for future icon customization functions -->
+            <h3 class="customization-title">Customize</h3>
+            
+            <div class="customization-item">
+              <label for="color-input" class="customization-label">Color</label>
+              <div class="color-input-wrapper">
+                <div class="color-input-container">
+                  <input 
+                    type="text" 
+                    id="color-input" 
+                    class="color-input" 
+                    placeholder="#000000"
+                    value="#000000"
+                  />
+                  <div class="color-reset-icon" id="color-reset-icon"></div>
+                </div>
+                <input 
+                  type="color" 
+                  id="color-picker" 
+                  class="color-picker"
+                  value="#000000"
+                />
+              </div>
+            </div>
+            
+            <!-- Placeholder for size selector -->
+            <div class="customization-item" style="display: none;">
+              <label class="customization-label">Size</label>
+            </div>
+            
+            <!-- Placeholder for export format selector -->
+            <div class="customization-item" style="display: none;">
+              <label class="customization-label">Export Format</label>
+            </div>
+          </div>
+        </div>
+
+        <div class="sidebar-section">
+          <div class="export-panel">
+            <h3 class="export-title">Export Icons</h3>
+            
+            <div class="export-item">
+              <label class="export-label">Icon size</label>
+              <div class="size-control-wrapper">
+                <div class="segmented-control" id="size-control">
+                  <button class="segment-button active" data-value="16">16</button>
+                  <button class="segment-button" data-value="20">20</button>
+                  <button class="segment-button" data-value="24">24</button>
+                  <button class="segment-button" data-value="32">32</button>
+                </div>
+                <input 
+                  type="number" 
+                  id="custom-size-input" 
+                  class="custom-size-input" 
+                  placeholder=""
+                  min="1"
+                />
+              </div>
+            </div>
+            
+            <div class="export-item">
+              <label class="export-label">File format</label>
+              <div class="segmented-control" id="format-control">
+                <button class="segment-button active" data-value="svg">svg</button>
+                <button class="segment-button" data-value="png">png</button>
+              </div>
+            </div>
+            
+            <button class="export-button" id="export-button">export</button>
           </div>
         </div>
 
