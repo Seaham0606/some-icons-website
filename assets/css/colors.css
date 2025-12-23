@@ -192,8 +192,10 @@
   
   /* Item */
   --color-item-primary: var(--color-black);
+  --color-item-secondary: var(--color-gray-600);
   --color-item-tertiary: var(--color-gray-300);
   --color-item-quaternary: var(--color-gray-100);
+  --color-item-disabled: var(--color-gray-100);
   
   /* Border */
   --color-border: var(--color-gray-800);
@@ -229,8 +231,10 @@
   
   /* Item */
   --color-item-primary: var(--color-white);
+  --color-item-secondary: var(--color-gray-500);
   --color-item-tertiary: var(--color-gray-700);
   --color-item-quaternary: var(--color-gray-600);
+  --color-item-disabled: var(--color-gray-600);
   
   /* Border */
   --color-border: var(--color-gray-200);
@@ -263,8 +267,10 @@
     
     /* Item */
     --color-item-primary: var(--color-white);
+    --color-item-secondary: var(--color-gray-500);
     --color-item-tertiary: var(--color-gray-700);
     --color-item-quaternary: var(--color-gray-600);
+    --color-item-disabled: var(--color-gray-600);
     
     /* Border */
     --color-border: var(--color-gray-200);

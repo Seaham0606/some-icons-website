@@ -7,6 +7,7 @@ const elStyleControl = document.getElementById("style-control");
 const elCategory = document.getElementById("category");
 const elGrid = document.getElementById("grid");
 const elToast = document.getElementById("toast");
+const elSelectedCountToast = document.getElementById("selected-count-toast");
 const elColorInput = document.getElementById("color-input");
 const elColorPicker = document.getElementById("color-picker");
 const elColorEyedropper = document.getElementById("color-eyedropper-icon");
@@ -14,6 +15,7 @@ const elColorReset = document.getElementById("color-reset-icon");
 
 const svgCache = new Map();
 let selectedColor = null; // null = Default mode (currentColor), string = custom hex color
+let selectedIconIds = new Set(); // Track selected icon IDs
 
 function getStyleValue() {
   if (!elStyleControl) return "outline";
@@ -29,6 +31,30 @@ function showToast(message) {
   elToast.textContent = message;
   elToast.classList.add("show");
   setTimeout(() => elToast.classList.remove("show"), 2000);
+}
+
+function updateSelectedCountToast() {
+  const count = selectedIconIds.size;
+  if (elSelectedCountToast) {
+    if (count > 0) {
+      elSelectedCountToast.textContent = `Selected: ${count}`;
+      elSelectedCountToast.classList.add("show");
+    } else {
+      elSelectedCountToast.classList.remove("show");
+    }
+  }
+}
+
+function toggleIconSelection(iconId) {
+  if (selectedIconIds.has(iconId)) {
+    selectedIconIds.delete(iconId);
+  } else {
+    selectedIconIds.add(iconId);
+  }
+  updateSelectedCountToast();
+  updateExportButtonState();
+  // Re-render to update card styling
+  render();
 }
 
 async function loadIndex() {
@@ -265,6 +291,26 @@ async function loadUIIcons() {
   await loadUIIcon("arrow-repeat", "color-reset-icon", "outline");
 }
 
+async function loadSelectionIcon(container, isSelected) {
+  const targetIconId = isSelected ? "general-button-radio-selected" : "general-button-radio";
+  const targetIcon = ICONS.find((i) => i.id === targetIconId);
+  if (!targetIcon || !targetIcon.files?.filled) return;
+  
+  const svg = await fetchSvgText(targetIcon, "filled");
+  let s = svg;
+  if (!/\bviewBox=/i.test(s)) {
+    s = s.replace(/<svg/i, '<svg viewBox="0 0 16 16"');
+  }
+  
+  container.innerHTML = s;
+  const svgElement = container.querySelector("svg");
+  if (svgElement) {
+    svgElement.style.width = "100%";
+    svgElement.style.height = "100%";
+    svgElement.style.display = "block";
+  }
+}
+
 function copyToClipboard(text) {
   navigator.clipboard.writeText(text).then(() => {
     showToast("SVG copied to clipboard!");
@@ -296,9 +342,35 @@ function render() {
 
   filtered.forEach((icon) => {
     const style = getStyleValue();
+    const isSelected = selectedIconIds.has(icon.id);
     const card = document.createElement("div");
     card.className = "card";
+    if (isSelected) {
+      card.classList.add("card-selected");
+    }
     card.title = icon.id;
+
+    // Selection control button
+    const selectionButton = document.createElement("button");
+    selectionButton.className = "card-selection-button";
+    selectionButton.setAttribute("aria-pressed", isSelected);
+    selectionButton.setAttribute("aria-label", `Select ${icon.id}`);
+    selectionButton.type = "button";
+    const selectionIcon = document.createElement("div");
+    selectionIcon.className = "card-selection-icon";
+    selectionButton.appendChild(selectionIcon);
+    
+    // Load selection icon
+    (async () => {
+      await loadSelectionIcon(selectionIcon, isSelected);
+    })();
+    
+    selectionButton.addEventListener("click", (e) => {
+      e.stopPropagation();
+      toggleIconSelection(icon.id);
+    });
+    
+    card.appendChild(selectionButton);
 
     const box = document.createElement("div");
     box.className = "iconBox";
@@ -326,7 +398,18 @@ function render() {
       box.appendChild(img);
     })();
 
-    card.onclick = async () => {
+    card.onclick = async (e) => {
+      // If in multi-select mode (at least one icon selected), toggle selection instead of copying
+      if (selectedIconIds.size > 0) {
+        // Don't toggle if clicking the selection button (it handles its own click)
+        if (e.target.closest('.card-selection-button')) {
+          return;
+        }
+        toggleIconSelection(icon.id);
+        return;
+      }
+      
+      // Normal mode: copy SVG to clipboard
       const svg = await fetchSvgText(icon, style);
       let s = svg;
       if (!/\bviewBox=/i.test(s)) {
@@ -539,11 +622,169 @@ if (elFormatControl) {
   });
 }
 
+function updateExportButtonState() {
+  const hasSelection = selectedIconIds.size > 0;
+  const exportHint = document.getElementById("export-hint");
+  
+  if (elExportButton) {
+    elExportButton.disabled = !hasSelection;
+    if (!hasSelection) {
+      elExportButton.classList.add("export-button-disabled");
+    } else {
+      elExportButton.classList.remove("export-button-disabled");
+    }
+  }
+  
+  if (exportHint) {
+    if (hasSelection) {
+      exportHint.style.display = "none";
+    } else {
+      exportHint.style.display = "block";
+    }
+  }
+}
+
+function formatDateTimeForFilename() {
+  const now = new Date();
+  const year = now.getFullYear();
+  const month = String(now.getMonth() + 1).padStart(2, '0');
+  const day = String(now.getDate()).padStart(2, '0');
+  return `${year}${month}${day}`;
+}
+
+async function exportSelectedIcons() {
+  if (selectedIconIds.size === 0) {
+    showToast("Please select icons to export");
+    return;
+  }
+  
+  const style = getStyleValue();
+  const size = selectedSize || 24;
+  const format = selectedFormat || "svg";
+  
+  const selectedIcons = Array.from(selectedIconIds)
+    .map(id => ICONS.find(icon => icon.id === id))
+    .filter(Boolean)
+    .filter(icon => icon.files?.[style]);
+  
+  if (selectedIcons.length === 0) {
+    showToast("No valid icons to export");
+    return;
+  }
+  
+  // Check if JSZip is available
+  if (typeof JSZip === 'undefined') {
+    showToast("Zip library not loaded. Please refresh the page.");
+    return;
+  }
+  
+  const zip = new JSZip();
+  const dateTime = formatDateTimeForFilename();
+  const iconCount = selectedIcons.length;
+  const zipFilename = `some-icons-${dateTime}-${iconCount}.zip`;
+  
+  if (format === "svg") {
+    // Prepare SVG files for zip
+    for (const icon of selectedIcons) {
+      const svg = await fetchSvgText(icon, style);
+      let s = svg;
+      if (!/\bviewBox=/i.test(s)) {
+        s = s.replace(/<svg/i, '<svg viewBox="0 0 16 16"');
+      }
+      s = applyColorToSvg(s, selectedColor);
+      
+      // Update SVG size if needed
+      if (size !== 16) {
+        s = s.replace(/width="[^"]*"/i, `width="${size}"`);
+        s = s.replace(/height="[^"]*"/i, `height="${size}"`);
+        if (!s.includes('viewBox')) {
+          s = s.replace(/<svg/i, `<svg viewBox="0 0 16 16"`);
+        }
+      }
+      
+      zip.file(`${icon.id}.svg`, s);
+    }
+    
+    // Generate and download zip
+    const zipBlob = await zip.generateAsync({ type: "blob" });
+    const url = URL.createObjectURL(zipBlob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = zipFilename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    
+    showToast(`Exported ${selectedIcons.length} SVG file(s) as ZIP`);
+  } else if (format === "png") {
+    // Prepare PNG files for zip
+    for (const icon of selectedIcons) {
+      const svg = await fetchSvgText(icon, style);
+      let s = svg;
+      if (!/\bviewBox=/i.test(s)) {
+        s = s.replace(/<svg/i, '<svg viewBox="0 0 16 16"');
+      }
+      s = applyColorToSvg(s, selectedColor);
+      
+      // Update SVG size
+      s = s.replace(/width="[^"]*"/i, `width="${size}"`);
+      s = s.replace(/height="[^"]*"/i, `height="${size}"`);
+      if (!s.includes('viewBox')) {
+        s = s.replace(/<svg/i, `<svg viewBox="0 0 16 16"`);
+      }
+      
+      // Convert SVG to PNG
+      const pngBlob = await new Promise((resolve, reject) => {
+        const img = new Image();
+        const svgBlob = new Blob([s], { type: "image/svg+xml" });
+        const url = URL.createObjectURL(svgBlob);
+        
+        img.onload = () => {
+          const canvas = document.createElement("canvas");
+          canvas.width = size;
+          canvas.height = size;
+          const ctx = canvas.getContext("2d");
+          ctx.drawImage(img, 0, 0, size, size);
+          
+          canvas.toBlob((blob) => {
+            URL.revokeObjectURL(url);
+            if (blob) {
+              resolve(blob);
+            } else {
+              reject(new Error("Failed to convert to PNG"));
+            }
+          }, "image/png");
+        };
+        img.onerror = () => {
+          URL.revokeObjectURL(url);
+          reject(new Error("Failed to load SVG"));
+        };
+        img.src = url;
+      });
+      
+      zip.file(`${icon.id}.png`, pngBlob);
+    }
+    
+    // Generate and download zip
+    const zipBlob = await zip.generateAsync({ type: "blob" });
+    const url = URL.createObjectURL(zipBlob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = zipFilename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    
+    showToast(`Exported ${selectedIcons.length} PNG file(s) as ZIP`);
+  }
+}
+
 // Export button handler
 if (elExportButton) {
   elExportButton.addEventListener("click", () => {
-    // TODO: Implement export functionality
-    showToast("Export functionality coming soon!");
+    exportSelectedIcons();
   });
 }
 
@@ -553,6 +794,8 @@ if (elExportButton) {
   await loadUIIcons();
   initFooter();
   updateColorUI(); // Initialize UI state
+  updateSelectedCountToast(); // Initialize selected count toast
+  updateExportButtonState(); // Initialize export button state
   render();
 })();
 
