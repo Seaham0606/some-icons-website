@@ -257,7 +257,12 @@ function render() {
 
     card.onclick = async () => {
       const svg = await fetchSvgText(icon, style);
-      copyToClipboard(svg);
+      let s = svg;
+      if (!/\bviewBox=/i.test(s)) {
+        s = s.replace(/<svg/i, '<svg viewBox="0 0 16 16"');
+      }
+      s = applyColorToSvg(s, selectedColor);
+      copyToClipboard(s);
     };
 
     elGrid.appendChild(card);
