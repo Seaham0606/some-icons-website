@@ -109,82 +109,169 @@
   --color-pink-25: rgb(255, 246, 254);
 
   /* Grayscale Tokens */
-  --color-white: #FFFFFF;
-  --color-gray-1: #010101;
-  --color-gray-25: #060606;
-  --color-gray-50: #0D0D0D;
-  --color-gray-75: #131313;
-  --color-gray-100: #1A1A1A;
-  --color-gray-200: #262626;
-  --color-gray-300: #333333;
-  --color-gray-400: #4D4D4D;
-  --color-gray-500: #666666;
-  --color-gray-600: #808080;
-  --color-gray-700: #999999;
-  --color-gray-800: #B3B3B3;
-  --color-gray-850: #CCCCCC;
-  --color-gray-900: #E6E6E6;
-  --color-gray-925: #ECECEC;
-  --color-gray-950: #F2F2F2;
-  --color-gray-975: #F9F9F9;
-  --color-gray-999: #FEFEFE;
   --color-black: #000000;
+  --color-gray-999: #000000;
+  --color-gray-975: #010101;
+  --color-gray-950: #060606;
+  --color-gray-925: #0D0D0D;
+  --color-gray-900: #131313;
+  --color-gray-850: #1A1A1A;
+  --color-gray-800: #262626;
+  --color-gray-700: #333333;
+  --color-gray-600: #4D4D4D;
+  --color-gray-500: #666666;
+  --color-gray-400: #999999;
+  --color-gray-300: #B3B3B3;
+  --color-gray-200: #CCCCCC;
+  --color-gray-100: #E6E6E6;
+  --color-gray-75: #ECECEC;
+  --color-gray-50: #F2F2F2;
+  --color-gray-25: #F9F9F9;
+  --color-gray-1: #FEFEFE;
+  --color-white: #FFFFFF;
+
+  /* Black Alpha Tokens */
+  --color-black-alpha-999: rgba(0, 0, 0, 0.999);
+  --color-black-alpha-975: rgba(0, 0, 0, 0.975);
+  --color-black-alpha-950: rgba(0, 0, 0, 0.95);
+  --color-black-alpha-925: rgba(0, 0, 0, 0.925);
+  --color-black-alpha-900: rgba(0, 0, 0, 0.9);
+  --color-black-alpha-850: rgba(0, 0, 0, 0.85);
+  --color-black-alpha-800: rgba(0, 0, 0, 0.8);
+  --color-black-alpha-700: rgba(0, 0, 0, 0.7);
+  --color-black-alpha-600: rgba(0, 0, 0, 0.6);
+  --color-black-alpha-500: rgba(0, 0, 0, 0.5);
+  --color-black-alpha-400: rgba(0, 0, 0, 0.4);
+  --color-black-alpha-300: rgba(0, 0, 0, 0.3);
+  --color-black-alpha-200: rgba(0, 0, 0, 0.2);
+  --color-black-alpha-100: rgba(0, 0, 0, 0.1);
+  --color-black-alpha-75: rgba(0, 0, 0, 0.075);
+  --color-black-alpha-50: rgba(0, 0, 0, 0.05);
+  --color-black-alpha-25: rgba(0, 0, 0, 0.025);
+  --color-black-alpha-1: rgba(0, 0, 0, 0.01);
+
+  /* White Alpha Tokens */
+  --color-white-alpha-999: rgba(255, 255, 255, 0.999);
+  --color-white-alpha-975: rgba(255, 255, 255, 0.975);
+  --color-white-alpha-950: rgba(255, 255, 255, 0.95);
+  --color-white-alpha-925: rgba(255, 255, 255, 0.925);
+  --color-white-alpha-900: rgba(255, 255, 255, 0.9);
+  --color-white-alpha-850: rgba(255, 255, 255, 0.85);
+  --color-white-alpha-800: rgba(255, 255, 255, 0.8);
+  --color-white-alpha-700: rgba(255, 255, 255, 0.7);
+  --color-white-alpha-600: rgba(255, 255, 255, 0.6);
+  --color-white-alpha-500: rgba(255, 255, 255, 0.5);
+  --color-white-alpha-400: rgba(255, 255, 255, 0.4);
+  --color-white-alpha-300: rgba(255, 255, 255, 0.3);
+  --color-white-alpha-200: rgba(255, 255, 255, 0.2);
+  --color-white-alpha-100: rgba(255, 255, 255, 0.1);
+  --color-white-alpha-75: rgba(255, 255, 255, 0.075);
+  --color-white-alpha-50: rgba(255, 255, 255, 0.05);
+  --color-white-alpha-25: rgba(255, 255, 255, 0.025);
+  --color-white-alpha-1: rgba(255, 255, 255, 0.01);
 
   /* Semantic Color Tokens - Light Mode (default) */
-  --color-background-primary: var(--color-white);
-  --color-text-primary: var(--color-black);
-  --color-item-primary: var(--color-black);
   
+  /* Background */
+  --color-background-primary: var(--color-white);
+  --color-background: var(--color-white);
+  --color-background-weak: var(--color-gray-25);
+  --color-background-hover: var(--color-black-alpha-25);
+  --color-background-hover-light: var(--color-black-alpha-25);
+  --color-background-active: var(--color-black-alpha-50);
+  --color-background-active-dark: var(--color-black-alpha-75);
+  --color-background-overlay: var(--color-white-alpha-950);
+  
+  /* Text */
+  --color-text-primary: var(--color-black);
   --color-text-secondary: var(--color-gray-700);
   --color-text-tertiary: var(--color-gray-400);
+  --color-text-disabled: var(--color-gray-200);
   --color-text-inverse: var(--color-white);
+  --color-text-primary-inverted: var(--color-white);
   
-  --color-background: var(--color-white);
-  --color-background-hover: rgba(0, 0, 0, 0.03);
-  --color-background-active: rgba(0, 0, 0, 0.06);
+  /* Item */
+  --color-item-primary: var(--color-black);
+  --color-item-tertiary: var(--color-gray-300);
+  --color-item-quaternary: var(--color-gray-100);
   
-  --color-border: var(--color-gray-200);
-  --color-border-subtle: rgba(0, 0, 0, 0.06);
+  /* Border */
+  --color-border: var(--color-gray-800);
+  --color-border-subtle: var(--color-gray-100);
+  --color-border-base: var(--color-gray-100);
   
+  /* Interactive/State */
   --color-primary: var(--color-blue-400);
   --color-primary-hover: var(--color-blue-500);
-  
   --color-focus: var(--color-blue-400);
+  --color-warning: var(--color-red-500);
 }
 
 /* Dark Mode */
 [data-theme="dark"] {
+  /* Background */
   --color-background-primary: var(--color-black);
-  --color-text-primary: var(--color-white);
-  --color-item-primary: var(--color-white);
-  
-  --color-text-secondary: var(--color-gray-300);
-  --color-text-tertiary: var(--color-gray-500);
-  --color-text-inverse: var(--color-black);
-  
   --color-background: var(--color-black);
-  --color-background-hover: rgba(255, 255, 255, 0.03);
-  --color-background-active: rgba(255, 255, 255, 0.06);
+  --color-background-weak: var(--color-gray-25);
+  --color-background-hover: var(--color-white-alpha-25);
+  --color-background-hover-light: var(--color-white-alpha-25);
+  --color-background-active: var(--color-white-alpha-50);
+  --color-background-active-dark: var(--color-white-alpha-75);
+  --color-background-overlay: var(--color-black-alpha-950);
   
-  --color-border: var(--color-gray-800);
-  --color-border-subtle: rgba(255, 255, 255, 0.06);
+  /* Text */
+  --color-text-primary: var(--color-white);
+  --color-text-secondary: var(--color-gray-700);
+  --color-text-tertiary: var(--color-gray-500);
+  --color-text-disabled: var(--color-gray-600);
+  --color-text-inverse: var(--color-black);
+  --color-text-primary-inverted: var(--color-white);
+  
+  /* Item */
+  --color-item-primary: var(--color-white);
+  --color-item-tertiary: var(--color-gray-700);
+  --color-item-quaternary: var(--color-gray-600);
+  
+  /* Border */
+  --color-border: var(--color-gray-200);
+  --color-border-subtle: var(--color-gray-800);
+  --color-border-base: var(--color-gray-25);
+  
+  /* Interactive/State */
+  --color-warning: var(--color-red-500);
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
+    /* Background */
     --color-background-primary: var(--color-black);
-    --color-text-primary: var(--color-white);
-    --color-item-primary: var(--color-white);
-    
-    --color-text-secondary: var(--color-gray-300);
-    --color-text-tertiary: var(--color-gray-500);
-    --color-text-inverse: var(--color-black);
-    
     --color-background: var(--color-black);
-    --color-background-hover: rgba(255, 255, 255, 0.03);
-    --color-background-active: rgba(255, 255, 255, 0.06);
+    --color-background-weak: var(--color-gray-25);
+    --color-background-hover: var(--color-white-alpha-25);
+    --color-background-hover-light: var(--color-white-alpha-25);
+    --color-background-active: var(--color-white-alpha-50);
+    --color-background-active-dark: var(--color-white-alpha-75);
+    --color-background-overlay: var(--color-black-alpha-950);
     
-    --color-border: var(--color-gray-800);
-    --color-border-subtle: rgba(255, 255, 255, 0.06);
+    /* Text */
+    --color-text-primary: var(--color-white);
+    --color-text-secondary: var(--color-gray-700);
+    --color-text-tertiary: var(--color-gray-500);
+    --color-text-disabled: var(--color-gray-600);
+    --color-text-inverse: var(--color-black);
+    --color-text-primary-inverted: var(--color-white);
+    
+    /* Item */
+    --color-item-primary: var(--color-white);
+    --color-item-tertiary: var(--color-gray-700);
+    --color-item-quaternary: var(--color-gray-600);
+    
+    /* Border */
+    --color-border: var(--color-gray-200);
+    --color-border-subtle: var(--color-white-alpha-50);
+    --color-border-base: var(--color-gray-100);
+    
+    /* Interactive/State */
+    --color-warning: var(--color-red-400);
   }
 }

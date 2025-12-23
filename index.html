@@ -13,121 +13,115 @@
 
   <body>
     <div class="layout">
-      <aside class="sidebar">
-        <div class="sidebar-section">
-          <img src="assets/images/logo-some-icons-full.svg" alt="Some Icons" class="logo" />
-        </div>
+      <div class="content-wrapper">
+        <aside class="sidebar">
+          <div class="sidebar-section">
+            <img src="assets/images/logo-some-icons-full.svg" alt="Some Icons" class="logo" />
+          </div>
 
-        <div class="sidebar-section">
-          <div class="controls">
-            <div class="customization-item">
-              <div class="search-wrapper">
-                <div class="search-icon" id="search-icon"></div>
-                <input id="search" placeholder="Search icons" />
+          <div class="sidebar-section">
+            <div class="controls">
+              <div class="customization-item">
+                <div class="search-wrapper">
+                  <div class="search-icon" id="search-icon"></div>
+                  <input id="search" placeholder="Search icons" />
+                </div>
               </div>
-            </div>
 
-            <div class="customization-item">
-              <label class="customization-label">Style</label>
-              <div class="segmented-control" id="style-control">
-                <button class="segment-button active" data-value="outline">Outline</button>
-                <button class="segment-button" data-value="filled">Filled</button>
+              <div class="customization-item">
+                <label class="customization-label">Style</label>
+                <div class="segmented-control" id="style-control">
+                  <button class="segment-button active" data-value="outline">Outline</button>
+                  <button class="segment-button" data-value="filled">Filled</button>
+                </div>
               </div>
-            </div>
 
-            <div class="customization-item">
-              <label for="category" class="customization-label">Category</label>
-              <div class="select-wrapper">
-                <select id="category">
-                  <option value="all">All icons</option>
-                </select>
-                <div class="select-icon" id="category-icon"></div>
+              <div class="customization-item">
+                <label for="category" class="customization-label">Category</label>
+                <div class="select-wrapper">
+                  <select id="category">
+                    <option value="all">All icons</option>
+                  </select>
+                  <div class="select-icon" id="category-icon"></div>
+                </div>
               </div>
             </div>
           </div>
-        </div>
 
-        <div class="sidebar-section">
-          <div class="customization-panel">
-            <h3 class="customization-title">Customize</h3>
-            
-            <div class="customization-item">
-              <label for="color-input" class="customization-label">Color</label>
-              <div class="color-input-wrapper">
-                <div class="color-input-container">
+          <div class="sidebar-section">
+            <div class="customization-panel">
+              <h3 class="customization-title">Customize</h3>
+              
+              <div class="customization-item">
+                <label for="color-input" class="customization-label">Color</label>
+                <div class="color-input-wrapper">
+                  <div class="color-input-container">
+                    <input 
+                      type="text" 
+                      id="color-input" 
+                      class="color-input" 
+                      placeholder="Default"
+                    />
+                    <div class="color-reset-icon" id="color-reset-icon"></div>
+                  </div>
+                  <div class="color-picker-container">
+                    <input 
+                      type="color" 
+                      id="color-picker" 
+                      class="color-picker"
+                      value="#000000"
+                    />
+                    <div class="color-eyedropper-icon" id="color-eyedropper-icon"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="sidebar-section">
+            <div class="export-panel">
+              <h3 class="export-title">Export</h3>
+              
+              <div class="export-item">
+                <label class="customization-label">Icon size</label>
+                <div class="size-control-wrapper">
+                  <div class="segmented-control" id="size-control">
+                    <button class="segment-button" data-value="16">16</button>
+                    <button class="segment-button" data-value="20">20</button>
+                    <button class="segment-button" data-value="24">24</button>
+                    <button class="segment-button" data-value="32">32</button>
+                  </div>
                   <input 
-                    type="text" 
-                    id="color-input" 
-                    class="color-input" 
-                    placeholder="#000000"
-                    value="#000000"
+                    type="number" 
+                    id="custom-size-input" 
+                    class="custom-size-input" 
+                    placeholder=""
+                    min="1"
                   />
-                  <div class="color-reset-icon" id="color-reset-icon"></div>
                 </div>
-                <input 
-                  type="color" 
-                  id="color-picker" 
-                  class="color-picker"
-                  value="#000000"
-                />
               </div>
-            </div>
-            
-            <!-- Placeholder for size selector -->
-            <div class="customization-item" style="display: none;">
-              <label class="customization-label">Size</label>
-            </div>
-            
-            <!-- Placeholder for export format selector -->
-            <div class="customization-item" style="display: none;">
-              <label class="customization-label">Export Format</label>
+              
+              <div class="export-item">
+                <label class="customization-label">File format</label>
+                <div class="segmented-control" id="format-control">
+                  <button class="segment-button" data-value="svg">SVG</button>
+                  <button class="segment-button" data-value="png">PNG</button>
+                </div>
+              </div>
+              
+              <button class="export-button" id="export-button">export</button>
             </div>
           </div>
-        </div>
+        </aside>
 
-        <div class="sidebar-section">
-          <div class="export-panel">
-            <h3 class="export-title">Export</h3>
-            
-            <div class="export-item">
-              <label class="export-label">Icon size</label>
-              <div class="size-control-wrapper">
-                <div class="segmented-control" id="size-control">
-                  <button class="segment-button active" data-value="16">16</button>
-                  <button class="segment-button" data-value="20">20</button>
-                  <button class="segment-button" data-value="24">24</button>
-                  <button class="segment-button" data-value="32">32</button>
-                </div>
-                <input 
-                  type="number" 
-                  id="custom-size-input" 
-                  class="custom-size-input" 
-                  placeholder=""
-                  min="1"
-                />
-              </div>
-            </div>
-            
-            <div class="export-item">
-              <label class="export-label">File format</label>
-              <div class="segmented-control" id="format-control">
-                <button class="segment-button active" data-value="svg">svg</button>
-                <button class="segment-button" data-value="png">png</button>
-              </div>
-            </div>
-            
-            <button class="export-button" id="export-button">export</button>
-          </div>
-        </div>
+        <main class="main">
+          <div id="grid" class="icon-grid"></div>
+        </main>
+      </div>
 
-        <div class="sidebar-footer">
-          <div class="footer-content" id="footer-content"></div>
-        </div>
-      </aside>
-
-      <main class="main">
-        <div id="grid" class="icon-grid"></div>
-      </main>
+      <footer class="footer">
+        <div class="footer-content" id="footer-content"></div>
+      </footer>
     </div>
 
     <div class="toast" id="toast"></div>

@@ -9,9 +9,11 @@ const elGrid = document.getElementById("grid");
 const elToast = document.getElementById("toast");
 const elColorInput = document.getElementById("color-input");
 const elColorPicker = document.getElementById("color-picker");
+const elColorEyedropper = document.getElementById("color-eyedropper-icon");
+const elColorReset = document.getElementById("color-reset-icon");
 
 const svgCache = new Map();
-let selectedColor = "#000000";
+let selectedColor = null; // null = Default mode (currentColor), string = custom hex color
 
 function getStyleValue() {
   if (!elStyleControl) return "outline";
@@ -76,20 +78,76 @@ function normalizeHexColor(hex) {
 }
 
 function updateColor(newColor) {
+  // Handle "Default" / currentColor mode
+  const isDefault = 
+    newColor === "Default" ||
+    newColor === "default" ||
+    newColor === "currentColor" ||
+    newColor === "" ||
+    newColor == null;
+
+  if (isDefault) {
+    selectedColor = null; // null = Default mode
+    if (elColorInput) {
+      elColorInput.value = "";
+      elColorInput.classList.add("color-input-default");
+    }
+    if (elColorPicker) {
+      elColorPicker.value = "#000000";
+    }
+    updateColorUI();
+    render();
+    return;
+  }
+
   const normalized = normalizeHexColor(newColor);
   if (isValidHexColor(normalized)) {
     selectedColor = normalized;
-    elColorInput.value = normalized;
-    elColorPicker.value = normalized;
+    if (elColorInput) {
+      elColorInput.value = normalized.toUpperCase();
+      elColorInput.classList.remove("color-input-default");
+    }
+    if (elColorPicker) {
+      elColorPicker.value = normalized;
+    }
+    updateColorUI();
     render();
   }
 }
 
+function updateColorUI() {
+  // Show/hide eyedropper overlay on color picker
+  if (selectedColor === null) {
+    // Default mode: show eyedropper overlay on color picker, hide reset
+    if (elColorEyedropper) elColorEyedropper.style.display = "block";
+    if (elColorPicker) elColorPicker.style.opacity = "0";
+    if (elColorReset) elColorReset.style.display = "none";
+    if (elColorInput) {
+      elColorInput.classList.add("color-input-default");
+      // Ensure value is empty to show placeholder
+      if (elColorInput.value === "" || elColorInput.value.toLowerCase() === "default") {
+        elColorInput.value = "";
+      }
+    }
+  } else {
+    // Custom color mode: hide eyedropper overlay, show color picker swatch and reset
+    if (elColorEyedropper) elColorEyedropper.style.display = "none";
+    if (elColorPicker) elColorPicker.style.opacity = "1";
+    if (elColorReset) elColorReset.style.display = "block";
+    if (elColorInput) elColorInput.classList.remove("color-input-default");
+  }
+}
+
 function resetColor() {
-  updateColor("#000000");
+  updateColor("Default");
 }
 
 function applyColorToSvg(svgText, color) {
+  // In Default mode (null), keep the original SVG colors (including currentColor)
+  if (color === null) {
+    return svgText;
+  }
+
   let s = svgText;
   
   // Replace currentColor first
@@ -169,21 +227,33 @@ async function loadUIIcon(iconId, containerId, style = "outline") {
   if (!/\bviewBox=/i.test(s)) {
     s = s.replace(/<svg/i, '<svg viewBox="0 0 16 16"');
   }
-  s = s.replaceAll("currentColor", "#000000");
-  const encoded = encodeURIComponent(s)
-    .replace(/'/g, "%27")
-    .replace(/"/g, "%22");
   
   const container = document.getElementById(containerId);
   if (container) {
     container.innerHTML = "";
-    const img = document.createElement("img");
-    img.src = `data:image/svg+xml,${encoded}`;
-    img.style.width = "100%";
-    img.style.height = "100%";
-    img.style.objectFit = "contain";
-    img.style.opacity = "0.3";
-    container.appendChild(img);
+    
+    // For reset and eyedropper icons, inject SVG directly so we can style it with CSS
+    if (containerId === "color-reset-icon" || containerId === "color-eyedropper-icon") {
+      container.innerHTML = s;
+      const svgElement = container.querySelector("svg");
+      if (svgElement) {
+        svgElement.style.width = "100%";
+        svgElement.style.height = "100%";
+        svgElement.style.display = "block";
+      }
+    } else {
+      s = s.replaceAll("currentColor", "#000000");
+      const encoded = encodeURIComponent(s)
+        .replace(/'/g, "%27")
+        .replace(/"/g, "%22");
+      const img = document.createElement("img");
+      img.src = `data:image/svg+xml,${encoded}`;
+      img.style.width = "100%";
+      img.style.height = "100%";
+      img.style.objectFit = "contain";
+      img.style.opacity = "0.3";
+      container.appendChild(img);
+    }
   }
 }
 
@@ -191,6 +261,7 @@ async function loadUIIcons() {
   await loadUIIcon("general-search", "search-icon", "filled");
   await loadUIIcon("arrow-down-triangle", "style-icon", "filled");
   await loadUIIcon("arrow-down-triangle", "category-icon", "filled");
+  await loadUIIcon("general-eyedropper", "color-eyedropper-icon", "filled");
   await loadUIIcon("arrow-repeat", "color-reset-icon", "outline");
 }
 
@@ -269,6 +340,18 @@ function render() {
   });
 }
 
+elSearch.addEventListener("focus", (e) => {
+  // Clear placeholder on focus so it disappears immediately
+  e.target.placeholder = "";
+});
+
+elSearch.addEventListener("blur", (e) => {
+  // Restore placeholder when not focused and empty
+  if (e.target.value === "") {
+    e.target.placeholder = "Search icons";
+  }
+});
+
 elSearch.oninput = render;
 elCategory.onchange = render;
 
@@ -294,18 +377,54 @@ if (elStyleControl) {
 // Color input handlers
 elColorInput.addEventListener("input", (e) => {
   const value = e.target.value;
+  const trimmed = value.trim();
+
+  // Allow user to type "Default" (case-insensitive) to go back to Default mode
+  if (trimmed.toLowerCase() === "default") {
+    updateColor("Default");
+    return;
+  }
+
+  // If empty, stay in Default mode but don't update (let user continue typing)
+  if (trimmed === "") {
+    return;
+  }
+
+  // Convert hex values to uppercase as user types
+  if (value.startsWith("#") || /^[0-9A-Fa-f]+$/.test(value.replace("#", ""))) {
+    const cursorPos = e.target.selectionStart;
+    e.target.value = value.toUpperCase();
+    e.target.setSelectionRange(cursorPos, cursorPos);
+  }
+
   if (isValidHexColor(normalizeHexColor(value))) {
     updateColor(value);
   }
 });
 
+elColorInput.addEventListener("focus", (e) => {
+  // Clear the field when focused so placeholder disappears immediately
+  // This ensures the placeholder is hidden as soon as user clicks
+  if (selectedColor === null) {
+    e.target.value = "";
+    e.target.placeholder = "";
+  }
+});
+
 elColorInput.addEventListener("blur", (e) => {
-  const value = e.target.value;
+  const value = e.target.value.trim();
   if (value && isValidHexColor(normalizeHexColor(value))) {
     updateColor(value);
   } else {
-    // Reset to current valid color if invalid
-    elColorInput.value = selectedColor;
+    // Reset to Default mode if empty or invalid
+    if (selectedColor === null) {
+      e.target.value = "";
+      e.target.placeholder = "Default";
+    } else {
+      // Restore the valid color value
+      e.target.value = selectedColor.toUpperCase();
+      e.target.placeholder = "Default";
+    }
   }
 });
 
@@ -319,15 +438,31 @@ elColorPicker.addEventListener("input", (e) => {
   updateColor(e.target.value);
 });
 
+// Click handler for color picker container - make entire area clickable when eyedropper is visible
+const elColorPickerContainer = document.querySelector(".color-picker-container");
+if (elColorPickerContainer && elColorPicker) {
+  // The color picker input itself is always clickable
+  // When eyedropper is visible, clicking the container should also trigger the picker
+  elColorPickerContainer.addEventListener("click", (e) => {
+    // If not clicking the input directly, trigger it
+    if (e.target !== elColorPicker) {
+      e.preventDefault();
+      elColorPicker.click();
+    }
+  });
+}
+
 // Reset color button handler
-const elColorReset = document.getElementById("color-reset-icon");
 if (elColorReset) {
-  elColorReset.addEventListener("click", resetColor);
+  elColorReset.addEventListener("click", (e) => {
+    e.stopPropagation();
+    resetColor();
+  });
 }
 
 // Export panel handlers
-let selectedSize = 16;
-let selectedFormat = "svg";
+let selectedSize = null;
+let selectedFormat = null;
 const elSizeControl = document.getElementById("size-control");
 const elFormatControl = document.getElementById("format-control");
 const elCustomSizeInput = document.getElementById("custom-size-input");
@@ -417,6 +552,7 @@ if (elExportButton) {
   buildCategories();
   await loadUIIcons();
   initFooter();
+  updateColorUI(); // Initialize UI state
   render();
 })();
 
