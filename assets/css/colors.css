@@ -206,7 +206,7 @@
   --color-primary: var(--color-blue-400);
   --color-primary-hover: var(--color-blue-500);
   --color-focus: var(--color-blue-400);
-  --color-warning: var(--color-red-500);
+  --color-warning: var(--color-red-400);
   
   /* CTA Button */
   --color-cta-button-bg: var(--color-gray-900);

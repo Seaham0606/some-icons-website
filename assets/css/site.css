@@ -54,7 +54,8 @@ body {
 }
 
 .sidebar-section:first-child {
-  padding-top: 32px;
+  padding-top: 40px;
+  padding-bottom: 16px;
 }
 
 .sidebar-section .logo {
@@ -242,6 +243,7 @@ body {
   width: 100%;
   padding: 8px 40px 8px 12px;
   font-family: 'Figtree', system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  color: var(--color-text-primary);
 }
 
 .color-input.color-input-default {
@@ -257,8 +259,10 @@ body {
   height: 24px;
   z-index: 1;
   cursor: pointer;
-  transition: color 0.2s;
+  transition: color 0.2s, opacity 0.2s;
   color: var(--color-item-tertiary);
+  display: block;
+  opacity: 1;
 }
 
 .color-reset-icon:hover {
@@ -344,6 +348,12 @@ body {
   gap: 8px;
   height: 44px;
   box-sizing: border-box;
+  transition: border-color 0.2s;
+}
+
+.segmented-control.segmented-control-error {
+  border: 2px solid var(--color-warning);
+  padding: 2px;
 }
 
 .segment-button {
@@ -463,23 +473,21 @@ body {
   margin-top: 4px;
 }
 
-.export-button:hover:not(:disabled) {
+.export-button:hover:not(.export-button-disabled) {
   background: var(--color-cta-button-bg-hover);
   transform: translateY(-1px);
 }
 
-.export-button:active:not(:disabled) {
+.export-button:active:not(.export-button-disabled) {
   transform: translateY(0);
 }
 
-.export-button:disabled,
 .export-button.export-button-disabled {
   cursor: not-allowed;
   background: var(--color-cta-button-bg-disabled);
   color: var(--color-cta-button-text);
 }
 
-.export-button:disabled:hover,
 .export-button.export-button-disabled:hover {
   transform: none;
   background: var(--color-cta-button-bg-disabled);
@@ -613,6 +621,7 @@ select {
 
 /* Select with icon - specific customization */
 .select-wrapper select {
+  padding-left: 12px;
   padding-right: 30px;
   appearance: none;
   -webkit-appearance: none;

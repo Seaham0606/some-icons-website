@@ -147,10 +147,10 @@ function updateColor(newColor) {
 function updateColorUI() {
   // Show/hide eyedropper overlay on color picker
   if (selectedColor === null) {
-    // Default mode: show eyedropper overlay on color picker, hide reset
+    // Default mode: show eyedropper overlay on color picker
     if (elColorEyedropper) elColorEyedropper.style.display = "block";
     if (elColorPicker) elColorPicker.style.opacity = "0";
-    if (elColorReset) elColorReset.style.display = "none";
+    // Reset button always visible
     if (elColorInput) {
       elColorInput.classList.add("color-input-default");
       // Ensure value is empty to show placeholder
@@ -159,10 +159,10 @@ function updateColorUI() {
       }
     }
   } else {
-    // Custom color mode: hide eyedropper overlay, show color picker swatch and reset
+    // Custom color mode: hide eyedropper overlay, show color picker swatch
     if (elColorEyedropper) elColorEyedropper.style.display = "none";
     if (elColorPicker) elColorPicker.style.opacity = "1";
-    if (elColorReset) elColorReset.style.display = "block";
+    // Reset button always visible
     if (elColorInput) elColorInput.classList.remove("color-input-default");
   }
 }
@@ -667,6 +667,11 @@ elColorInput.addEventListener("input", (e) => {
     return;
   }
 
+  // Remove default class when user starts typing to show text-primary color
+  if (elColorInput && elColorInput.classList.contains("color-input-default")) {
+    elColorInput.classList.remove("color-input-default");
+  }
+
   // Convert hex values to uppercase as user types
   if (value.startsWith("#") || /^[0-9A-Fa-f]+$/.test(value.replace("#", ""))) {
     const cursorPos = e.target.selectionStart;
@@ -740,6 +745,7 @@ if (elColorReset) {
 // Export panel handlers
 let selectedSize = null;
 let selectedFormat = null;
+let showExportErrors = false;
 const elSizeControl = document.getElementById("size-control");
 const elFormatControl = document.getElementById("format-control");
 const elCustomSizeInput = document.getElementById("custom-size-input");
@@ -766,6 +772,8 @@ if (elSizeControl) {
       }
       
       selectedSize = parseInt(value);
+      clearExportError('size');
+      updateExportButtonState();
     }
   });
 }
@@ -787,6 +795,8 @@ if (elCustomSizeInput) {
     const value = parseInt(e.target.value);
     if (value && value > 0) {
       selectedSize = value;
+      clearExportError('size');
+      updateExportButtonState();
     }
   });
   
@@ -794,6 +804,12 @@ if (elCustomSizeInput) {
     const value = parseInt(e.target.value);
     if (!value || value <= 0) {
       e.target.value = "";
+      selectedSize = null;
+      updateExportButtonState();
+    } else {
+      selectedSize = value;
+      clearExportError('size');
+      updateExportButtonState();
     }
   });
 }
@@ -812,20 +828,48 @@ if (elFormatControl) {
       // Add active class to clicked button
       e.target.classList.add("active");
       selectedFormat = value;
+      clearExportError('format');
+      updateExportButtonState();
     }
   });
 }
 
-function updateExportButtonState() {
-  const hasSelection = selectedIconIds.size > 0;
+function clearExportError(field) {
+  if (field === 'size' && elSizeControl) {
+    elSizeControl.classList.remove("segmented-control-error");
+  }
+  if (field === 'format' && elFormatControl) {
+    elFormatControl.classList.remove("segmented-control-error");
+  }
+}
+
+function updateExportErrorStates() {
+  if (!showExportErrors) return;
   
-  if (elExportButton) {
-    elExportButton.disabled = !hasSelection;
-    if (!hasSelection) {
-      elExportButton.classList.add("export-button-disabled");
+  // Show error for size if not selected
+  if (elSizeControl) {
+    if (!selectedSize) {
+      elSizeControl.classList.add("segmented-control-error");
     } else {
-      elExportButton.classList.remove("export-button-disabled");
+      elSizeControl.classList.remove("segmented-control-error");
     }
+  }
+  
+  // Show error for format if not selected
+  if (elFormatControl) {
+    if (!selectedFormat) {
+      elFormatControl.classList.add("segmented-control-error");
+    } else {
+      elFormatControl.classList.remove("segmented-control-error");
+    }
+  }
+}
+
+function updateExportButtonState() {
+  // Button is always enabled - validation handles errors on click
+  // Update error states if errors are being shown
+  if (showExportErrors) {
+    updateExportErrorStates();
   }
 }
 
@@ -838,14 +882,38 @@ function formatDateTimeForFilename() {
 }
 
 async function exportSelectedIcons() {
+  // Validate selection
   if (selectedIconIds.size === 0) {
     showToast("Please select icons to export");
     return;
   }
   
+  // Validate size and format - show errors if missing
+  const hasSize = selectedSize !== null && selectedSize > 0;
+  const hasFormat = selectedFormat !== null;
+  
+  if (!hasSize || !hasFormat) {
+    showExportErrors = true;
+    updateExportErrorStates();
+    
+    if (!hasSize && !hasFormat) {
+      showToast("Please select both size and format");
+    } else if (!hasSize) {
+      showToast("Please select icon size");
+    } else if (!hasFormat) {
+      showToast("Please select file format");
+    }
+    return;
+  }
+  
+  // Clear errors if validation passes
+  showExportErrors = false;
+  clearExportError('size');
+  clearExportError('format');
+  
   const style = getStyleValue();
-  const size = selectedSize || 24;
-  const format = selectedFormat || "svg";
+  const size = selectedSize;
+  const format = selectedFormat;
   
   const selectedIcons = Array.from(selectedIconIds)
     .map(id => ICONS.find(icon => icon.id === id))
