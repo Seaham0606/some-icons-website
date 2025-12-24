@@ -171,13 +171,48 @@ function resetColor() {
   updateColor("Default");
 }
 
-function applyColorToSvg(svgText, color) {
-  // In Default mode (null), keep the original SVG colors (including currentColor)
-  if (color === null) {
-    return svgText;
+function getCurrentThemeColor() {
+  // Create a temporary element to get the computed color value
+  const temp = document.createElement('div');
+  temp.style.color = 'var(--color-item-grid)';
+  temp.style.position = 'absolute';
+  temp.style.visibility = 'hidden';
+  temp.style.opacity = '0';
+  document.body.appendChild(temp);
+  
+  const computedColor = getComputedStyle(temp).color;
+  document.body.removeChild(temp);
+  
+  // Convert rgb/rgba to hex
+  if (computedColor.startsWith('rgb')) {
+    const rgbMatch = computedColor.match(/rgba?\((\d+),\s*(\d+),\s*(\d+)/);
+    if (rgbMatch) {
+      const r = parseInt(rgbMatch[1]).toString(16).padStart(2, '0');
+      const g = parseInt(rgbMatch[2]).toString(16).padStart(2, '0');
+      const b = parseInt(rgbMatch[3]).toString(16).padStart(2, '0');
+      return `#${r}${g}${b}`;
+    }
   }
+  
+  return computedColor || '#000000'; // Fallback to black
+}
 
+function applyColorToSvg(svgText, color, forDisplay = false) {
   let s = svgText;
+  
+  // In Default mode (null), only replace currentColor if rendering for display
+  // Keep currentColor intact for export/copy operations
+  if (color === null) {
+    if (forDisplay) {
+      // Replace currentColor with theme-appropriate color for display only
+      const themeColor = getCurrentThemeColor();
+      s = s.replaceAll("currentColor", themeColor);
+      return s;
+    } else {
+      // Keep currentColor for export/copy
+      return s;
+    }
+  }
   
   // Replace currentColor first
   s = s.replaceAll("currentColor", color);
@@ -261,8 +296,8 @@ async function loadUIIcon(iconId, containerId, style = "outline") {
   if (container) {
     container.innerHTML = "";
     
-    // For reset and eyedropper icons, inject SVG directly so we can style it with CSS
-    if (containerId === "color-reset-icon" || containerId === "color-eyedropper-icon") {
+    // For reset, eyedropper, search, and dropdown icons, inject SVG directly so we can style it with CSS
+    if (containerId === "color-reset-icon" || containerId === "color-eyedropper-icon" || containerId === "search-icon" || containerId === "category-icon") {
       container.innerHTML = s;
       const svgElement = container.querySelector("svg");
       if (svgElement) {
@@ -332,6 +367,8 @@ function initFooter() {
     footerContent.innerHTML = `
       <span class="footer-copyright">© ${year} Sihan Liu</span>
       <div class="footer-links">
+        <a href="https://www.figma.com/community/plugin/1581870303104890341/some-icons" target="_blank">Figma plugin</a>
+        <a href="#" class="footer-link-disabled" aria-disabled="true" tabindex="-1">Changelog</a>
         <a href="https://github.com/Seaham0606/some-icons-cdn" target="_blank">GitHub</a>
         <a href="https://choosealicense.com/licenses/mit/" target="_blank">MIT License</a>
       </div>
@@ -347,11 +384,17 @@ function initVersionLabel() {
 }
 
 function getTheme() {
-  // Check for data-theme attribute first (user preference)
+  // Check localStorage first (user preference)
+  const savedTheme = localStorage.getItem('theme');
+  if (savedTheme === 'dark' || savedTheme === 'light') {
+    return savedTheme;
+  }
+  
+  // Check for data-theme attribute
   const html = document.documentElement;
   const dataTheme = html.getAttribute('data-theme');
-  if (dataTheme === 'dark' || dataTheme === 'light') {
-    return dataTheme;
+  if (dataTheme === 'dark') {
+    return 'dark';
   }
   
   // Fall back to system preference
@@ -370,12 +413,24 @@ function setTheme(theme, saveToStorage = true) {
       localStorage.setItem('theme', 'dark');
     }
   } else {
-    html.setAttribute('data-theme', 'light');
+    // Remove data-theme attribute for light mode to use default :root styles
+    html.removeAttribute('data-theme');
     if (saveToStorage) {
       localStorage.setItem('theme', 'light');
     }
   }
-  updateThemeToggleUI(theme === 'dark');
+  // Update toggle UI state
+  const themeToggle = document.getElementById("theme-toggle");
+  if (themeToggle) {
+    themeToggle.checked = (theme === 'dark');
+    themeToggle.setAttribute('aria-checked', theme === 'dark');
+  }
+  // Force a repaint to ensure CSS updates
+  void html.offsetHeight;
+  // Re-render icons to update colors when theme changes
+  if (typeof render === 'function') {
+    render();
+  }
 }
 
 function initTheme() {
@@ -404,16 +459,18 @@ function updateThemeToggleUI(isDark) {
 
 function initThemeToggle() {
   const themeToggle = document.getElementById("theme-toggle");
-  if (themeToggle) {
-    const currentTheme = getTheme();
-    updateThemeToggleUI(currentTheme === 'dark');
-    
-    themeToggle.addEventListener('change', () => {
-      const newTheme = themeToggle.checked ? 'dark' : 'light';
-      setTheme(newTheme, true); // Save user preference when manually toggled
-      updateThemeToggleUI(newTheme === 'dark');
-    });
+  if (!themeToggle) {
+    return;
   }
+  
+  const currentTheme = getTheme();
+  themeToggle.checked = (currentTheme === 'dark');
+  themeToggle.setAttribute('aria-checked', currentTheme === 'dark');
+  
+  themeToggle.addEventListener('change', (e) => {
+    const newTheme = e.target.checked ? 'dark' : 'light';
+    setTheme(newTheme, true); // Save user preference when manually toggled
+  });
   
   // Listen for system theme changes
   if (window.matchMedia) {
@@ -572,7 +629,7 @@ function render() {
       if (!/\bviewBox=/i.test(s)) {
         s = s.replace(/<svg/i, '<svg viewBox="0 0 16 16"');
       }
-      s = applyColorToSvg(s, selectedColor);
+      s = applyColorToSvg(s, selectedColor, true); // true = for display
       const encoded = encodeURIComponent(s)
         .replace(/'/g, "%27")
         .replace(/"/g, "%22");
@@ -1044,7 +1101,16 @@ if (elExportButton) {
 // Add resize event listener
 window.addEventListener('resize', handleResize);
 
-(async () => {
+// Wait for DOM to be ready
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', () => {
+    initializeApp();
+  });
+} else {
+  initializeApp();
+}
+
+async function initializeApp() {
   // Initialize theme first (before other UI elements)
   initTheme();
   initThemeToggle();
@@ -1057,6 +1123,6 @@ window.addEventListener('resize', handleResize);
   updateColorUI(); // Initialize UI state
   updateSelectedCountToast(); // Initialize selected count toast
   updateExportButtonState(); // Initialize export button state
-  render();
-})();
+  render(); // Initial render
+}
 
