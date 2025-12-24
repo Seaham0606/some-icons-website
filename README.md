@@ -10,9 +10,7 @@ Official website for browsing, customizing, and downloading [Some Icons](https:/
 - 📦 **Batch Export** - Select multiple icons and export them as a ZIP file
 - 📐 **Size Control** - Choose preset sizes (16, 20, 24, 32) or enter custom dimensions
 - 💾 **Format Options** - Export as SVG or PNG
-- 🌓 **Theme Support** - Light and dark mode with system preference detection
-- 📱 **Responsive Design** - Works seamlessly on desktop, tablet, and mobile devices
-
+- 
 ## Usage
 
 ### Browsing Icons
