@@ -175,7 +175,7 @@
   /* Background */
   --color-background-primary: var(--color-white);
   --color-background: var(--color-white);
-  --color-background-weak: var(--color-gray-25);
+  --color-background-weak: var(--color-black-alpha-50);
   --color-background-hover: var(--color-black-alpha-25);
   --color-background-hover-light: var(--color-black-alpha-25);
   --color-background-active: var(--color-black-alpha-50);
@@ -183,15 +183,15 @@
   --color-background-overlay: var(--color-white-alpha-950);
   
   /* Text */
-  --color-text-primary: var(--color-black);
+  --color-text-primary: var(--color-gray-900);
   --color-text-secondary: var(--color-gray-700);
   --color-text-tertiary: var(--color-gray-400);
   --color-text-disabled: var(--color-gray-200);
   --color-text-inverse: var(--color-white);
-  --color-text-primary-inverted: var(--color-white);
+  --color-text-primary-inverted: var(--color-gray-100);
   
   /* Item */
-  --color-item-primary: var(--color-black);
+  --color-item-primary: var(--color-gray-900);
   --color-item-secondary: var(--color-gray-600);
   --color-item-tertiary: var(--color-gray-300);
   --color-item-quaternary: var(--color-gray-100);
@@ -199,7 +199,7 @@
   
   /* Border */
   --color-border: var(--color-gray-800);
-  --color-border-subtle: var(--color-gray-100);
+  --color-border-subtle: var(--color-gray-50);
   --color-border-base: var(--color-gray-100);
   
   /* Interactive/State */
@@ -207,6 +207,12 @@
   --color-primary-hover: var(--color-blue-500);
   --color-focus: var(--color-blue-400);
   --color-warning: var(--color-red-500);
+  
+  /* CTA Button */
+  --color-cta-button-bg: var(--color-gray-900);
+  --color-cta-button-bg-hover: var(--color-gray-700);
+  --color-cta-button-bg-disabled: var(--color-gray-200);
+  --color-cta-button-text: var(--color-white);
 }
 
 /* Dark Mode */
@@ -227,7 +233,7 @@
   --color-text-tertiary: var(--color-gray-500);
   --color-text-disabled: var(--color-gray-600);
   --color-text-inverse: var(--color-black);
-  --color-text-primary-inverted: var(--color-white);
+  --color-text-primary-inverted: var(--color-gray-900);
   
   /* Item */
   --color-item-primary: var(--color-white);
@@ -243,6 +249,12 @@
   
   /* Interactive/State */
   --color-warning: var(--color-red-500);
+  
+  /* CTA Button */
+  --color-cta-button-bg: var(--color-gray-100);
+  --color-cta-button-bg-hover: var(--color-gray-300);
+  --color-cta-button-bg-disabled: var(--color-gray-800);
+  --color-cta-button-text: var(--color-black);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -279,5 +291,11 @@
     
     /* Interactive/State */
     --color-warning: var(--color-red-400);
+    
+    /* CTA Button */
+    --color-cta-button-bg: var(--color-gray-100);
+    --color-cta-button-bg-hover: var(--color-gray-300);
+    --color-cta-button-bg-disabled: var(--color-gray-700);
+    --color-cta-button-text: var(--color-black);
   }
 }

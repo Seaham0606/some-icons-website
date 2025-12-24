@@ -111,20 +111,33 @@
                 </div>
               </div>
               
-              <div class="export-hint" id="export-hint">Select icons to export.</div>
               <button class="export-button" id="export-button">export</button>
             </div>
+          </div>
+
+          <div class="sidebar-utility-bar">
+            <span class="version-label" id="version-label">v1.0.0</span>
+            <label class="theme-toggle-wrapper" aria-label="Toggle theme">
+              <input 
+                type="checkbox" 
+                class="theme-toggle-input" 
+                id="theme-toggle"
+                role="switch"
+                aria-label="Toggle theme"
+                disabled
+              />
+              <span class="theme-toggle-switch"></span>
+            </label>
           </div>
         </aside>
 
         <main class="main">
           <div id="grid" class="icon-grid"></div>
+          <footer class="footer">
+            <div class="footer-content" id="footer-content"></div>
+          </footer>
         </main>
       </div>
-
-      <footer class="footer">
-        <div class="footer-content" id="footer-content"></div>
-      </footer>
     </div>
 
     <div class="toast" id="toast"></div>

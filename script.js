@@ -16,6 +16,9 @@ const elColorReset = document.getElementById("color-reset-icon");
 const svgCache = new Map();
 let selectedColor = null; // null = Default mode (currentColor), string = custom hex color
 let selectedIconIds = new Set(); // Track selected icon IDs
+let baseCardWidth = null; // Measured base card width
+let baseCardHeight = null; // Measured base card height
+let resizeTimeout = null; // Debounce timeout for resize handler
 
 function getStyleValue() {
   if (!elStyleControl) return "outline";
@@ -319,12 +322,180 @@ function copyToClipboard(text) {
   });
 }
 
+// App version - structured as a variable for future dynamic changelog integration
+const APP_VERSION = 'v1.0.0';
+
 function initFooter() {
   const year = new Date().getFullYear();
   const footerContent = document.getElementById("footer-content");
   if (footerContent) {
-    footerContent.innerHTML = `© ${year} Sihan Liu · <a href="https://github.com/Seaham0606/some-icons-cdn" target="_blank">GitHub</a> · <a href="https://choosealicense.com/licenses/mit/" target="_blank">MIT License</a>`;
+    footerContent.innerHTML = `
+      <span class="footer-copyright">© ${year} Sihan Liu</span>
+      <div class="footer-links">
+        <a href="https://github.com/Seaham0606/some-icons-cdn" target="_blank">GitHub</a>
+        <a href="https://choosealicense.com/licenses/mit/" target="_blank">MIT License</a>
+      </div>
+    `;
   }
+}
+
+function initVersionLabel() {
+  const versionLabel = document.getElementById("version-label");
+  if (versionLabel) {
+    versionLabel.textContent = APP_VERSION;
+  }
+}
+
+function getTheme() {
+  // Check for data-theme attribute first (user preference)
+  const html = document.documentElement;
+  const dataTheme = html.getAttribute('data-theme');
+  if (dataTheme === 'dark' || dataTheme === 'light') {
+    return dataTheme;
+  }
+  
+  // Fall back to system preference
+  if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+    return 'dark';
+  }
+  
+  return 'light';
+}
+
+function setTheme(theme, saveToStorage = true) {
+  const html = document.documentElement;
+  if (theme === 'dark') {
+    html.setAttribute('data-theme', 'dark');
+    if (saveToStorage) {
+      localStorage.setItem('theme', 'dark');
+    }
+  } else {
+    html.setAttribute('data-theme', 'light');
+    if (saveToStorage) {
+      localStorage.setItem('theme', 'light');
+    }
+  }
+  updateThemeToggleUI(theme === 'dark');
+}
+
+function initTheme() {
+  // Check localStorage first, then system preference
+  const savedTheme = localStorage.getItem('theme');
+  if (savedTheme === 'dark' || savedTheme === 'light') {
+    setTheme(savedTheme, true);
+  } else {
+    // Check system preference directly, but don't save to localStorage
+    // so system preference changes can still be detected
+    let systemTheme = 'light';
+    if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+      systemTheme = 'dark';
+    }
+    setTheme(systemTheme, false);
+  }
+}
+
+function updateThemeToggleUI(isDark) {
+  const themeToggle = document.getElementById("theme-toggle");
+  if (themeToggle) {
+    themeToggle.checked = isDark;
+    themeToggle.setAttribute('aria-checked', isDark);
+  }
+}
+
+function initThemeToggle() {
+  const themeToggle = document.getElementById("theme-toggle");
+  if (themeToggle) {
+    const currentTheme = getTheme();
+    updateThemeToggleUI(currentTheme === 'dark');
+    
+    themeToggle.addEventListener('change', () => {
+      const newTheme = themeToggle.checked ? 'dark' : 'light';
+      setTheme(newTheme, true); // Save user preference when manually toggled
+      updateThemeToggleUI(newTheme === 'dark');
+    });
+  }
+  
+  // Listen for system theme changes
+  if (window.matchMedia) {
+    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+    mediaQuery.addEventListener('change', (e) => {
+      // Only update if user hasn't set a preference
+      if (!localStorage.getItem('theme')) {
+        const newTheme = e.matches ? 'dark' : 'light';
+        setTheme(newTheme, false); // Don't save system preference changes
+        updateThemeToggleUI(newTheme === 'dark');
+      }
+    });
+  }
+}
+
+function measureBaseCardSize() {
+  // Wait for cards to be rendered, then measure the first one
+  // Use double requestAnimationFrame to ensure layout is complete
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => {
+      const firstCard = elGrid.querySelector('.card');
+      if (firstCard) {
+        const rect = firstCard.getBoundingClientRect();
+        if (rect.width > 0 && rect.height > 0) {
+          baseCardWidth = rect.width;
+          baseCardHeight = rect.height;
+          updateGridLayout();
+        }
+      }
+    });
+  });
+}
+
+function calculateColumnsThatFit() {
+  if (!baseCardWidth || !elGrid) return 0;
+  
+  const gridRect = elGrid.getBoundingClientRect();
+  const gridWidth = gridRect.width - (parseFloat(getComputedStyle(elGrid).paddingLeft) || 0) - (parseFloat(getComputedStyle(elGrid).paddingRight) || 0);
+  const gap = parseFloat(getComputedStyle(elGrid).gap) || 12;
+  
+  // Calculate how many columns can fit: (gridWidth + gap) / (baseCardWidth + gap)
+  const columnsThatFit = Math.floor((gridWidth + gap) / (baseCardWidth + gap));
+  return Math.max(1, columnsThatFit); // At least 1 column
+}
+
+function updateGridLayout() {
+  if (!elGrid) return;
+  
+  const visibleCards = elGrid.querySelectorAll('.card');
+  const visibleIconCount = visibleCards.length;
+  
+  if (visibleIconCount === 0) return;
+  
+  const columnsThatFit = calculateColumnsThatFit();
+  const isLowCountMode = visibleIconCount < columnsThatFit;
+  
+  if (isLowCountMode && baseCardWidth) {
+    // Low-count mode: use fixed width columns to prevent stretching
+    elGrid.style.gridTemplateColumns = `repeat(auto-fill, ${baseCardWidth}px)`;
+    elGrid.style.justifyContent = 'start';
+  } else {
+    // Normal mode: use flexible columns that fill the width
+    elGrid.style.gridTemplateColumns = '';
+    elGrid.style.justifyContent = '';
+  }
+}
+
+function handleResize() {
+  // Debounce resize handling
+  if (resizeTimeout) {
+    clearTimeout(resizeTimeout);
+  }
+  
+  resizeTimeout = setTimeout(() => {
+    if (baseCardWidth) {
+      // Re-measure if needed, or just update layout
+      updateGridLayout();
+    } else {
+      // If base size not measured yet, measure it
+      measureBaseCardSize();
+    }
+  }, 150);
 }
 
 function render() {
@@ -338,9 +509,27 @@ function render() {
     return matches(icon, q);
   });
 
+  // Sort icons: general category first, then other categories alphabetically
+  const sorted = filtered.sort((a, b) => {
+    const aCategory = a.category || "";
+    const bCategory = b.category || "";
+    
+    // If one is "general" and the other isn't, general comes first
+    if (aCategory === "general" && bCategory !== "general") return -1;
+    if (bCategory === "general" && aCategory !== "general") return 1;
+    
+    // If both are general or both are not general, sort by category alphabetically
+    if (aCategory !== bCategory) {
+      return aCategory.localeCompare(bCategory);
+    }
+    
+    // Within the same category, sort by icon id alphabetically
+    return (a.id || "").localeCompare(b.id || "");
+  });
+
   elGrid.innerHTML = "";
 
-  filtered.forEach((icon) => {
+  sorted.forEach((icon) => {
     const style = getStyleValue();
     const isSelected = selectedIconIds.has(icon.id);
     const card = document.createElement("div");
@@ -376,11 +565,6 @@ function render() {
     box.className = "iconBox";
     box.innerHTML = `<span class="muted">…</span>`;
     card.appendChild(box);
-
-    const name = document.createElement("div");
-    name.className = "card-name";
-    name.textContent = icon.id;
-    card.appendChild(name);
 
     (async () => {
       const svg = await fetchSvgText(icon, style);
@@ -421,6 +605,16 @@ function render() {
 
     elGrid.appendChild(card);
   });
+  
+  // Measure base card size after rendering (if not already measured)
+  if (!baseCardWidth) {
+    measureBaseCardSize();
+  } else {
+    // Update grid layout based on current icon count
+    requestAnimationFrame(() => {
+      updateGridLayout();
+    });
+  }
 }
 
 elSearch.addEventListener("focus", (e) => {
@@ -624,7 +818,6 @@ if (elFormatControl) {
 
 function updateExportButtonState() {
   const hasSelection = selectedIconIds.size > 0;
-  const exportHint = document.getElementById("export-hint");
   
   if (elExportButton) {
     elExportButton.disabled = !hasSelection;
@@ -632,14 +825,6 @@ function updateExportButtonState() {
       elExportButton.classList.add("export-button-disabled");
     } else {
       elExportButton.classList.remove("export-button-disabled");
-    }
-  }
-  
-  if (exportHint) {
-    if (hasSelection) {
-      exportHint.style.display = "none";
-    } else {
-      exportHint.style.display = "block";
     }
   }
 }
@@ -788,11 +973,19 @@ if (elExportButton) {
   });
 }
 
+// Add resize event listener
+window.addEventListener('resize', handleResize);
+
 (async () => {
+  // Initialize theme first (before other UI elements)
+  initTheme();
+  initThemeToggle();
+  
   await loadIndex();
   buildCategories();
   await loadUIIcons();
   initFooter();
+  initVersionLabel();
   updateColorUI(); // Initialize UI state
   updateSelectedCountToast(); // Initialize selected count toast
   updateExportButtonState(); // Initialize export button state
