@@ -1,79 +1,153 @@
-# some-icons-website
-Official website for Some Icons
+# Some Icons Website
 
-## Color Tokens
+Official website for browsing, customizing, and downloading [Some Icons](https://github.com/Seaham0606/some-icons-cdn) - a comprehensive icon library.
 
-This project uses color tokens exported from Figma. The tokens are available as CSS custom properties in `assets/css/colors.css`.
+## Features
 
-### Usage in CSS
+- 🔍 **Search & Filter** - Quickly find icons by name, category, or tags
+- 🎨 **Style Toggle** - Switch between outline and filled icon styles
+- 🌈 **Color Customization** - Apply custom colors to icons or use default colors
+- 📦 **Batch Export** - Select multiple icons and export them as a ZIP file
+- 📐 **Size Control** - Choose preset sizes (16, 20, 24, 32) or enter custom dimensions
+- 💾 **Format Options** - Export as SVG or PNG
+- 🌓 **Theme Support** - Light and dark mode with system preference detection
+- 📱 **Responsive Design** - Works seamlessly on desktop, tablet, and mobile devices
 
-```css
-.my-element {
-  color: var(--color-blue-500);
-  background: var(--color-red-100);
-  border-color: var(--color-border);
-}
+## Usage
+
+### Browsing Icons
+
+1. Use the search bar to find icons by name
+2. Filter by category using the dropdown menu
+3. Toggle between **Outline** and **Filled** styles using the segmented control
+
+### Customizing Icons
+
+1. **Color**: Enter a hex color code (e.g., `#FF5733`) or click the color picker
+   - Use "Default" to return to the original icon colors
+   - Click the reset button (↻) to clear custom colors
+
+### Exporting Icons
+
+1. **Single Icon**: Click any icon card to copy its SVG code to clipboard
+2. **Multiple Icons**:
+   - Click the selection button (radio icon) on each icon you want to export
+   - Choose icon size (preset or custom)
+   - Select file format (SVG or PNG)
+   - Click **Export** to download a ZIP file containing all selected icons
+
+### Keyboard Shortcuts
+
+- Click any icon to copy SVG to clipboard (when no icons are selected)
+- Press Enter in color input to apply the color
+
+## Project Structure
+
+```
+some-icons-website/
+├── index.html          # Main HTML structure
+├── script.js           # Application logic and icon handling
+├── assets/
+│   ├── css/
+│   │   ├── colors.css  # Color tokens and theme definitions
+│   │   └── site.css    # Component styles and layout
+│   └── images/
+│       ├── favicon.png
+│       └── logo-some-icons-full.svg
+├── LICENSE             # MIT License
+└── README.md           # This file
 ```
 
-### Available Color Families
+## Color System
 
-- `red`, `orange`, `yellow`, `green`, `pine`, `teal`, `blue`, `purple`, `pink`, `gray`
+This project uses a comprehensive color token system exported from Figma. All colors are available as CSS custom properties.
 
-### Available Shades
+### Color Families
 
-Each color family has shades from `900` (darkest) to `25` (lightest):
+Available color families: `red`, `orange`, `yellow`, `green`, `pine`, `teal`, `blue`, `purple`, `pink`, `gray`
+
+Each family includes shades from `900` (darkest) to `25` (lightest):
 - `900`, `800`, `700`, `600`, `500`, `400`, `300`, `200`, `100`, `50`, `25`
-
-### Grayscale Tokens
-
-Special grayscale tokens are available:
-- `white`, `1`, `25`, `50`, `75`, `100`, `200`, `300`, `400`, `500`, `600`, `700`, `800`, `850`, `900`, `925`, `950`, `975`, `999`, `black`
-
-Usage: `var(--color-white)`, `var(--color-gray-500)`, `var(--color-black)`
 
 ### Semantic Tokens
 
-For common use cases, semantic tokens are available. These automatically adapt to light/dark mode:
+Semantic tokens automatically adapt to light/dark mode:
 
 **Background:**
-- `--color-background-primary` - Main background (white in light, black in dark)
-- `--color-background` - General background
-- `--color-background-hover` - Hover state background
-- `--color-background-active` - Active state background
+- `--color-background-primary` - Main background
+- `--color-background-weak` - Subtle background
+- `--color-background-hover` - Hover state
 
 **Text:**
-- `--color-text-primary` - Primary text (black in light, white in dark)
+- `--color-text-primary` - Primary text
 - `--color-text-secondary` - Secondary text
 - `--color-text-tertiary` - Tertiary text
-- `--color-text-inverse` - Inverse text color
-
-**Items:**
-- `--color-item-primary` - Primary item color (black in light, white in dark)
-
-**Borders:**
-- `--color-border` - Standard border
-- `--color-border-subtle` - Subtle border
 
 **Interactive:**
-- `--color-primary` - Primary action color
-- `--color-primary-hover` - Primary hover state
+- `--color-primary` - Primary action color (blue)
 - `--color-focus` - Focus state color
 
-**Dark Mode Support:**
-Semantic tokens automatically switch based on:
-- `data-theme="dark"` attribute on any parent element
-- `prefers-color-scheme: dark` media query (system preference)
+### Dark Mode
 
-### Usage in JavaScript
+Dark mode is supported via:
+- `data-theme="dark"` attribute on the document element
+- System preference detection (`prefers-color-scheme: dark`)
+- Manual theme toggle in the sidebar
 
-Import the colors utility:
+### Usage Example
 
-```javascript
-// Access via CSS variables
-const blue500 = getComputedStyle(document.documentElement)
-  .getPropertyValue('--color-blue-500');
+```css
+.my-element {
+  color: var(--color-text-primary);
+  background: var(--color-background-primary);
+  border: 1px solid var(--color-border-subtle);
+}
 
-// Or use the Colors utility (if loaded)
-const hex = Colors.getHex('blue', '500');
-const rgb = Colors.getRGB('blue', '500');
+.my-button {
+  background: var(--color-primary);
+  color: var(--color-text-inverse);
+}
+
+.my-button:hover {
+  background: var(--color-primary-hover);
+}
 ```
+
+## Development
+
+### Local Setup
+
+1. Clone the repository
+2. Serve the files using a local web server (required for fetching icons from CDN)
+3. Open `index.html` in your browser
+
+### Dependencies
+
+- [JSZip](https://stuk.github.io/jszip/) - For creating ZIP files during export
+- [Figtree Font](https://fonts.google.com/specimen/Figtree) - Primary typeface
+
+### Icon Data Source
+
+Icons are loaded from the [Some Icons CDN](https://github.com/Seaham0606/some-icons-cdn) repository:
+- Base URL: `https://raw.githubusercontent.com/Seaham0606/some-icons-cdn/main/`
+- Index file: `index.json` (contains icon metadata)
+
+## Browser Support
+
+- Chrome (latest)
+- Firefox (latest)
+- Safari (latest)
+- Edge (latest)
+
+## License
+
+MIT License - see [LICENSE](LICENSE) file for details.
+
+## Links
+
+- [Some Icons CDN Repository](https://github.com/Seaham0606/some-icons-cdn)
+- [GitHub Repository](https://github.com/Seaham0606/some-icons-website)
+
+---
+
+Made with ❤️ for the design community
