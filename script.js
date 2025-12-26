@@ -393,8 +393,8 @@ function getTheme() {
   // Check for data-theme attribute
   const html = document.documentElement;
   const dataTheme = html.getAttribute('data-theme');
-  if (dataTheme === 'dark') {
-    return 'dark';
+  if (dataTheme === 'dark' || dataTheme === 'light') {
+    return dataTheme;
   }
   
   // Fall back to system preference
@@ -413,8 +413,8 @@ function setTheme(theme, saveToStorage = true) {
       localStorage.setItem('theme', 'dark');
     }
   } else {
-    // Remove data-theme attribute for light mode to use default :root styles
-    html.removeAttribute('data-theme');
+    // Set data-theme="light" explicitly to override system preference
+    html.setAttribute('data-theme', 'light');
     if (saveToStorage) {
       localStorage.setItem('theme', 'light');
     }
@@ -434,19 +434,20 @@ function setTheme(theme, saveToStorage = true) {
 }
 
 function initTheme() {
-  // Check localStorage first, then system preference
+  // Check localStorage first for user preference
   const savedTheme = localStorage.getItem('theme');
   if (savedTheme === 'dark' || savedTheme === 'light') {
-    setTheme(savedTheme, true);
+    // User has a saved preference, apply it explicitly
+    // (inline script already set it, but ensure it's correct)
+    const html = document.documentElement;
+    html.setAttribute('data-theme', savedTheme);
   } else {
-    // Check system preference directly, but don't save to localStorage
-    // so system preference changes can still be detected
-    let systemTheme = 'light';
-    if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
-      systemTheme = 'dark';
-    }
-    setTheme(systemTheme, false);
+    // No saved preference - ensure data-theme is removed
+    // Let the CSS media query handle system preference
+    const html = document.documentElement;
+    html.removeAttribute('data-theme');
   }
+  // Note: Toggle UI will be updated by initThemeToggle() which calls getTheme()
 }
 
 function updateThemeToggleUI(isDark) {
@@ -463,13 +464,15 @@ function initThemeToggle() {
     return;
   }
   
+  // Get current effective theme (system or saved preference)
   const currentTheme = getTheme();
   themeToggle.checked = (currentTheme === 'dark');
   themeToggle.setAttribute('aria-checked', currentTheme === 'dark');
   
   themeToggle.addEventListener('change', (e) => {
     const newTheme = e.target.checked ? 'dark' : 'light';
-    setTheme(newTheme, true); // Save user preference when manually toggled
+    // Always save preference when user manually toggles
+    setTheme(newTheme, true);
   });
   
   // Listen for system theme changes
@@ -478,9 +481,15 @@ function initThemeToggle() {
     mediaQuery.addEventListener('change', (e) => {
       // Only update if user hasn't set a preference
       if (!localStorage.getItem('theme')) {
-        const newTheme = e.matches ? 'dark' : 'light';
-        setTheme(newTheme, false); // Don't save system preference changes
-        updateThemeToggleUI(newTheme === 'dark');
+        // Remove data-theme to let CSS media query handle system preference
+        const html = document.documentElement;
+        html.removeAttribute('data-theme');
+        // Update toggle UI to match system preference
+        updateThemeToggleUI(e.matches);
+        // Re-render icons to update colors when theme changes
+        if (typeof render === 'function') {
+          render();
+        }
       }
     });
   }

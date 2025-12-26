@@ -24,6 +24,26 @@
     <link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="assets/css/colors.css" />
     <link rel="stylesheet" href="assets/css/site.css" />
+    <script>
+      // Initialize theme immediately to prevent flash of wrong theme
+      // This runs before CSS is evaluated, so the correct theme is applied from the start
+      (function() {
+        try {
+          const savedTheme = localStorage.getItem('theme');
+          if (savedTheme === 'dark' || savedTheme === 'light') {
+            // User has a saved preference, apply it immediately
+            document.documentElement.setAttribute('data-theme', savedTheme);
+          } else {
+            // No saved preference - ensure data-theme is not set
+            // This allows the CSS media query to handle system preference
+            document.documentElement.removeAttribute('data-theme');
+          }
+        } catch (e) {
+          // If localStorage fails, just remove data-theme to use system preference
+          document.documentElement.removeAttribute('data-theme');
+        }
+      })();
+    </script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
   </head>
 

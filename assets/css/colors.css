@@ -218,6 +218,55 @@
   --color-cta-button-text: var(--color-white);
 }
 
+/* Light Mode (explicit user preference) */
+html[data-theme="light"],
+:root[data-theme="light"] {
+  /* Background */
+  --color-background-primary: var(--color-white);
+  --color-background: var(--color-white);
+  --color-background-secondary: var(--color-gray-25);
+  --color-background-weak: var(--color-black-alpha-50);
+  --color-background-hover: var(--color-black-alpha-50);
+  --color-background-hover-light: var(--color-black-alpha-50);
+  --color-background-active: var(--color-black-alpha-50);
+  --color-background-active-dark: var(--color-black-alpha-75);
+  --color-background-overlay: var(--color-white-alpha-950);
+  
+  /* Text */
+  --color-text-primary: var(--color-gray-900);
+  --color-text-secondary: var(--color-gray-700);
+  --color-text-tertiary: var(--color-gray-400);
+  --color-text-quaternary: var(--color-gray-300);
+  --color-text-disabled: var(--color-gray-200);
+  --color-text-inverse: var(--color-white);
+  --color-text-primary-inverted: var(--color-gray-100);
+  
+  /* Item */
+  --color-item-primary: var(--color-gray-900);
+  --color-item-secondary: var(--color-gray-600);
+  --color-item-tertiary: var(--color-gray-300);
+  --color-item-quaternary: var(--color-gray-100);
+  --color-item-disabled: var(--color-gray-100);
+  --color-item-grid: var(--color-gray-900);
+  
+  /* Border */
+  --color-border: var(--color-gray-800);
+  --color-border-subtle: var(--color-gray-50);
+  --color-border-base: var(--color-black-alpha-50);
+  
+  /* Interactive/State */
+  --color-primary: var(--color-blue-400);
+  --color-primary-hover: var(--color-blue-500);
+  --color-focus: var(--color-blue-400);
+  --color-warning: var(--color-red-400);
+  
+  /* CTA Button */
+  --color-cta-button-bg: var(--color-gray-900);
+  --color-cta-button-bg-hover: var(--color-gray-700);
+  --color-cta-button-bg-disabled: var(--color-gray-200);
+  --color-cta-button-text: var(--color-white);
+}
+
 /* Dark Mode */
 html[data-theme="dark"],
 :root[data-theme="dark"] {
@@ -268,6 +317,7 @@ html[data-theme="dark"],
 }
 
 @media (prefers-color-scheme: dark) {
+  html:not([data-theme]),
   :root:not([data-theme]) {
     /* Background */
     --color-background-primary: var(--color-black);
