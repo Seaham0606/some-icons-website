@@ -565,6 +565,29 @@ select:focus {
   outline: none;
 }
 
+/* Input hover and focus states - inner blue border */
+/* Exclude search input - handled by search-wrapper */
+input:not([type="color"]):not([type="checkbox"]):not(#search):hover,
+select:hover {
+  box-shadow: inset 0 0 0 2px var(--color-focus);
+}
+
+input:not([type="color"]):not([type="checkbox"]):not(#search):focus,
+input:not([type="color"]):not([type="checkbox"]):not(#search):focus-visible,
+select:focus,
+select:focus-visible {
+  box-shadow: inset 0 0 0 1.2px var(--color-focus);
+}
+
+/* Search wrapper - border on entire container */
+.search-wrapper:hover {
+  box-shadow: inset 0 0 0 2px var(--color-focus);
+}
+
+.search-wrapper:focus-within {
+  box-shadow: inset 0 0 0 2px var(--color-focus);
+}
+
 /* Default input/select */
 input:not([type="color"]):not(.color-input):not(.custom-size-input),
 select {

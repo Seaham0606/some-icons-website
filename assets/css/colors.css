@@ -208,7 +208,7 @@
   /* Interactive/State */
   --color-primary: var(--color-blue-400);
   --color-primary-hover: var(--color-blue-500);
-  --color-focus: var(--color-blue-400);
+  --color-focus: var(--color-black-alpha-100);
   --color-warning: var(--color-red-400);
   
   /* CTA Button */
@@ -257,7 +257,7 @@ html[data-theme="light"],
   /* Interactive/State */
   --color-primary: var(--color-blue-400);
   --color-primary-hover: var(--color-blue-500);
-  --color-focus: var(--color-blue-400);
+  --color-focus: var(--color-black-alpha-100);
   --color-warning: var(--color-red-400);
   
   /* CTA Button */
@@ -306,7 +306,7 @@ html[data-theme="dark"],
   /* Interactive/State */
   --color-primary: var(--color-blue-400);
   --color-primary-hover: var(--color-blue-300);
-  --color-focus: var(--color-blue-400);
+  --color-focus: var(--color-white-alpha-100);
   --color-warning: var(--color-red-500);
   
   /* CTA Button */
@@ -355,7 +355,7 @@ html[data-theme="dark"],
     /* Interactive/State */
     --color-primary: var(--color-blue-400);
     --color-primary-hover: var(--color-blue-300);
-    --color-focus: var(--color-blue-400);
+    --color-focus: var(--color-white-alpha-100);
     --color-warning: var(--color-red-500);
     
     /* CTA Button */
