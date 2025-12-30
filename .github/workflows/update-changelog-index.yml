@@ -1,0 +1,45 @@
+name: Update Changelog Index
+
+on:
+  push:
+    paths:
+      - 'content/changelog/**/*.md'
+  workflow_dispatch: # Allow manual trigger
+
+permissions:
+  contents: write # Required to commit changes
+
+jobs:
+  generate-index:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+      
+      - name: Generate changelog index
+        run: node scripts/generate-changelog-index.js
+      
+      - name: Check for changes
+        id: verify-changed-files
+        run: |
+          if [ -n "$(git status --porcelain assets/js/changelog-index.json)" ]; then
+            echo "changed=true" >> $GITHUB_OUTPUT
+          else
+            echo "changed=false" >> $GITHUB_OUTPUT
+          fi
+      
+      - name: Commit and push changes
+        if: steps.verify-changed-files.outputs.changed == 'true'
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add assets/js/changelog-index.json
+          git commit -m "chore: auto-update changelog index" || exit 0
+          git push
+

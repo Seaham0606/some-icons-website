@@ -124,6 +124,29 @@ Dark mode is supported via:
 - [JSZip](https://stuk.github.io/jszip/) - For creating ZIP files during export
 - [Figtree Font](https://fonts.google.com/specimen/Figtree) - Primary typeface
 
+### Changelog Management
+
+The changelog page displays entries from markdown files in `content/changelog/`. Each markdown file should include frontmatter with `title`, `version`, and `date` fields.
+
+**To update the changelog:**
+
+1. **Manual generation** (one-time):
+   ```bash
+   node scripts/generate-changelog-index.js
+   ```
+
+2. **Watch mode** (automatic, recommended for development):
+   ```bash
+   node scripts/watch-changelog.js
+   ```
+   This will watch the `content/changelog/` directory and automatically regenerate the JSON index whenever markdown files are added, modified, or deleted. Press `Ctrl+C` to stop.
+
+The watch script will:
+- Generate an initial index on startup
+- Automatically regenerate when files change
+- Debounce changes (waits 300ms after last change) to avoid excessive regeneration
+- Handle file additions, modifications, and deletions
+
 ### Icon Data Source
 
 Icons are loaded from the [Some Icons CDN](https://github.com/Seaham0606/some-icons-cdn) repository:

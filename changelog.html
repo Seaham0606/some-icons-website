@@ -1,0 +1,111 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Changelog - Some Icons</title>
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Changelog - Some Icons" />
+    <meta property="og:description" content="View the changelog for Some Icons - see what's new and what's changed." />
+    <meta property="og:image" content="https://someicons.com/assets/images/social-banner.jpg" />
+    <meta property="og:url" content="https://someicons.com/changelog" />
+    
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Changelog - Some Icons" />
+    <meta name="twitter:description" content="View the changelog for Some Icons - see what's new and what's changed." />
+    <meta name="twitter:image" content="https://someicons.com/assets/images/social-banner.jpg" />
+    
+    <link rel="icon" type="image/png" href="assets/images/favicon.png" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="assets/css/colors.css" />
+    <link rel="stylesheet" href="assets/css/changelog-shared.css" />
+    <link rel="stylesheet" href="assets/css/changelog.css" />
+    <script>
+      // Initialize theme immediately to prevent flash of wrong theme
+      (function() {
+        try {
+          const savedTheme = localStorage.getItem('theme');
+          if (savedTheme === 'dark' || savedTheme === 'light') {
+            document.documentElement.setAttribute('data-theme', savedTheme);
+          } else {
+            document.documentElement.removeAttribute('data-theme');
+          }
+        } catch (e) {
+          document.documentElement.removeAttribute('data-theme');
+        }
+      })();
+    </script>
+  </head>
+
+  <body>
+    <div class="changelog-layout">
+      <nav class="changelog-nav">
+        <a href="/" class="changelog-nav-link" aria-label="Back to Icons">
+          <div class="changelog-nav-icon-wrapper">
+            <div class="changelog-nav-icon" id="back-icon"></div>
+          </div>
+        </a>
+        <div class="content">
+          <div class="changelog-nav-content">
+            <a href="/" class="changelog-logo-link">
+              <img src="assets/images/logo-some-icons-symbol.svg" alt="Some Icons" class="changelog-logo" />
+            </a>
+            <h1 class="changelog-page-title">Changelog</h1>
+          </div>
+        </div>
+      </nav>
+
+      <main class="changelog-main">
+        <div class="content">
+          <div class="changelog-container">
+            <div id="changelog-entries" class="changelog-entries">
+              <div class="changelog-loading">Loading changelog...</div>
+            </div>
+          </div>
+        </div>
+      </main>
+
+      <footer class="footer changelog-footer">
+        <div class="footer-content">
+          <span class="footer-copyright">© <span id="footer-year"></span> Sihan Liu</span>
+          <div class="footer-links">
+            <a href="https://www.figma.com/community/plugin/1581870303104890341/some-icons" target="_blank" rel="noopener noreferrer">Figma plugin</a>
+            <a href="/changelog">Changelog</a>
+            <a href="https://github.com/Seaham0606/some-icons-cdn" target="_blank" rel="noopener noreferrer">GitHub</a>
+            <a href="https://choosealicense.com/licenses/mit/" target="_blank" rel="noopener noreferrer">MIT License</a>
+          </div>
+        </div>
+      </footer>
+
+      <div class="changelog-theme-toggle-container">
+        <label class="changelog-theme-toggle-wrapper" aria-label="Toggle theme">
+          <input 
+            type="checkbox" 
+            class="changelog-theme-toggle-input" 
+            id="changelog-theme-toggle"
+            role="switch"
+            aria-label="Toggle theme"
+          />
+          <span class="changelog-theme-toggle-switch"></span>
+        </label>
+      </div>
+    </div>
+
+    <script>
+      // Set footer year immediately
+      (function() {
+        const footerYear = document.getElementById('footer-year');
+        if (footerYear) {
+          footerYear.textContent = new Date().getFullYear();
+        }
+      })();
+    </script>
+    <script src="assets/js/changelog.js"></script>
+  </body>
+</html>
+

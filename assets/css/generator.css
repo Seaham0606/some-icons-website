@@ -1,0 +1,180 @@
+/**
+ * Generator Page Styles
+ * 
+ * Styles specific to the changelog generator form page.
+ */
+
+/* Override site.css overflow: hidden for generator page */
+html.generator-page,
+html.generator-page body {
+  overflow: auto !important;
+  height: auto !important;
+}
+
+/* Adjust main padding since there's no nav */
+.generator-page .changelog-main {
+  padding-top: 40px;
+}
+
+.generator-container {
+  width: 100%;
+  max-width: 640px;
+  margin: 0 auto;
+}
+
+.generator-form {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+
+.generator-form-section {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.generator-section-title {
+  margin: 0 0 8px 0;
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--color-text-primary);
+}
+
+.generator-form-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 8px;
+}
+
+.generator-message {
+  font-size: 14px;
+  padding: 12px;
+  border-radius: 8px;
+  text-align: center;
+  min-height: 20px;
+}
+
+.generator-message.success {
+  background: var(--color-background-secondary);
+  color: var(--color-text-primary);
+}
+
+.generator-message.error {
+  background: var(--color-background-secondary);
+  color: var(--color-warning);
+}
+
+.generator-message:empty {
+  display: none;
+}
+
+/* Textarea styles - reuse input styles from site.css */
+textarea {
+  width: 100%;
+  padding: 8px 12px;
+  border: none;
+  border-radius: 10px;
+  background: var(--color-background-weak);
+  font: inherit;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--color-text-primary);
+  resize: vertical;
+  min-height: 120px;
+  font-family: 'Figtree', system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+}
+
+textarea::placeholder {
+  color: var(--color-item-tertiary);
+}
+
+textarea:focus {
+  outline: none;
+  box-shadow: inset 0 0 0 1.2px var(--color-focus);
+}
+
+textarea:hover:not(:focus) {
+  box-shadow: inset 0 0 0 2px var(--color-focus);
+}
+
+/* Row layout for version, release type, and date */
+.generator-row {
+  display: flex;
+  gap: 20px;
+  align-items: flex-start;
+}
+
+.generator-row-item {
+  flex: 1;
+}
+
+/* Make segmented control buttons fill available space */
+#release-type-control .segment-button {
+  flex: 1;
+  width: auto;
+}
+
+@media (max-width: 699px) {
+  .generator-row {
+    flex-direction: column;
+    gap: 20px;
+  }
+}
+
+/* Date input wrapper with custom icon */
+.date-input-wrapper {
+  position: relative;
+}
+
+.date-input-wrapper input[type="date"] {
+  cursor: pointer;
+  padding-right: 40px;
+}
+
+.date-input-wrapper input[type="date"]::-webkit-calendar-picker-indicator {
+  position: absolute;
+  right: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.date-icon {
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 24px;
+  height: 24px;
+  pointer-events: none;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-item-tertiary);
+}
+
+.date-icon svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+/* Responsive adjustments */
+@media (max-width: 699px) {
+  .generator-container {
+    max-width: 100%;
+  }
+
+  .generator-form {
+    gap: 24px;
+  }
+
+  .generator-form-section {
+    gap: 16px;
+  }
+}
+

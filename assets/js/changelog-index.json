@@ -1,0 +1,18 @@
+{
+  "entries": [
+    {
+      "title": "New calendar and circuit icons with refinements",
+      "version": "1.1.0",
+      "date": "2025-12-29",
+      "content": "<h2>Added</h2>\n<ul>\n  <li>`general-calendar-alt-2` in filled and outline styles</li>\n  <li>`general-circuit-line` in filled style</li>\n</ul>\n<h2>Changed</h2>\n<ul>\n  <li>`general-target-alt` filled style updated</li>\n  <li>`general-skull-poison` filled and outline styles updated</li>\n</ul>",
+      "anchorId": "1-1-0-new-calendar-and-circuit-icons-with-refinements"
+    },
+    {
+      "title": "Some Icons 1.0 Launch",
+      "version": "1.0.0",
+      "date": "2025-12-26",
+      "content": "<h2>Added</h2>\n<ul>\n  <li>First stable public release of the Some Icons icon set</li>\n  <li>Initial curated set of icons released under a unified design system</li>\n  <li>Outline and filled styles available at launch</li>\n  <li>Core categories and tags implemented for search and filtering</li>\n</ul>\n<h2>Design System</h2>\n<ul>\n  <li>Consistent grid and geometry across all icons</li>\n  <li>Harmonized stroke weight and corner radii between styles</li>\n  <li>Designed for clarity and legibility at common UI sizes</li>\n</ul>\n<h2>Supported Platforms</h2>\n<ul>\n  <li>Website library browser</li>\n  <li>Figma plugin for direct insertion and export</li>\n</ul>\n<h2>License</h2>\n<ul>\n  <li>Released under the MIT License</li>\n  <li>Free for personal and commercial use</li>\n</ul>\n<h2>Notes</h2>\n<ul>\n  <li>Some icons are still undergoing refinement and may receive visual adjustments in future releases</li>\n  <li>Icon names and IDs introduced in this release are considered stable unless explicitly noted in future changelogs</li>\n</ul>",
+      "anchorId": "1-0-0-some-icons-1-0-launch"
+    }
+  ]
+}

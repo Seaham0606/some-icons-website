@@ -150,7 +150,6 @@
           </div>
 
           <div class="sidebar-utility-bar">
-            <span class="version-label" id="version-label">v1.0.0</span>
             <label class="theme-toggle-wrapper" aria-label="Toggle theme">
               <input 
                 type="checkbox" 
@@ -161,13 +160,22 @@
               />
               <span class="theme-toggle-switch"></span>
             </label>
+            <span class="version-label" id="version-label">v1.0.0</span>
           </div>
         </aside>
 
         <main class="main">
           <div id="grid" class="icon-grid"></div>
           <footer class="footer">
-            <div class="footer-content" id="footer-content"></div>
+            <div class="footer-content">
+              <span class="footer-copyright">© <span id="footer-year"></span> Sihan Liu</span>
+              <div class="footer-links">
+                <a href="https://www.figma.com/community/plugin/1581870303104890341/some-icons" target="_blank" rel="noopener noreferrer">Figma plugin</a>
+                <a href="/changelog">Changelog</a>
+                <a href="https://github.com/Seaham0606/some-icons-cdn" target="_blank" rel="noopener noreferrer">GitHub</a>
+                <a href="https://choosealicense.com/licenses/mit/" target="_blank" rel="noopener noreferrer">MIT License</a>
+              </div>
+            </div>
           </footer>
         </main>
       </div>
@@ -176,6 +184,15 @@
     <div class="toast" id="toast"></div>
     <div class="toast selected-count-toast" id="selected-count-toast"></div>
 
+    <script>
+      // Set footer year immediately
+      (function() {
+        const footerYear = document.getElementById('footer-year');
+        if (footerYear) {
+          footerYear.textContent = new Date().getFullYear();
+        }
+      })();
+    </script>
     <script src="script.js"></script>
   </body>
 </html>

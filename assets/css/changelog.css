@@ -1,0 +1,257 @@
+/**
+ * Changelog Page Styles
+ * 
+ * Styles specific to the changelog page.
+ * Shared layout styles are in changelog-shared.css
+ */
+
+/* Changelog entries */
+.changelog-entries {
+  display: flex;
+  flex-direction: column;
+  gap: 48px;
+  max-width: 800px;
+}
+
+.changelog-entry {
+  width: 100%;
+}
+
+.changelog-entry:last-child {
+  margin-bottom: 0;
+}
+
+.changelog-entry-header {
+  margin-bottom: 16px;
+}
+
+.changelog-entry-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.changelog-entry-title {
+  margin: 0;
+  font-size: 24px;
+  font-weight: 600;
+  color: var(--color-text-primary);
+}
+
+.changelog-entry-link {
+  color: inherit;
+  text-decoration: none;
+}
+
+.changelog-entry-link:hover {
+  color: var(--color-text-primary);
+}
+
+.changelog-entry-info {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  font-size: 14px;
+  color: var(--color-text-secondary);
+}
+
+.changelog-entry-version {
+  font-weight: 500;
+}
+
+.changelog-entry-date {
+  color: var(--color-text-tertiary);
+}
+
+/* Markdown content styles - scoped to .changelog-content */
+.changelog-content {
+  font-size: 15px;
+  line-height: 1.6;
+  color: var(--color-text-primary);
+}
+
+.changelog-content > *:first-child {
+  margin-top: 0;
+}
+
+.changelog-content > *:last-child {
+  margin-bottom: 0;
+}
+
+.changelog-content h1,
+.changelog-content h2,
+.changelog-content h3,
+.changelog-content h4,
+.changelog-content h5,
+.changelog-content h6 {
+  margin-top: 24px;
+  margin-bottom: 12px;
+  font-weight: 600;
+  color: var(--color-text-primary);
+  line-height: 1.3;
+}
+
+.changelog-content h1 {
+  font-size: 28px;
+}
+
+.changelog-content h2 {
+  font-size: 24px;
+}
+
+.changelog-content h3 {
+  font-size: 20px;
+}
+
+.changelog-content h4 {
+  font-size: 18px;
+}
+
+.changelog-content h5 {
+  font-size: 16px;
+}
+
+.changelog-content h6 {
+  font-size: 15px;
+}
+
+.changelog-content p {
+  margin-top: 0;
+  margin-bottom: 16px;
+}
+
+.changelog-content ul,
+.changelog-content ol {
+  margin-top: 0;
+  margin-bottom: 16px;
+  padding-left: 24px;
+}
+
+.changelog-content li {
+  margin-bottom: 8px;
+}
+
+.changelog-content ul {
+  list-style-type: disc;
+}
+
+.changelog-content ol {
+  list-style-type: decimal;
+}
+
+.changelog-content ul ul,
+.changelog-content ol ol,
+.changelog-content ul ol,
+.changelog-content ol ul {
+  margin-top: 8px;
+  margin-bottom: 8px;
+}
+
+.changelog-content a {
+  color: var(--color-text-primary);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.changelog-content a:hover {
+  text-decoration: none;
+}
+
+.changelog-content code {
+  background: var(--color-background-secondary);
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+  font-size: 0.9em;
+}
+
+.changelog-content pre {
+  background: var(--color-background-secondary);
+  padding: 16px;
+  border-radius: 8px;
+  overflow-x: auto;
+  margin-top: 0;
+  margin-bottom: 16px;
+}
+
+.changelog-content pre code {
+  background: none;
+  padding: 0;
+}
+
+.changelog-content blockquote {
+  margin: 16px 0;
+  padding-left: 16px;
+  border-left: 3px solid var(--color-border-subtle);
+  color: var(--color-text-secondary);
+}
+
+.changelog-content table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 16px 0;
+}
+
+.changelog-content th,
+.changelog-content td {
+  padding: 8px 12px;
+  text-align: left;
+  border-bottom: 1px solid var(--color-border-subtle);
+}
+
+.changelog-content th {
+  font-weight: 600;
+  background: var(--color-background-secondary);
+}
+
+.changelog-content tr:hover {
+  background: var(--color-background-secondary);
+}
+
+.changelog-content hr {
+  border: none;
+  border-top: 1px solid var(--color-border-subtle);
+  margin: 24px 0;
+}
+
+.changelog-content img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 8px;
+}
+
+.changelog-empty,
+.changelog-loading,
+.changelog-error {
+  text-align: center;
+  padding: 48px 0;
+  color: var(--color-text-secondary);
+}
+
+.changelog-empty-hint,
+.changelog-error-hint {
+  font-size: 14px;
+  color: var(--color-text-tertiary);
+  margin-top: 8px;
+}
+
+.changelog-empty code,
+.changelog-error-hint code {
+  background: var(--color-background-secondary);
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+  font-size: 0.9em;
+}
+
+/* Responsive adjustments */
+@media (max-width: 699px) {
+  .changelog-entries {
+    gap: 24px;
+  }
+
+  .changelog-entry {
+    margin-bottom: 24px;
+  }
+}
+

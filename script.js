@@ -357,29 +357,68 @@ function copyToClipboard(text) {
   });
 }
 
-// App version - structured as a variable for future dynamic changelog integration
+// App version (fallback)
 const APP_VERSION = 'v1.0.0';
 
 function initFooter() {
   const year = new Date().getFullYear();
-  const footerContent = document.getElementById("footer-content");
-  if (footerContent) {
-    footerContent.innerHTML = `
-      <span class="footer-copyright">© ${year} Sihan Liu</span>
-      <div class="footer-links">
-        <a href="https://www.figma.com/community/plugin/1581870303104890341/some-icons" target="_blank">Figma plugin</a>
-        <a href="#" class="footer-link-disabled" aria-disabled="true" tabindex="-1">Changelog</a>
-        <a href="https://github.com/Seaham0606/some-icons-cdn" target="_blank">GitHub</a>
-        <a href="https://choosealicense.com/licenses/mit/" target="_blank">MIT License</a>
-      </div>
-    `;
+  const footerYear = document.getElementById("footer-year");
+  if (footerYear) {
+    footerYear.textContent = year.toString();
+  } else {
+    console.warn("Footer year element not found");
   }
 }
 
-function initVersionLabel() {
+/**
+ * Fetch the latest version from the changelog index
+ */
+async function fetchLatestVersion() {
+  try {
+    const response = await fetch('/assets/js/changelog-index.json', { cache: 'no-store' });
+    if (!response.ok) {
+      throw new Error(`Failed to load changelog index: ${response.status}`);
+    }
+    
+    const data = await response.json();
+    const entries = data.entries || [];
+    
+    if (entries.length > 0) {
+      // Find the entry with the latest valid date
+      let latestEntry = entries[0];
+      let latestDate = 0;
+      
+      for (const entry of entries) {
+        if (entry.date) {
+          const date = new Date(entry.date).getTime();
+          // Only consider valid dates (not NaN)
+          if (!isNaN(date) && date > latestDate) {
+            latestDate = date;
+            latestEntry = entry;
+          }
+        }
+      }
+      
+      const latestVersion = latestEntry.version;
+      return latestVersion ? `v${latestVersion}` : APP_VERSION;
+    }
+    
+    return APP_VERSION;
+  } catch (error) {
+    console.warn('Failed to fetch latest version from changelog:', error);
+    return APP_VERSION;
+  }
+}
+
+async function initVersionLabel() {
   const versionLabel = document.getElementById("version-label");
   if (versionLabel) {
+    // Set fallback version immediately
     versionLabel.textContent = APP_VERSION;
+    
+    // Fetch and update with latest version
+    const latestVersion = await fetchLatestVersion();
+    versionLabel.textContent = latestVersion;
   }
 }
 
@@ -1128,7 +1167,7 @@ async function initializeApp() {
   buildCategories();
   await loadUIIcons();
   initFooter();
-  initVersionLabel();
+  await initVersionLabel(); // Fetch latest version from changelog
   updateColorUI(); // Initialize UI state
   updateSelectedCountToast(); // Initialize selected count toast
   updateExportButtonState(); // Initialize export button state

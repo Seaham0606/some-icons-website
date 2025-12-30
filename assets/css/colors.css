@@ -182,6 +182,7 @@
   --color-background-active: var(--color-black-alpha-50);
   --color-background-active-dark: var(--color-black-alpha-75);
   --color-background-overlay: var(--color-white-alpha-950);
+  --color-background-footer: var(--color-white-alpha-700);
   
   /* Text */
   --color-text-primary: var(--color-gray-900);
@@ -231,11 +232,12 @@ html[data-theme="light"],
   --color-background-active: var(--color-black-alpha-50);
   --color-background-active-dark: var(--color-black-alpha-75);
   --color-background-overlay: var(--color-white-alpha-950);
+  --color-background-footer: var(--color-white-alpha-700);
   
   /* Text */
   --color-text-primary: var(--color-gray-900);
-  --color-text-secondary: var(--color-gray-700);
-  --color-text-tertiary: var(--color-gray-400);
+  --color-text-secondary: var(--color-gray-600);
+  --color-text-tertiary: var(--color-gray-300);
   --color-text-quaternary: var(--color-gray-300);
   --color-text-disabled: var(--color-gray-200);
   --color-text-inverse: var(--color-white);
@@ -280,11 +282,12 @@ html[data-theme="dark"],
   --color-background-active: var(--color-white-alpha-50);
   --color-background-active-dark: var(--color-white-alpha-75);
   --color-background-overlay: var(--color-black-alpha-950);
+  --color-background-footer: var(--color-black-alpha-700);
   
   /* Text */
   --color-text-primary: var(--color-white);
-  --color-text-secondary: var(--color-gray-300);
-  --color-text-tertiary: var(--color-gray-400);
+  --color-text-secondary: var(--color-gray-400);
+  --color-text-tertiary: var(--color-gray-500);
   --color-text-quaternary: var(--color-gray-600);
   --color-text-disabled: var(--color-gray-600);
   --color-text-inverse: var(--color-black);
@@ -329,11 +332,12 @@ html[data-theme="dark"],
     --color-background-active: var(--color-white-alpha-50);
     --color-background-active-dark: var(--color-white-alpha-75);
     --color-background-overlay: var(--color-black-alpha-950);
+    --color-background-footer: var(--color-black-alpha-700);
     
     /* Text */
     --color-text-primary: var(--color-white);
-    --color-text-secondary: var(--color-gray-300);
-    --color-text-tertiary: var(--color-gray-400);
+    --color-text-secondary: var(--color-gray-400);
+    --color-text-tertiary: var(--color-gray-500);
     --color-text-quaternary: var(--color-gray-600);
     --color-text-disabled: var(--color-gray-600);
     --color-text-inverse: var(--color-black);
