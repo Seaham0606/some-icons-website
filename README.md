@@ -4,13 +4,13 @@ Official website for browsing, customizing, and downloading [Some Icons](https:/
 
 ## Features
 
-- 🔍 **Search & Filter** - Quickly find icons by name or category
-- 🎨 **Style Toggle** - Switch between outline and filled icon styles
-- 🌈 **Color Customization** - Apply custom colors to icons or use default colors
-- 📦 **Batch Export** - Select multiple icons and export them as a ZIP file
-- 📐 **Size Control** - Choose preset sizes (16, 20, 24, 32) or enter custom dimensions
-- 💾 **Format Options** - Export as SVG or PNG
-- 
+- **Search & Filter** - Quickly find icons by name or category
+- **Style Toggle** - Switch between outline and filled icon styles
+- **Color Customization** - Apply custom colors to icons or use default colors
+- **Batch Export** - Select multiple icons and export them as a ZIP file
+- **Size Control** - Choose preset sizes (16, 20, 24, 32) or enter custom dimensions
+- **Format Options** - Export as SVG or PNG
+  
 ## Usage
 
 ### Browsing Icons
