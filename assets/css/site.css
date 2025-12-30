@@ -161,8 +161,8 @@ body {
   bottom: 0;
   left: 0;
   right: 0;
-  z-index: 10;
-  pointer-events: none;
+  z-index: 100;
+  pointer-events: auto;
 }
 
 .footer-content {
@@ -172,6 +172,8 @@ body {
   align-items: center;
   justify-content: space-between;
   pointer-events: auto;
+  position: relative;
+  z-index: 1;
 }
 
 .footer-links {
@@ -202,6 +204,14 @@ body {
   outline: 2px solid var(--color-focus);
   outline-offset: 2px;
   border-radius: 2px;
+}
+
+/* Active state for footer links (current page) */
+.footer-links a.footer-link-active,
+.footer-links span.footer-link-active {
+  color: var(--color-text-primary);
+  cursor: default;
+  pointer-events: none;
 }
 
 /* Customization panel */

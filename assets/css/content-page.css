@@ -1,8 +1,8 @@
 /**
- * Changelog Page Styles
+ * Content Page Styles
  * 
- * Styles for the changelog page including layout, sidebar, entries, and shared components.
- * Also used by the generator page for common layout styles.
+ * Shared styles for content pages including layout, sidebar, entries, and common components.
+ * Used by the changelog page, generator page, and other content pages.
  */
 
 * {
@@ -145,10 +145,7 @@ body {
   flex: 1;
 }
 
-/* Hide Changelog link in footer on changelog page */
-.changelog-footer-link {
-  display: none;
-}
+/* Footer active state is handled in site.css */
 
 .changelog-versions-section {
   flex: 1;
@@ -325,10 +322,6 @@ body {
     padding: 16px;
     padding-bottom: 66px;
   }
-
-  .changelog-sidebar-nav .footer-links {
-    gap: 6px;
-  }
 }
 
 @media (max-width: 699px) {
@@ -340,4 +333,5 @@ body {
     margin-bottom: 24px;
   }
 }
+
 
