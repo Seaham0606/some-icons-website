@@ -47,6 +47,21 @@ function parseFrontmatter(content) {
 }
 
 /**
+ * Process inline markdown (bold, italic, code, links)
+ */
+function processInlineMarkdown(text) {
+  return text
+    // Bold
+    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+    // Italic (but not if it's part of bold)
+    .replace(/(?<!\*)\*(?!\*)([^*]+?)(?<!\*)\*(?!\*)/g, '<em>$1</em>')
+    // Inline code
+    .replace(/`([^`]+)`/g, '<code>$1</code>')
+    // Links
+    .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2">$1</a>');
+}
+
+/**
  * Convert markdown to HTML (basic implementation)
  * For production, consider using a proper markdown parser like marked or markdown-it
  */
@@ -78,18 +93,21 @@ function markdownToHtml(markdown) {
     const line = lines[i];
     const trimmed = line.trim();
     
-    // Check for headers
-    if (trimmed.match(/^#{1,6}\s/)) {
+    // Check for headers (with or without space after #)
+    const headerMatch = trimmed.match(/^(#{1,6})(.+)$/);
+    if (headerMatch) {
       flushList();
-      const level = trimmed.match(/^(#{1,6})/)[1].length;
-      const text = trimmed.substring(level).trim();
+      const level = headerMatch[1].length;
+      const text = headerMatch[2].trim();
       result.push(`<h${level}>${text}</h${level}>`);
       continue;
     }
     
     // Check for unordered list item (- or *)
     if (trimmed.match(/^[-*]\s/)) {
-      const itemText = trimmed.substring(2).trim();
+      let itemText = trimmed.substring(2).trim();
+      // Process inline markdown in list items
+      itemText = processInlineMarkdown(itemText);
       if (!inList || listType !== 'ul') {
         flushList();
         inList = true;
@@ -101,7 +119,9 @@ function markdownToHtml(markdown) {
     
     // Check for ordered list item (1. 2. etc.)
     if (trimmed.match(/^\d+\.\s/)) {
-      const itemText = trimmed.replace(/^\d+\.\s/, '').trim();
+      let itemText = trimmed.replace(/^\d+\.\s/, '').trim();
+      // Process inline markdown in list items
+      itemText = processInlineMarkdown(itemText);
       if (!inList || listType !== 'ol') {
         flushList();
         inList = true;
@@ -120,19 +140,25 @@ function markdownToHtml(markdown) {
       continue;
     }
     
+    // If last element was a header and this line doesn't start with #, treat as list item
+    const lastElement = result[result.length - 1];
+    if (lastElement && lastElement.match(/^<h[1-6]>/) && !trimmed.match(/^#/)) {
+      // Treat as list item (even without - or *)
+      let itemText = processInlineMarkdown(trimmed);
+      if (!inList || listType !== 'ul') {
+        flushList();
+        inList = true;
+        listType = 'ul';
+      }
+      listItems.push(itemText);
+      continue;
+    }
+    
     // Regular line - flush list first, then process as paragraph
     flushList();
     
     // Process inline markdown
-    let processedLine = trimmed
-      // Bold
-      .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-      // Italic (but not if it's part of bold)
-      .replace(/(?<!\*)\*(?!\*)([^*]+?)(?<!\*)\*(?!\*)/g, '<em>$1</em>')
-      // Inline code
-      .replace(/`([^`]+)`/g, '<code>$1</code>')
-      // Links
-      .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2">$1</a>');
+    let processedLine = processInlineMarkdown(trimmed);
     
     result.push(`<p>${processedLine}</p>`);
   }

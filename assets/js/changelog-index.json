@@ -4,7 +4,7 @@
       "title": "New calendar and circuit icons with refinements",
       "version": "1.1.0",
       "date": "2025-12-29",
-      "content": "<h2>Added</h2>\n<ul>\n  <li>`general-calendar-alt-2` in filled and outline styles</li>\n  <li>`general-circuit-line` in filled style</li>\n</ul>\n<h2>Changed</h2>\n<ul>\n  <li>`general-target-alt` filled style updated</li>\n  <li>`general-skull-poison` filled and outline styles updated</li>\n</ul>",
+      "content": "<h2>Added</h2>\n<ul>\n  <li><code>general-calendar-alt-2</code> in <strong><em>filled</strong></em> and <strong><em>outline</strong></em> styles</li>\n  <li><code>general-circuit-line</code> in <strong><em>filled</strong></em> style</li>\n</ul>\n<h2>Changed</h2>\n<ul>\n  <li><code>general-target-alt</code> <strong><em>filled</strong></em> style updated</li>\n  <li><code>general-skull-poison</code> <strong><em>filled</strong></em> and <strong><em>outline</strong></em> styles updated</li>\n</ul>",
       "anchorId": "1-1-0-new-calendar-and-circuit-icons-with-refinements"
     },
     {

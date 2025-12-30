@@ -1074,6 +1074,22 @@ async function exportSelectedIcons() {
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
     
+    // Track download in Google Analytics
+    if (typeof gtag !== 'undefined') {
+      const iconIds = selectedIcons.map(icon => icon.id);
+      gtag('event', 'icon_download', {
+        'event_category': 'Export',
+        'event_label': format,
+        'format': format,
+        'style': style,
+        'size': size,
+        'icon_count': iconCount,
+        'icon_ids': iconIds.join(','),
+        'color': selectedColor || 'default',
+        'value': iconCount
+      });
+    }
+    
     showToast(`Exported ${selectedIcons.length} SVG file(s) as ZIP`);
   } else if (format === "png") {
     // Prepare PNG files for zip
@@ -1134,6 +1150,22 @@ async function exportSelectedIcons() {
     a.click();
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
+    
+    // Track download in Google Analytics
+    if (typeof gtag !== 'undefined') {
+      const iconIds = selectedIcons.map(icon => icon.id);
+      gtag('event', 'icon_download', {
+        'event_category': 'Export',
+        'event_label': format,
+        'format': format,
+        'style': style,
+        'size': size,
+        'icon_count': iconCount,
+        'icon_ids': iconIds.join(','),
+        'color': selectedColor || 'default',
+        'value': iconCount
+      });
+    }
     
     showToast(`Exported ${selectedIcons.length} PNG file(s) as ZIP`);
   }
