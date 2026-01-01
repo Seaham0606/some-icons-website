@@ -70,12 +70,10 @@ function buildCategories() {
   elCategory.innerHTML = `<option value="all">All icons</option>`;
   const cats = uniq(ICONS.map((i) => i.category).filter(Boolean));
   
-  const sortedCats = [...cats];
-  const generalIndex = sortedCats.indexOf("general");
-  if (generalIndex > -1) {
-    sortedCats.splice(generalIndex, 1);
-    sortedCats.unshift("general");
-  }
+  // Sort categories alphabetically (removed legacy "general first" priority)
+  // Category priority was historically used to avoid large sets (especially arrows)
+  // dominating the initial view, but this workaround is no longer desired.
+  const sortedCats = [...cats].sort();
   
   sortedCats.forEach((c) => {
     const opt = document.createElement("option");
@@ -87,6 +85,29 @@ function buildCategories() {
 
 function normalizeQuery(s) {
   return (s || "").trim().toLowerCase();
+}
+
+/**
+ * Computes a derived sort key from an icon id by removing the category prefix.
+ * Icon ids follow the pattern: [category]-[icon]-[name]-[optional modifiers]
+ * Example: "arrow-top-left-alt" -> "top-left-alt"
+ * 
+ * This allows sorting icons alphabetically by their semantic name rather than
+ * by category, which is used in the "All icons" view.
+ * 
+ * @param {string} iconId - The icon id (e.g., "arrow-top-left-alt")
+ * @returns {string} The derived sort key with category prefix removed, normalized to lowercase
+ */
+function getDerivedSortKey(iconId) {
+  if (!iconId) return "";
+  const normalized = iconId.toLowerCase();
+  const firstDashIndex = normalized.indexOf("-");
+  if (firstDashIndex === -1) {
+    // No dash found, return full id
+    return normalized;
+  }
+  // Remove first kebab segment (everything before and including the first "-")
+  return normalized.substring(firstDashIndex + 1);
 }
 
 function isValidHexColor(hex) {
@@ -614,22 +635,31 @@ function render() {
     return matches(icon, q);
   });
 
-  // Sort icons: general category first, then other categories alphabetically
+  // Sort icons based on view type
   const sorted = filtered.sort((a, b) => {
-    const aCategory = a.category || "";
-    const bCategory = b.category || "";
+    const isAllIconsView = elCategory.value === "all";
     
-    // If one is "general" and the other isn't, general comes first
-    if (aCategory === "general" && bCategory !== "general") return -1;
-    if (bCategory === "general" && aCategory !== "general") return 1;
-    
-    // If both are general or both are not general, sort by category alphabetically
-    if (aCategory !== bCategory) {
-      return aCategory.localeCompare(bCategory);
+    if (isAllIconsView) {
+      // "All icons" view: Sort by derived sort key (ignoring category prefix)
+      // This removes category-based grouping and bias, allowing icons to be
+      // sorted purely by their semantic name (e.g., "arrow-top-left-alt" sorts
+      // as "top-left-alt", ignoring the "arrow" category prefix).
+      // Legacy category-priority behavior (e.g., "general first") has been removed.
+      const aSortKey = getDerivedSortKey(a.id || "");
+      const bSortKey = getDerivedSortKey(b.id || "");
+      
+      const keyComparison = aSortKey.localeCompare(bSortKey);
+      if (keyComparison !== 0) {
+        return keyComparison;
+      }
+      
+      // Stable tie-breaker: sort by full id ascending
+      return (a.id || "").localeCompare(b.id || "");
+    } else {
+      // Category view: Sort by icon id alphabetically within the category
+      // (category-local sorting behavior preserved)
+      return (a.id || "").localeCompare(b.id || "");
     }
-    
-    // Within the same category, sort by icon id alphabetically
-    return (a.id || "").localeCompare(b.id || "");
   });
 
   elGrid.innerHTML = "";
