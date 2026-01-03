@@ -88,7 +88,7 @@ export function IconGrid() {
   }
 
   return (
-    <div className="grid grid-cols-[repeat(auto-fill,minmax(104px,1fr))] gap-3 p-6 pb-[74px] content-start">
+    <div className="grid grid-cols-[repeat(auto-fill,minmax(88px,1fr))] sm:grid-cols-[repeat(auto-fill,minmax(104px,1fr))] gap-2 sm:gap-3 p-4 sm:p-6 pb-20 content-start">
       {filteredIcons.map((icon) => (
         <IconCard key={icon.id} icon={icon} />
       ))}

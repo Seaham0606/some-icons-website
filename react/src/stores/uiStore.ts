@@ -7,6 +7,9 @@ interface UIState {
   theme: Theme
   setTheme: (theme: Theme) => void
   getEffectiveTheme: () => 'light' | 'dark'
+  sidebarOpen: boolean
+  setSidebarOpen: (open: boolean) => void
+  toggleSidebar: () => void
 }
 
 function getSystemTheme(): 'light' | 'dark' {
@@ -30,6 +33,9 @@ export const useUIStore = create<UIState>()(
         const { theme } = get()
         return theme === 'system' ? getSystemTheme() : theme
       },
+      sidebarOpen: false,
+      setSidebarOpen: (open) => set({ sidebarOpen: open }),
+      toggleSidebar: () => set((state) => ({ sidebarOpen: !state.sidebarOpen })),
     }),
     {
       name: 'some-icons-ui',

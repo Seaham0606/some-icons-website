@@ -5,6 +5,7 @@ import {
   SidebarFooter,
 } from '@/components/layout/Sidebar'
 import { MainContent, ScrollArea } from '@/components/layout/MainContent'
+import { MobileHeader } from '@/components/layout/MobileHeader'
 import { Footer } from '@/components/layout/Footer'
 import { ThemeToggle } from '@/components/layout/ThemeToggle'
 import { SearchInput } from '@/components/controls/SearchInput'
@@ -22,7 +23,10 @@ export default function HomePage() {
   const version = getLatestVersion(entries)
 
   return (
-    <div className="flex h-screen max-md:flex-col">
+    <div className="flex flex-col h-dvh md:flex-row">
+      {/* Mobile header with hamburger menu */}
+      <MobileHeader />
+
       <Sidebar>
         {/* Logo section - centered like vanilla */}
         <SidebarHeader className="flex justify-center">

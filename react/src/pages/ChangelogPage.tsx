@@ -11,8 +11,36 @@ import { ThemeToggle } from '@/components/layout/ThemeToggle'
 import { VersionList } from '@/components/changelog/VersionList'
 import { ChangelogEntry } from '@/components/changelog/ChangelogEntry'
 import { useChangelog } from '@/hooks/useChangelog'
-import { ArrowLeft } from 'lucide-react'
+import { useUIStore } from '@/stores/uiStore'
+import { ArrowLeft, Menu, X } from 'lucide-react'
 import { useState, useEffect, useMemo } from 'react'
+
+function ChangelogMobileHeader() {
+  const sidebarOpen = useUIStore((state) => state.sidebarOpen)
+  const toggleSidebar = useUIStore((state) => state.toggleSidebar)
+
+  return (
+    <header className="md:hidden flex items-center justify-between px-4 py-3 border-b border-border-subtle bg-background">
+      <div className="flex items-center gap-3">
+        <Link
+          to="/"
+          className="flex items-center gap-2 text-sm text-foreground-secondary hover:text-foreground transition-colors"
+        >
+          <ArrowLeft className="h-4 w-4" />
+        </Link>
+        <img src="/favicon.png" alt="Some Icons" className="w-6 h-6" />
+        <h1 className="font-semibold text-foreground">Changelog</h1>
+      </div>
+      <button
+        onClick={toggleSidebar}
+        className="p-2 -mr-2 text-foreground-secondary hover:text-foreground transition-colors"
+        aria-label={sidebarOpen ? 'Close menu' : 'Open menu'}
+      >
+        {sidebarOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+      </button>
+    </header>
+  )
+}
 
 export default function ChangelogPage() {
   const { data: entries, isLoading, error } = useChangelog()
@@ -34,7 +62,10 @@ export default function ChangelogPage() {
   }, [hashId, entries])
 
   return (
-    <div className="flex h-screen max-md:flex-col">
+    <div className="flex flex-col h-dvh md:flex-row">
+      {/* Mobile header with back button and hamburger */}
+      <ChangelogMobileHeader />
+
       <Sidebar>
         <SidebarHeader>
           <Link
@@ -70,7 +101,7 @@ export default function ChangelogPage() {
       </Sidebar>
 
       <MainContent>
-        <ScrollArea className="p-8 max-md:p-4">
+        <ScrollArea className="p-6 max-sm:p-4">
           {isLoading ? (
             <div className="text-foreground-secondary">Loading changelog...</div>
           ) : error ? (

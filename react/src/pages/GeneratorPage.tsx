@@ -19,12 +19,12 @@ export default function GeneratorPage() {
         </div>
       </header>
 
-      <main className="max-w-3xl mx-auto px-4 py-8">
-        <div className="mb-8">
-          <h1 className="text-2xl font-semibold text-foreground">
+      <main className="max-w-3xl mx-auto px-4 py-6 sm:py-8">
+        <div className="mb-6 sm:mb-8">
+          <h1 className="text-xl sm:text-2xl font-semibold text-foreground">
             Changelog Generator
           </h1>
-          <p className="mt-2 text-foreground-secondary">
+          <p className="mt-2 text-sm sm:text-base text-foreground-secondary">
             Create changelog entries in markdown format for the Some Icons project.
           </p>
         </div>

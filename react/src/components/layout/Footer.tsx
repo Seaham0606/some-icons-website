@@ -9,12 +9,12 @@ export function Footer() {
         absolute bottom-0 left-0 right-0 z-50
         border-t border-border-subtle
         bg-[var(--background-footer)] backdrop-blur-[10px]
-        px-6 py-4
+        px-4 py-3 sm:px-6 sm:py-4
       "
     >
-      <div className="flex flex-wrap items-center justify-between gap-2 text-[var(--foreground-quaternary)]">
+      <div className="flex flex-col sm:flex-row items-center justify-between gap-2 text-sm text-[var(--foreground-quaternary)]">
         <span>&copy; {currentYear} Sihan Liu</span>
-        <div className="flex items-center gap-5">
+        <div className="flex items-center gap-4 sm:gap-5 flex-wrap justify-center">
           <a
             href="https://www.figma.com/community/plugin/1581870303104890341/some-icons"
             target="_blank"
