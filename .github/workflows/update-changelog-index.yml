@@ -34,12 +34,16 @@ jobs:
             echo "changed=false" >> $GITHUB_OUTPUT
           fi
       
+      - name: Copy to React app
+        if: steps.verify-changed-files.outputs.changed == 'true'
+        run: cp assets/js/changelog-index.json react/public/assets/js/changelog-index.json
+
       - name: Commit and push changes
         if: steps.verify-changed-files.outputs.changed == 'true'
         run: |
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
-          git add assets/js/changelog-index.json
+          git add assets/js/changelog-index.json react/public/assets/js/changelog-index.json
           git commit -m "chore: auto-update changelog index" || exit 0
           git push
 

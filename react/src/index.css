@@ -1,0 +1,259 @@
+@import "tailwindcss";
+
+@custom-variant dark (&:where([data-theme=dark], [data-theme=dark] *));
+
+@theme {
+  --font-family-sans: 'Figtree', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+
+  /* Spacing scale - pixel-based to match vanilla (root font-size is 14px) */
+  --spacing-0: 0px;
+  --spacing-0_5: 2px;
+  --spacing-1: 4px;
+  --spacing-2: 8px;
+  --spacing-3: 12px;
+  --spacing-4: 16px;
+  --spacing-5: 20px;
+  --spacing-6: 24px;
+  --spacing-8: 32px;
+  --spacing-10: 40px;
+  --spacing-12: 48px;
+  --spacing-16: 64px;
+  --spacing-20: 80px;
+  --spacing-24: 96px;
+  --spacing-80: 320px;
+
+  /* Semantic colors - map CSS variables to Tailwind classes */
+  --color-background: var(--background);
+  --color-background-secondary: var(--background-secondary);
+  --color-background-weak: var(--background-weak);
+  --color-background-hover-light: var(--background-hover-light);
+  --color-foreground: var(--foreground);
+  --color-foreground-secondary: var(--foreground-secondary);
+  --color-foreground-tertiary: var(--foreground-tertiary);
+  --color-foreground-quaternary: var(--foreground-quaternary);
+  --color-border-subtle: var(--border-subtle);
+  --color-primary: var(--primary);
+  --color-muted: var(--muted);
+  --color-accent: var(--accent);
+
+  /* Grayscale - exact match to vanilla */
+  --color-gray-1: #FEFEFE;
+  --color-gray-25: #F9F9F9;
+  --color-gray-50: #F2F2F2;
+  --color-gray-75: #ECECEC;
+  --color-gray-100: #E6E6E6;
+  --color-gray-200: #CCCCCC;
+  --color-gray-300: #B3B3B3;
+  --color-gray-400: #999999;
+  --color-gray-500: #666666;
+  --color-gray-600: #4D4D4D;
+  --color-gray-700: #333333;
+  --color-gray-800: #262626;
+  --color-gray-850: #1A1A1A;
+  --color-gray-900: #131313;
+  --color-gray-925: #0D0D0D;
+  --color-gray-950: #060606;
+
+  /* Blue (primary) */
+  --color-blue-300: rgb(153, 206, 255);
+  --color-blue-400: rgb(128, 194, 255);
+  --color-blue-500: rgb(102, 162, 216);
+
+  /* Red (warning) */
+  --color-red-300: rgb(255, 179, 179);
+  --color-red-400: rgb(255, 143, 143);
+  --color-red-500: rgb(212, 114, 114);
+
+  /* Alpha colors - exact match to vanilla */
+  --color-black-alpha-1: rgba(0, 0, 0, 0.01);
+  --color-black-alpha-25: rgba(0, 0, 0, 0.025);
+  --color-black-alpha-50: rgba(0, 0, 0, 0.05);
+  --color-black-alpha-75: rgba(0, 0, 0, 0.075);
+  --color-black-alpha-100: rgba(0, 0, 0, 0.1);
+  --color-black-alpha-200: rgba(0, 0, 0, 0.2);
+  --color-black-alpha-300: rgba(0, 0, 0, 0.3);
+  --color-black-alpha-400: rgba(0, 0, 0, 0.4);
+  --color-black-alpha-500: rgba(0, 0, 0, 0.5);
+  --color-black-alpha-600: rgba(0, 0, 0, 0.6);
+  --color-black-alpha-700: rgba(0, 0, 0, 0.7);
+  --color-black-alpha-800: rgba(0, 0, 0, 0.8);
+  --color-black-alpha-900: rgba(0, 0, 0, 0.9);
+  --color-black-alpha-950: rgba(0, 0, 0, 0.95);
+  --color-white-alpha-1: rgba(255, 255, 255, 0.01);
+  --color-white-alpha-25: rgba(255, 255, 255, 0.025);
+  --color-white-alpha-50: rgba(255, 255, 255, 0.05);
+  --color-white-alpha-75: rgba(255, 255, 255, 0.075);
+  --color-white-alpha-100: rgba(255, 255, 255, 0.1);
+  --color-white-alpha-200: rgba(255, 255, 255, 0.2);
+  --color-white-alpha-300: rgba(255, 255, 255, 0.3);
+  --color-white-alpha-400: rgba(255, 255, 255, 0.4);
+  --color-white-alpha-500: rgba(255, 255, 255, 0.5);
+  --color-white-alpha-600: rgba(255, 255, 255, 0.6);
+  --color-white-alpha-700: rgba(255, 255, 255, 0.7);
+  --color-white-alpha-800: rgba(255, 255, 255, 0.8);
+  --color-white-alpha-900: rgba(255, 255, 255, 0.9);
+  --color-white-alpha-950: rgba(255, 255, 255, 0.95);
+}
+
+/* Light mode (default) - aligned with vanilla */
+:root {
+  /* Background */
+  --background: #ffffff;
+  --background-secondary: var(--color-gray-25);
+  --background-weak: var(--color-black-alpha-50);
+  --background-hover: var(--color-black-alpha-50);
+  --background-hover-light: var(--color-black-alpha-50);
+  --background-active: var(--color-black-alpha-50);
+  --background-active-dark: var(--color-black-alpha-75);
+  --background-overlay: var(--color-white-alpha-950);
+  --background-footer: var(--color-white-alpha-700);
+
+  /* Text/Foreground */
+  --foreground: var(--color-gray-900);
+  --foreground-secondary: var(--color-gray-600);
+  --foreground-tertiary: var(--color-gray-300);
+  --foreground-quaternary: var(--color-gray-300);
+  --foreground-disabled: var(--color-gray-200);
+  --foreground-inverse: #ffffff;
+  --foreground-inverted: var(--color-gray-100);
+
+  /* Item colors (icons, controls) */
+  --item-primary: var(--color-gray-900);
+  --item-secondary: var(--color-gray-600);
+  --item-tertiary: var(--color-gray-300);
+  --item-quaternary: var(--color-gray-100);
+  --item-disabled: var(--color-gray-100);
+  --item-grid: var(--color-gray-900);
+
+  /* Border */
+  --border: var(--color-gray-800);
+  --border-subtle: var(--color-gray-50);
+  --border-base: var(--color-black-alpha-50);
+  --border-focus: var(--color-black-alpha-100);
+
+  /* Interactive */
+  --primary: var(--color-blue-400);
+  --primary-hover: var(--color-blue-500);
+  --primary-foreground: #ffffff;
+
+  --destructive: var(--color-red-400);
+  --destructive-foreground: #ffffff;
+
+  /* UI components */
+  --muted: var(--color-gray-100);
+  --muted-foreground: var(--color-gray-500);
+
+  --accent: var(--color-gray-100);
+  --accent-foreground: var(--color-gray-900);
+
+  --card: #ffffff;
+  --card-foreground: var(--color-gray-900);
+
+  --popover: #ffffff;
+  --popover-foreground: var(--color-gray-900);
+
+  --input: var(--color-black-alpha-50);
+  --ring: var(--color-black-alpha-100);
+
+  /* CTA Button */
+  --cta-bg: var(--color-gray-900);
+  --cta-bg-hover: var(--color-gray-700);
+  --cta-bg-disabled: var(--color-gray-200);
+  --cta-fg: #ffffff;
+
+  --icon-color: var(--color-gray-900);
+
+  --radius: 10px;
+}
+
+/* Dark mode - aligned with vanilla */
+[data-theme="dark"] {
+  /* Background */
+  --background: #000000;
+  --background-secondary: var(--color-gray-900);
+  --background-weak: var(--color-white-alpha-50);
+  --background-hover: var(--color-white-alpha-200);
+  --background-hover-light: var(--color-white-alpha-50);
+  --background-active: var(--color-white-alpha-50);
+  --background-active-dark: var(--color-white-alpha-75);
+  --background-overlay: var(--color-black-alpha-950);
+  --background-footer: var(--color-black-alpha-700);
+
+  /* Text/Foreground */
+  --foreground: #ffffff;
+  --foreground-secondary: var(--color-gray-400);
+  --foreground-tertiary: var(--color-gray-500);
+  --foreground-quaternary: var(--color-gray-600);
+  --foreground-disabled: var(--color-gray-600);
+  --foreground-inverse: #000000;
+  --foreground-inverted: var(--color-gray-900);
+
+  /* Item colors (icons, controls) */
+  --item-primary: #ffffff;
+  --item-secondary: var(--color-gray-400);
+  --item-tertiary: var(--color-gray-500);
+  --item-quaternary: var(--color-gray-900);
+  --item-disabled: var(--color-gray-600);
+  --item-grid: var(--color-gray-300);
+
+  /* Border */
+  --border: var(--color-gray-200);
+  --border-subtle: var(--color-gray-900);
+  --border-base: var(--color-white-alpha-50);
+  --border-focus: var(--color-white-alpha-100);
+
+  /* Interactive */
+  --primary: var(--color-blue-400);
+  --primary-hover: var(--color-blue-300);
+  --primary-foreground: #000000;
+
+  --destructive: var(--color-red-500);
+  --destructive-foreground: #ffffff;
+
+  /* UI components */
+  --muted: var(--color-gray-800);
+  --muted-foreground: var(--color-gray-400);
+
+  --accent: var(--color-gray-800);
+  --accent-foreground: #ffffff;
+
+  --card: #000000;
+  --card-foreground: #ffffff;
+
+  --popover: var(--color-gray-900);
+  --popover-foreground: #ffffff;
+
+  --input: var(--color-white-alpha-50);
+  --ring: var(--color-white-alpha-100);
+
+  /* CTA Button */
+  --cta-bg: var(--color-gray-100);
+  --cta-bg-hover: var(--color-gray-300);
+  --cta-bg-disabled: var(--color-gray-800);
+  --cta-fg: #000000;
+
+  --icon-color: var(--color-gray-300);
+}
+
+/* Base styles - aligned with vanilla */
+* {
+  box-sizing: border-box;
+}
+
+html {
+  font-size: 14px;
+}
+
+body {
+  font-family: var(--font-family-sans);
+  font-size: 14px;
+  background-color: var(--background);
+  color: var(--foreground);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+}
+
+

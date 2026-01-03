@@ -1,0 +1,25 @@
+{
+  "entries": [
+    {
+      "title": "Refined Icon Category Taxonomy",
+      "version": "1.2.0",
+      "date": "2025-12-30",
+      "content": "<h2>Changed</h2>\n<ul>\n  <li>Refined icon category taxonomy to improve clarity, scalability, and discoverability.</li>\n  <li>Narrowed the scope of the general category to focus on core UI utilities and system level primitives.</li>\n  <li>Re scoped symbol to represent semantic meaning, status, warnings, reactions, and abstract concepts rather than functional controls.</li>\n  <li>Reclassified multiple icons across categories to better align with their primary intent and usage context.</li>\n</ul>\n<h2>Notes</h2>\n<ul>\n  <li>No icons were removed in this release.</li>\n  <li>This release focuses on structural consistency rather than visual changes.</li>\n  <li>Existing icon names and styles remain unchanged.</li>\n</ul>",
+      "anchorId": "1-2-0-refined-icon-category-taxonomy"
+    },
+    {
+      "title": "New calendar and circuit icons with refinements",
+      "version": "1.1.0",
+      "date": "2025-12-29",
+      "content": "<h2>Added</h2>\n<ul>\n  <li><code>general-calendar-alt-2</code> in <strong><em>filled</strong></em> and <strong><em>outline</strong></em> styles</li>\n  <li><code>general-circuit-line</code> in <strong><em>filled</strong></em> style</li>\n</ul>\n<h2>Changed</h2>\n<ul>\n  <li><code>general-target-alt</code> <strong><em>filled</strong></em> style updated</li>\n  <li><code>general-skull-poison</code> <strong><em>filled</strong></em> and <strong><em>outline</strong></em> styles updated</li>\n</ul>",
+      "anchorId": "1-1-0-new-calendar-and-circuit-icons-with-refinements"
+    },
+    {
+      "title": "Some Icons 1.0 Launch",
+      "version": "1.0.0",
+      "date": "2025-12-26",
+      "content": "<h2>Added</h2>\n<ul>\n  <li>First stable public release of the Some Icons icon set</li>\n  <li>Initial curated set of icons released under a unified design system</li>\n  <li>Outline and filled styles available at launch</li>\n  <li>Core categories and tags implemented for search and filtering</li>\n</ul>\n<h2>Design System</h2>\n<ul>\n  <li>Consistent grid and geometry across all icons</li>\n  <li>Harmonized stroke weight and corner radii between styles</li>\n  <li>Designed for clarity and legibility at common UI sizes</li>\n</ul>\n<h2>Supported Platforms</h2>\n<ul>\n  <li>Website library browser</li>\n  <li>Figma plugin for direct insertion and export</li>\n</ul>\n<h2>License</h2>\n<ul>\n  <li>Released under the MIT License</li>\n  <li>Free for personal and commercial use</li>\n</ul>\n<h2>Notes</h2>\n<ul>\n  <li>Some icons are still undergoing refinement and may receive visual adjustments in future releases</li>\n  <li>Icon names and IDs introduced in this release are considered stable unless explicitly noted in future changelogs</li>\n</ul>",
+      "anchorId": "1-0-0-some-icons-1-0-launch"
+    }
+  ]
+}
