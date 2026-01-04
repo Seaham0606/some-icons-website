@@ -13,7 +13,7 @@ export function Footer() {
         px-4 py-3 sm:px-6 sm:py-4
       "
     >
-      <div className="flex flex-col sm:flex-row items-center justify-between gap-2 text-sm text-[var(--foreground-quaternary)]">
+      <div className="flex flex-col sm:flex-row items-center justify-between gap-2 text-[var(--foreground-quaternary)]">
         <span>&copy; {currentYear} Sihan Liu</span>
         <div className="flex items-center gap-4 sm:gap-5 flex-wrap justify-center">
           <a
