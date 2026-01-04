@@ -10,12 +10,18 @@ const OPTIONS = [
 export function FormatSelector() {
   const format = useExportStore((state) => state.format)
   const setFormat = useExportStore((state) => state.setFormat)
+  const showValidationErrors = useExportStore((state) => state.showValidationErrors)
+  const validate = useExportStore((state) => state.validate)
+
+  const { formatValid } = validate()
+  const hasError = showValidationErrors && !formatValid
 
   return (
     <SegmentedControl<ExportFormat>
       options={OPTIONS}
       value={format}
       onChange={setFormat}
+      hasError={hasError}
     />
   )
 }

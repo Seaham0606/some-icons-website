@@ -1,8 +1,8 @@
 import { Input } from '@/components/ui/input'
+import { CdnIcon } from '@/components/ui/cdn-icon'
 import { useColorStore } from '@/stores/colorStore'
 import { isValidHexColor, normalizeHexColor } from '@/lib/svg-utils'
-import { RotateCcw, Pencil } from 'lucide-react'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { cn } from '@/lib/utils'
 
 export function ColorPicker() {
@@ -10,6 +10,11 @@ export function ColorPicker() {
   const setColor = useColorStore((state) => state.setColor)
   const reset = useColorStore((state) => state.reset)
   const [inputValue, setInputValue] = useState(selectedColor ?? '')
+
+  // Sync inputValue with selectedColor from store
+  useEffect(() => {
+    setInputValue(selectedColor ?? '')
+  }, [selectedColor])
 
   const handleInputChange = (value: string) => {
     setInputValue(value)
@@ -33,15 +38,15 @@ export function ColorPicker() {
   return (
     <div className="flex gap-2 items-center">
       {/* Text input with reset icon inside */}
-      <div className="relative flex-1 h-11">
+      <div className="relative flex-1 h-12">
         <Input
           type="text"
           placeholder="Default"
           value={inputValue}
           onChange={(e) => handleInputChange(e.target.value)}
           className={cn(
-            'h-11 bg-[var(--background-weak)] border-0 pr-10 font-mono',
-            !selectedColor && 'text-[var(--foreground-disabled)]'
+            'pr-10',
+            !selectedColor && 'text-[var(--foreground-tertiary)] font-semibold leading-normal'
           )}
         />
         <button
@@ -54,13 +59,13 @@ export function ColorPicker() {
           )}
           aria-label="Reset color"
         >
-          <RotateCcw className="h-5 w-5" />
+          <CdnIcon iconId="arrow-undo-large" className="h-6 w-6" />
         </button>
       </div>
 
-      {/* Color picker box with pencil icon overlay */}
+      {/* Color picker box with eyedropper icon overlay */}
       <div
-        className="relative w-11 h-11 shrink-0 rounded-[10px] cursor-pointer"
+        className="relative w-12 h-12 shrink-0 rounded-[10px] cursor-pointer"
         style={{
           backgroundColor: selectedColor ?? 'var(--background-weak)',
         }}
@@ -71,9 +76,11 @@ export function ColorPicker() {
           onChange={(e) => handleColorPickerChange(e.target.value)}
           className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
         />
-        <Pencil
-          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-5 h-5 text-[var(--item-tertiary)] pointer-events-none"
-        />
+        {!selectedColor && (
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-6 h-6 text-[var(--item-tertiary)] pointer-events-none">
+            <CdnIcon iconId="general-eyedropper" className="h-6 w-6" />
+          </div>
+        )}
       </div>
     </div>
   )

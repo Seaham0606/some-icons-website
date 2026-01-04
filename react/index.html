@@ -2,13 +2,54 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/png" href="/favicon.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Some Icons</title>
-    <meta name="description" content="A free and open source icon set with clean, minimal design. Available in outline and filled styles." />
+    
+    <!-- Meta Description -->
+    <meta name="description" content="Browse, customize, and download icons from the Some Icons library. Search by category, apply custom colors, and export as SVG or PNG." />
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Some Icons" />
+    <meta property="og:description" content="Browse, customize, and download icons from the Some Icons library. Search by category, apply custom colors, and export as SVG or PNG." />
+    <meta property="og:image" content="https://someicons.com/assets/images/social-banner.jpg" />
+    <meta property="og:url" content="https://someicons.com" />
+    
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Some Icons" />
+    <meta name="twitter:description" content="Browse, customize, and download icons from the Some Icons library. Search by category, apply custom colors, and export as SVG or PNG." />
+    <meta name="twitter:image" content="https://someicons.com/assets/images/social-banner.jpg" />
+    
+    <link rel="icon" type="image/png" href="/favicon.png" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-JNWWFMCPD8"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-JNWWFMCPD8');
+    </script>
+    
+    <!-- Initialize theme immediately to prevent flash -->
+    <script>
+      (function() {
+        try {
+          const savedTheme = localStorage.getItem('theme');
+          if (savedTheme === 'dark' || savedTheme === 'light') {
+            document.documentElement.setAttribute('data-theme', savedTheme);
+          } else {
+            document.documentElement.removeAttribute('data-theme');
+          }
+        } catch (e) {
+          document.documentElement.removeAttribute('data-theme');
+        }
+      })();
+    </script>
   </head>
   <body>
     <div id="root"></div>

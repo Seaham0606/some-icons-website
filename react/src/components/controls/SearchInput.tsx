@@ -1,5 +1,5 @@
 import { Input } from '@/components/ui/input'
-import { Search } from 'lucide-react'
+import { CdnIcon } from '@/components/ui/cdn-icon'
 import { useFilterStore } from '@/stores/filterStore'
 
 export function SearchInput() {
@@ -8,13 +8,15 @@ export function SearchInput() {
 
   return (
     <div className="relative">
-      <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-foreground-tertiary" />
+      <div className="absolute left-3 top-1/2 -translate-y-1/2 h-6 w-6 pr-2 text-[var(--item-tertiary)]">
+        <CdnIcon iconId="general-search" className="h-6 w-6" style="outline" />
+      </div>
       <Input
         type="text"
         placeholder="Search icons..."
         value={searchQuery}
         onChange={(e) => setSearchQuery(e.target.value)}
-        className="pl-10 h-11 bg-background-weak border-0 focus-visible:ring-1 focus-visible:ring-ring"
+        className="pl-10"
       />
     </div>
   )

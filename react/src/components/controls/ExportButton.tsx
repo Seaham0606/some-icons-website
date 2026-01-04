@@ -5,8 +5,9 @@ import { useFilterStore } from '@/stores/filterStore'
 import { useIcons } from '@/hooks/useIcons'
 import { exportToZip, downloadBlob } from '@/lib/export-utils'
 import { fetchSvg } from '@/lib/api'
-import { Loader2 } from 'lucide-react'
-import { useState } from 'react'
+import { CdnIcon } from '@/components/ui/cdn-icon'
+import { cn } from '@/lib/utils'
+import { useState, useRef, useEffect } from 'react'
 import { toast } from 'sonner'
 
 export function ExportButton() {
@@ -17,15 +18,71 @@ export function ExportButton() {
   const size = useExportStore((state) => state.size)
   const format = useExportStore((state) => state.format)
   const isValid = useExportStore((state) => state.isValid)
+  const setShowValidationErrors = useExportStore((state) => state.setShowValidationErrors)
   const selectedColor = useColorStore((state) => state.selectedColor)
   const style = useFilterStore((state) => state.style)
 
   const [isExporting, setIsExporting] = useState(false)
+  const [showNoIconsTooltip, setShowNoIconsTooltip] = useState(false)
+  const [tooltipPosition, setTooltipPosition] = useState({ x: 0, y: 0 })
+  const [isDark, setIsDark] = useState(false)
+  const buttonRef = useRef<HTMLButtonElement>(null)
+  const tooltipTimeoutRef = useRef<NodeJS.Timeout | null>(null)
 
-  const canExport = count > 0 && isValid()
+  // Check theme
+  useEffect(() => {
+    const checkTheme = () => {
+      const theme = document.documentElement.getAttribute('data-theme')
+      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches
+      setIsDark(theme === 'dark' || (!theme && prefersDark))
+    }
+    
+    checkTheme()
+    const observer = new MutationObserver(checkTheme)
+    observer.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] })
+    
+    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)')
+    mediaQuery.addEventListener('change', checkTheme)
+    
+    return () => {
+      observer.disconnect()
+      mediaQuery.removeEventListener('change', checkTheme)
+    }
+  }, [])
+
+  // Auto-hide tooltip after 3 seconds
+  useEffect(() => {
+    if (showNoIconsTooltip) {
+      tooltipTimeoutRef.current = setTimeout(() => {
+        setShowNoIconsTooltip(false)
+      }, 3000)
+    }
+    
+    return () => {
+      if (tooltipTimeoutRef.current) {
+        clearTimeout(tooltipTimeoutRef.current)
+      }
+    }
+  }, [showNoIconsTooltip])
 
   const handleExport = async () => {
-    if (!canExport || !icons || !size || !format) return
+    if (!count || !icons) {
+      // Show tooltip if no icons selected
+      if (buttonRef.current) {
+        const rect = buttonRef.current.getBoundingClientRect()
+        setTooltipPosition({
+          x: rect.left + rect.width / 2,
+          y: rect.top - 8,
+        })
+        setShowNoIconsTooltip(true)
+      }
+      return
+    }
+    
+    if (!isValid() || !size || !format) {
+      setShowValidationErrors(true)
+      return
+    }
 
     setIsExporting(true)
 
@@ -61,27 +118,55 @@ export function ExportButton() {
   }
 
   return (
-    <button
-      onClick={handleExport}
-      disabled={!canExport || isExporting}
-      className={`
-        w-full h-11 rounded-[10px] text-sm font-semibold
-        transition-all duration-200
-        flex items-center justify-center mt-1
-        ${canExport && !isExporting
-          ? 'bg-[var(--cta-bg)] text-[var(--cta-fg)] hover:bg-[var(--cta-bg-hover)] hover:-translate-y-px active:translate-y-0 cursor-pointer'
-          : 'bg-[var(--cta-bg-disabled)] text-[var(--cta-fg)] cursor-not-allowed'
-        }
-      `}
-    >
+    <>
+      <button
+        ref={buttonRef}
+        onClick={handleExport}
+        disabled={isExporting}
+        className={cn(
+          'w-full h-12 rounded-[10px] text-base font-medium',
+          'transition-all duration-200',
+          'flex items-center justify-center mt-1',
+          'bg-[var(--cta-bg)] text-[var(--cta-fg)] hover:bg-[var(--cta-bg-hover)] cursor-pointer',
+          isExporting && 'opacity-50 cursor-not-allowed'
+        )}
+      >
       {isExporting ? (
         <>
-          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+          <div className="mr-2 h-4 w-4 animate-spin">
+            <CdnIcon iconId="general-loading" className="h-4 w-4" />
+          </div>
           Exporting...
         </>
       ) : (
-        'Export'
+        count > 0 ? (
+          <span>Export <span className="font-bold">{count}</span> icon{count > 1 ? 's' : ''}</span>
+        ) : (
+          <span className="font-semibold">Export</span>
+        )
       )}
     </button>
+
+    {/* Tooltip for no icons selected */}
+    {showNoIconsTooltip && (
+      <div
+        className={cn(
+          "fixed pointer-events-none z-50 pl-2 pr-4 py-1 rounded-[999px] text-base font-semibold whitespace-nowrap flex items-center gap-1.5 backdrop-blur-[10px]",
+          isDark ? "text-white" : "text-black"
+        )}
+        style={{
+          left: `${tooltipPosition.x}px`,
+          top: `${tooltipPosition.y}px`,
+          transform: 'translate(-50%, -100%)',
+          backgroundColor: isDark 
+            ? 'var(--color-white-alpha-100)' 
+            : 'var(--color-black-alpha-100)',
+        }}
+      >
+        <CdnIcon iconId="general-warning-circle" className="w-4 h-4" />
+        Please select icons to export
+      </div>
+    )}
+    </>
   )
 }

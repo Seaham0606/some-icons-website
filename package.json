@@ -5,6 +5,9 @@
   "scripts": {
     "dev": "node server.js",
     "start": "node server.js",
+    "build": "cd react && npm run build",
+    "build:react": "cd react && npm run build",
+    "dev:react": "cd react && npm run dev",
     "generate-changelog": "node scripts/generate-changelog-index.js",
     "watch-changelog": "node scripts/watch-changelog.js"
   },

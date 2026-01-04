@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom'
 import { ThemeToggle } from '@/components/layout/ThemeToggle'
 import { GeneratorForm } from '@/components/generator/GeneratorForm'
-import { ArrowLeft } from 'lucide-react'
+import { CdnIcon } from '@/components/ui/cdn-icon'
 
 export default function GeneratorPage() {
   return (
@@ -12,7 +12,7 @@ export default function GeneratorPage() {
             to="/"
             className="flex items-center gap-2 text-sm text-foreground-secondary hover:text-foreground transition-colors"
           >
-            <ArrowLeft className="h-4 w-4" />
+            <CdnIcon iconId="arrow-left-triangle" className="h-4 w-4" />
             Back to icons
           </Link>
           <ThemeToggle />

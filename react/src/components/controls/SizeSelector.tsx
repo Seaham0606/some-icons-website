@@ -3,6 +3,7 @@ import { SIZE_PRESETS } from '@/lib/constants'
 import { SegmentedControl } from '@/components/ui/segmented-control'
 import { useState } from 'react'
 import { cn } from '@/lib/utils'
+import { inputBaseStyles } from '@/components/ui/input'
 
 const SIZE_OPTIONS = SIZE_PRESETS.map((size) => ({
   value: size,
@@ -12,7 +13,12 @@ const SIZE_OPTIONS = SIZE_PRESETS.map((size) => ({
 export function SizeSelector() {
   const size = useExportStore((state) => state.size)
   const setSize = useExportStore((state) => state.setSize)
+  const showValidationErrors = useExportStore((state) => state.showValidationErrors)
+  const validate = useExportStore((state) => state.validate)
   const [customSize, setCustomSize] = useState('')
+
+  const { sizeValid } = validate()
+  const hasError = showValidationErrors && !sizeValid
 
   const handlePresetClick = (preset: number) => {
     setSize(preset)
@@ -36,6 +42,7 @@ export function SizeSelector() {
         value={size}
         onChange={handlePresetClick}
         className="flex-1"
+        hasError={hasError}
       />
 
       <input
@@ -45,11 +52,11 @@ export function SizeSelector() {
         onChange={(e) => handleCustomSizeChange(e.target.value)}
         min={1}
         className={cn(
-          'w-11 h-11 shrink-0 rounded-[10px] bg-[var(--background-weak)]',
-          'text-center text-sm font-semibold',
-          'focus:outline-none focus:ring-1 focus:ring-[var(--border-focus)]',
+          inputBaseStyles,
+          'w-12 shrink-0 text-center',
           'transition-[width] duration-300 focus:w-20',
-          '[appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none'
+          '[appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none',
+          hasError && 'ring-2 ring-[var(--color-warning)]'
         )}
       />
     </div>

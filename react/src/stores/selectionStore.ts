@@ -5,6 +5,7 @@ interface SelectionState {
   toggle: (id: string) => void
   select: (id: string) => void
   deselect: (id: string) => void
+  selectAll: (ids: string[]) => void
   clear: () => void
   isSelected: (id: string) => boolean
   count: number
@@ -33,6 +34,11 @@ export const useSelectionStore = create<SelectionState>((set, get) => ({
     set((state) => {
       const next = new Set(state.selectedIds)
       next.delete(id)
+      return { selectedIds: next, count: next.size }
+    }),
+  selectAll: (ids) =>
+    set(() => {
+      const next = new Set(ids)
       return { selectedIds: next, count: next.size }
     }),
   clear: () => set({ selectedIds: new Set(), count: 0 }),

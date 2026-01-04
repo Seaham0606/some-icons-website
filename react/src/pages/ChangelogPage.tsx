@@ -12,7 +12,7 @@ import { VersionList } from '@/components/changelog/VersionList'
 import { ChangelogEntry } from '@/components/changelog/ChangelogEntry'
 import { useChangelog } from '@/hooks/useChangelog'
 import { useUIStore } from '@/stores/uiStore'
-import { ArrowLeft, Menu, X } from 'lucide-react'
+import { CdnIcon } from '@/components/ui/cdn-icon'
 import { useState, useEffect, useMemo } from 'react'
 
 function ChangelogMobileHeader() {
@@ -26,7 +26,7 @@ function ChangelogMobileHeader() {
           to="/"
           className="flex items-center gap-2 text-sm text-foreground-secondary hover:text-foreground transition-colors"
         >
-          <ArrowLeft className="h-4 w-4" />
+          <CdnIcon iconId="arrow-left-triangle" className="h-4 w-4" />
         </Link>
         <img src="/favicon.png" alt="Some Icons" className="w-6 h-6" />
         <h1 className="font-semibold text-foreground">Changelog</h1>
@@ -36,7 +36,11 @@ function ChangelogMobileHeader() {
         className="p-2 -mr-2 text-foreground-secondary hover:text-foreground transition-colors"
         aria-label={sidebarOpen ? 'Close menu' : 'Open menu'}
       >
-        {sidebarOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+        {sidebarOpen ? (
+          <CdnIcon iconId="arrow-up-triangle" className="h-6 w-6" />
+        ) : (
+          <CdnIcon iconId="arrow-down-triangle" className="h-6 w-6" />
+        )}
       </button>
     </header>
   )
@@ -72,7 +76,7 @@ export default function ChangelogPage() {
             to="/"
             className="flex items-center gap-2 text-sm text-foreground-secondary hover:text-foreground transition-colors"
           >
-            <ArrowLeft className="h-4 w-4" />
+            <CdnIcon iconId="arrow-left-triangle" className="h-4 w-4" />
             Back to icons
           </Link>
           <div className="flex items-center gap-3 mt-4">

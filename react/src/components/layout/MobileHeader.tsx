@@ -1,5 +1,5 @@
-import { Menu, X } from 'lucide-react'
 import { useUIStore } from '@/stores/uiStore'
+import { CdnIcon } from '@/components/ui/cdn-icon'
 import { cn } from '@/lib/utils'
 
 interface MobileHeaderProps {
@@ -32,7 +32,7 @@ export function MobileHeader({ title, showLogo = true, className }: MobileHeader
         className="p-2 -mr-2 text-foreground-secondary hover:text-foreground transition-colors"
         aria-label={sidebarOpen ? 'Close menu' : 'Open menu'}
       >
-        {sidebarOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+        <CdnIcon iconId="arrow-down-triangle" className="h-6 w-6" />
       </button>
     </header>
   )

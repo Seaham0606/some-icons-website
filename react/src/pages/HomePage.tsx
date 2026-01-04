@@ -17,10 +17,85 @@ import { FormatSelector } from '@/components/controls/FormatSelector'
 import { ExportButton } from '@/components/controls/ExportButton'
 import { IconGrid } from '@/components/icons/IconGrid'
 import { useChangelog, getLatestVersion } from '@/hooks/useChangelog'
+import { useIcons } from '@/hooks/useIcons'
+import { useSelectionStore } from '@/stores/selectionStore'
+import { useFilterStore } from '@/stores/filterStore'
+import { useMemo } from 'react'
+import type { Icon } from '@/types/icon'
+
+function normalizeQuery(s: string): string {
+  return s.trim().toLowerCase()
+}
+
+function matches(icon: Icon, query: string): boolean {
+  const q = normalizeQuery(query)
+  if (!q) return true
+
+  const searchableText = [
+    icon.id,
+    icon.category,
+    ...(icon.tags ?? []),
+  ]
+    .join(' ')
+    .toLowerCase()
+
+  return q.split(/\s+/).every((term) => searchableText.includes(term))
+}
+
+function getDerivedSortKey(iconId: string): string {
+  const parts = iconId.split('-')
+  if (parts.length > 1) {
+    return parts.slice(1).join('-')
+  }
+  return iconId
+}
 
 export default function HomePage() {
   const { data: entries } = useChangelog()
   const version = getLatestVersion(entries)
+  const { data: icons } = useIcons()
+  const count = useSelectionStore((state) => state.count)
+  const selectAll = useSelectionStore((state) => state.selectAll)
+  const clear = useSelectionStore((state) => state.clear)
+  const searchQuery = useFilterStore((state) => state.searchQuery)
+  const category = useFilterStore((state) => state.category)
+  const style = useFilterStore((state) => state.style)
+
+  // Get filtered icons for select all functionality
+  const filteredIcons = useMemo(() => {
+    if (!icons) return []
+
+    let result = icons
+
+    if (category !== 'all') {
+      result = result.filter((icon) => icon.category === category)
+    }
+
+    if (searchQuery) {
+      result = result.filter((icon) => matches(icon, searchQuery))
+    }
+
+    result = result.filter((icon) => icon.files[style])
+
+    if (category === 'all') {
+      result = [...result].sort((a, b) =>
+        getDerivedSortKey(a.id).localeCompare(getDerivedSortKey(b.id))
+      )
+    } else {
+      result = [...result].sort((a, b) => a.id.localeCompare(b.id))
+    }
+
+    return result
+  }, [icons, searchQuery, category, style])
+
+  const handleSelectAll = () => {
+    const iconIds = filteredIcons.map((icon) => icon.id)
+    selectAll(iconIds)
+  }
+
+  const handleDeselect = () => {
+    clear()
+  }
 
   return (
     <div className="flex flex-col h-dvh md:flex-row">
@@ -44,16 +119,16 @@ export default function HomePage() {
           </div>
 
           {/* Style control */}
-          <div className="space-y-2">
-            <label className="text-[13px] font-medium text-[var(--item-tertiary)] pl-0.5">
+          <div>
+            <label className="text-[13px] font-semibold text-[var(--item-tertiary)] pl-0.5 mb-2 block">
               Style
             </label>
             <StyleToggle />
           </div>
 
           {/* Category control */}
-          <div className="space-y-2">
-            <label className="text-[13px] font-medium text-[var(--item-tertiary)] pl-0.5">
+          <div>
+            <label className="text-[13px] font-semibold text-[var(--item-tertiary)] pl-0.5 mb-2 block">
               Category
             </label>
             <CategorySelect />
@@ -61,11 +136,11 @@ export default function HomePage() {
 
           {/* Customize section */}
           <div className="space-y-5">
-            <h3 className="text-base font-semibold text-foreground mb-1">
+            <h3 className="text-lg font-semibold text-foreground mb-4">
               Customize
             </h3>
-            <div className="space-y-2">
-              <label className="text-[13px] font-medium text-[var(--item-tertiary)] pl-0.5">
+            <div>
+              <label className="text-[13px] font-semibold text-[var(--item-tertiary)] pl-0.5 mb-2 block">
                 Color
               </label>
               <ColorPicker />
@@ -74,22 +149,38 @@ export default function HomePage() {
 
           {/* Export section */}
           <div className="space-y-5">
-            <h3 className="text-base font-semibold text-foreground mb-1">
+            <h3 className="text-lg font-semibold text-foreground mb-4">
               Export
             </h3>
-            <div className="space-y-2">
-              <label className="text-[13px] font-medium text-[var(--item-tertiary)] pl-0.5">
+            <div>
+              <label className="text-[13px] font-semibold text-[var(--item-tertiary)] pl-0.5 mb-2 block">
                 Icon size
               </label>
               <SizeSelector />
             </div>
-            <div className="space-y-2">
-              <label className="text-[13px] font-medium text-[var(--item-tertiary)] pl-0.5">
+            <div>
+              <label className="text-[13px] font-semibold text-[var(--item-tertiary)] pl-0.5 mb-2 block">
                 File format
               </label>
               <FormatSelector />
             </div>
             <ExportButton />
+            {count > 0 && (
+              <div className="flex justify-between items-center px-0.5">
+                <button
+                  onClick={handleSelectAll}
+                  className="text-base font-semibold text-[var(--primary)] hover:underline cursor-pointer"
+                >
+                  Select all
+                </button>
+                <button
+                  onClick={handleDeselect}
+                  className="text-base font-semibold text-[var(--color-warning)] hover:underline cursor-pointer"
+                >
+                  Deselect
+                </button>
+              </div>
+            )}
           </div>
         </SidebarContent>
 

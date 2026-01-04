@@ -111,8 +111,63 @@ app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', message: 'Changelog generator API is running' });
 });
 
-// Static file serving - must come after API routes
-app.use(express.static(__dirname));
+// Serve React app static files (if built)
+const distPath = path.join(__dirname, 'dist');
+if (fs.existsSync(distPath)) {
+  app.use(express.static(distPath));
+}
+
+// Serve other static assets (images, etc.)
+app.use('/assets', express.static(path.join(__dirname, 'assets')));
+app.use('/content', express.static(path.join(__dirname, 'content')));
+
+// SPA fallback - serve React app index.html for all routes
+// This must come after static file serving
+app.get('*', (req, res) => {
+  // If dist exists (production build), serve from there
+  if (fs.existsSync(distPath)) {
+    const indexPath = path.join(distPath, 'index.html');
+    if (fs.existsSync(indexPath)) {
+      return res.sendFile(indexPath);
+    }
+  }
+  // React build doesn't exist - show helpful error
+  res.status(503).send(`
+    <!DOCTYPE html>
+    <html>
+      <head>
+        <title>Build Required</title>
+        <style>
+          body {
+            font-family: system-ui, -apple-system, sans-serif;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+            background: #f5f5f5;
+          }
+          .container {
+            text-align: center;
+            padding: 2rem;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+          }
+          h1 { margin-top: 0; color: #333; }
+          code { background: #f0f0f0; padding: 2px 6px; border-radius: 3px; }
+        </style>
+      </head>
+      <body>
+        <div class="container">
+          <h1>⚠️ React Build Required</h1>
+          <p>The React app needs to be built before it can be served.</p>
+          <p>Run: <code>cd react && npm run build</code></p>
+        </div>
+      </body>
+    </html>
+  `);
+});
 
 // Start server
 if (process.env.PORT) {

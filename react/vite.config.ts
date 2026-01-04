@@ -11,4 +11,12 @@ export default defineConfig({
       '@': path.resolve(__dirname, './src'),
     },
   },
+  build: {
+    outDir: '../dist',
+    emptyOutDir: true,
+    // Ensure assets are referenced correctly from root
+    assetsDir: 'assets',
+  },
+  // For development, serve from root
+  base: '/',
 })

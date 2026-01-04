@@ -5,6 +5,7 @@ export function Footer() {
 
   return (
     <footer
+      id="main-footer"
       className="
         absolute bottom-0 left-0 right-0 z-50
         border-t border-border-subtle

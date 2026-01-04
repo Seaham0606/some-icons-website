@@ -1,6 +1,8 @@
 import { useFilterStore } from '@/stores/filterStore'
 import { useIcons, getCategories } from '@/hooks/useIcons'
-import { ChevronDown } from 'lucide-react'
+import { CdnIcon } from '@/components/ui/cdn-icon'
+import { inputBaseStyles } from '@/components/ui/input'
+import { cn } from '@/lib/utils'
 
 export function CategorySelect() {
   const { data: icons } = useIcons()
@@ -9,17 +11,14 @@ export function CategorySelect() {
   const setCategory = useFilterStore((state) => state.setCategory)
 
   return (
-    <div className="relative h-11">
+    <div className="relative h-12">
       <select
         value={category}
         onChange={(e) => setCategory(e.target.value)}
-        className="
-          w-full h-full px-3 pr-8 appearance-none
-          rounded-[10px] bg-[var(--background-weak)]
-          text-sm font-medium text-foreground
-          cursor-pointer
-          focus:outline-none focus:ring-1 focus:ring-[var(--border-focus)]
-        "
+        className={cn(
+          inputBaseStyles,
+          "pr-8 appearance-none cursor-pointer"
+        )}
       >
         <option value="all">All icons</option>
         {categories.map((cat) => (
@@ -28,9 +27,9 @@ export function CategorySelect() {
           </option>
         ))}
       </select>
-      <ChevronDown
-        className="absolute right-2 top-1/2 -translate-y-1/2 w-5 h-5 text-[var(--item-tertiary)] pointer-events-none"
-      />
+      <div className="absolute right-2 top-1/2 -translate-y-1/2 w-6 h-6 text-[var(--item-tertiary)] pointer-events-none">
+        <CdnIcon iconId="arrow-down-triangle" className="h-6 w-6" />
+      </div>
     </div>
   )
 }

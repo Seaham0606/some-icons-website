@@ -43,17 +43,22 @@ Official website for browsing, customizing, and downloading [Some Icons](https:/
 
 ```
 some-icons-website/
-├── index.html          # Main HTML structure
-├── script.js           # Application logic and icon handling
+├── react/              # React application (main app)
+│   ├── src/            # React source code
+│   │   ├── components/ # React components
+│   │   ├── pages/      # Page components
+│   │   ├── stores/     # State management
+│   │   └── index.css   # Tailwind CSS with color tokens
+│   └── dist/           # Production build (generated)
 ├── assets/
-│   ├── css/
-│   │   ├── colors.css  # Color tokens and theme definitions
-│   │   └── site.css    # Component styles and layout
-│   └── images/
-│       ├── favicon.png
-│       └── logo-some-icons-full.svg
-├── LICENSE             # MIT License
-└── README.md           # This file
+│   ├── js/
+│   │   └── changelog-index.json  # Changelog metadata
+│   └── images/         # Static images
+├── content/
+│   └── changelog/      # Changelog markdown files
+├── server.js         # Development server
+├── LICENSE            # MIT License
+└── README.md          # This file
 ```
 
 ## Color System
@@ -116,13 +121,38 @@ Dark mode is supported via:
 ### Local Setup
 
 1. Clone the repository
-2. Serve the files using a local web server (required for fetching icons from CDN)
-3. Open `index.html` in your browser
+2. Install dependencies:
+   ```bash
+   cd react
+   npm install
+   ```
+3. Start the development server:
+   ```bash
+   npm run dev
+   ```
+   Or from the root directory:
+   ```bash
+   npm run dev
+   ```
+4. The app will be available at `http://localhost:8000` (or next available port)
 
-### Dependencies
+### Building for Production
 
-- [JSZip](https://stuk.github.io/jszip/) - For creating ZIP files during export
-- [Figtree Font](https://fonts.google.com/specimen/Figtree) - Primary typeface
+```bash
+cd react
+npm run build
+```
+
+The built files will be in `react/dist/` and can be served by the development server or any static file server.
+
+### Tech Stack
+
+- **React** - UI framework
+- **TypeScript** - Type safety
+- **Tailwind CSS** - Styling
+- **Vite** - Build tool
+- **JSZip** - For creating ZIP files during export
+- **Figtree Font** - Primary typeface
 
 ### Changelog Management
 
