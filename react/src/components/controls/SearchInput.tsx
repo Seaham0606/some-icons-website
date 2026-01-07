@@ -12,7 +12,7 @@ export function SearchInput() {
       value={searchQuery}
       onChange={(e) => setSearchQuery(e.target.value)}
       leadingIcon={{
-        iconId: "general-search",
+        iconId: "interface-search",
         style: "outline"
       }}
     />

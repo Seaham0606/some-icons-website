@@ -130,7 +130,7 @@ export function ExportButton() {
       {isExporting ? (
         <>
           <div className="mr-2 h-4 w-4 animate-spin">
-            <CdnIcon iconId="general-loading" className="h-4 w-4" />
+            <CdnIcon iconId="interface-loading" className="h-4 w-4" />
           </div>
           Downloading...
         </>
@@ -159,7 +159,7 @@ export function ExportButton() {
             : 'var(--color-black-alpha-100)',
         }}
       >
-        <CdnIcon iconId="general-warning-circle" className="w-4 h-4" />
+        <CdnIcon iconId="interface-warning-circle" className="w-4 h-4" />
         Please select icons to download
       </div>
     )}

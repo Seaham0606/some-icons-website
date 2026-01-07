@@ -151,9 +151,9 @@ export function IconCard({ icon }: IconCardProps) {
         aria-label={isSelected ? 'Deselect icon' : 'Select icon'}
       >
         {isSelected ? (
-          <CdnIcon iconId="general-button-radio-selected" className="w-5 h-5 text-primary" />
+          <CdnIcon iconId="interface-button-radio-selected" className="w-5 h-5 text-primary" />
         ) : (
-          <CdnIcon iconId="general-button-radio" className="w-5 h-5 text-[var(--item-disabled)]" />
+          <CdnIcon iconId="interface-button-radio" className="w-5 h-5 text-[var(--item-disabled)]" />
         )}
       </button>
     </button>
@@ -173,7 +173,7 @@ export function IconCard({ icon }: IconCardProps) {
               : 'var(--color-black-alpha-100)',
           }}
         >
-          <CdnIcon iconId="general-check-mark" className="w-4 h-4" />
+          <CdnIcon iconId="interface-check-mark" className="w-4 h-4" />
           Copied
         </div>
       )}

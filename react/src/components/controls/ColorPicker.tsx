@@ -74,7 +74,7 @@ export function ColorPicker() {
         />
         {!selectedColor && (
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-5 h-5 text-[var(--item-tertiary)] pointer-events-none">
-            <CdnIcon iconId="general-eyedropper" className="h-5 w-5" />
+            <CdnIcon iconId="formatting-eyedropper" className="h-5 w-5" />
           </div>
         )}
       </div>
