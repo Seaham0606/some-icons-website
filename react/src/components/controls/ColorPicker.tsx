@@ -1,4 +1,4 @@
-import { Input } from '@/components/ui/input'
+import { Input, inputBaseStyles } from '@/components/ui/input'
 import { CdnIcon } from '@/components/ui/cdn-icon'
 import { useColorStore } from '@/stores/colorStore'
 import { isValidHexColor, normalizeHexColor } from '@/lib/svg-utils'
@@ -38,36 +38,32 @@ export function ColorPicker() {
   return (
     <div className="flex gap-2 items-center">
       {/* Text input with reset icon inside */}
-      <div className="relative flex-1 h-12">
+      <div className="relative flex-1">
         <Input
           type="text"
           placeholder="Default"
           value={inputValue}
           onChange={(e) => handleInputChange(e.target.value)}
+          trailingIcons={selectedColor ? [{
+            iconId: "arrow-undo-large",
+            style: "outline",
+            onClick: handleReset
+          }] : undefined}
           className={cn(
-            'pr-10',
             !selectedColor && 'text-[var(--foreground-tertiary)] font-semibold leading-normal'
           )}
         />
-        <button
-          onClick={handleReset}
-          disabled={!selectedColor}
-          className={cn(
-            'absolute right-2 top-1/2 -translate-y-1/2 w-6 h-6 flex items-center justify-center',
-            'text-[var(--item-tertiary)] transition-all duration-200',
-            selectedColor && 'cursor-pointer hover:text-[var(--warning)] hover:-rotate-180'
-          )}
-          aria-label="Reset color"
-        >
-          <CdnIcon iconId="arrow-undo-large" className="h-6 w-6" />
-        </button>
       </div>
 
       {/* Color picker box with eyedropper icon overlay */}
       <div
-        className="relative w-12 h-12 shrink-0 rounded-[10px] cursor-pointer"
+        className={cn(
+          inputBaseStyles,
+          'relative w-[44px] shrink-0 cursor-pointer p-0 overflow-hidden',
+          'flex items-center justify-center'
+        )}
         style={{
-          backgroundColor: selectedColor ?? 'var(--background-weak)',
+          backgroundColor: selectedColor ?? 'var(--color-input-bg)',
         }}
       >
         <input
@@ -77,8 +73,8 @@ export function ColorPicker() {
           className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
         />
         {!selectedColor && (
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-6 h-6 text-[var(--item-tertiary)] pointer-events-none">
-            <CdnIcon iconId="general-eyedropper" className="h-6 w-6" />
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-5 h-5 text-[var(--item-tertiary)] pointer-events-none">
+            <CdnIcon iconId="general-eyedropper" className="h-5 w-5" />
           </div>
         )}
       </div>

@@ -6,6 +6,7 @@ import { useIcons } from '@/hooks/useIcons'
 import { exportToZip, downloadBlob } from '@/lib/export-utils'
 import { fetchSvg } from '@/lib/api'
 import { CdnIcon } from '@/components/ui/cdn-icon'
+import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 import { useState, useRef, useEffect } from 'react'
 import { toast } from 'sonner'
@@ -107,11 +108,11 @@ export function ExportButton() {
       const filename = `some-icons-${style}-${size}px.zip`
       downloadBlob(blob, filename)
 
-      toast.success(`Exported ${count} icon${count > 1 ? 's' : ''}`)
+      toast.success(`Downloaded ${count} icon${count > 1 ? 's' : ''}`)
       clear()
     } catch (error) {
-      console.error('Export failed:', error)
-      toast.error('Export failed. Please try again.')
+      console.error('Download failed:', error)
+      toast.error('Download failed. Please try again.')
     } finally {
       setIsExporting(false)
     }
@@ -119,39 +120,34 @@ export function ExportButton() {
 
   return (
     <>
-      <button
+      <Button
         ref={buttonRef}
         onClick={handleExport}
         disabled={isExporting}
-        className={cn(
-          'w-full h-12 rounded-[10px] text-base font-medium',
-          'transition-all duration-200',
-          'flex items-center justify-center mt-1',
-          'bg-[var(--cta-bg)] text-[var(--cta-fg)] hover:bg-[var(--cta-bg-hover)] cursor-pointer',
-          isExporting && 'opacity-50 cursor-not-allowed'
-        )}
+        fullWidth
+        className={cn('rounded-[10px]')}
       >
       {isExporting ? (
         <>
           <div className="mr-2 h-4 w-4 animate-spin">
             <CdnIcon iconId="general-loading" className="h-4 w-4" />
           </div>
-          Exporting...
+          Downloading...
         </>
       ) : (
         count > 0 ? (
-          <span>Export <span className="font-bold">{count}</span> icon{count > 1 ? 's' : ''}</span>
+          <span>Download <span className="font-bold">{count}</span> icon{count > 1 ? 's' : ''}</span>
         ) : (
-          <span className="font-semibold">Export</span>
+          <span className="font-semibold">Download</span>
         )
       )}
-    </button>
+    </Button>
 
     {/* Tooltip for no icons selected */}
     {showNoIconsTooltip && (
       <div
         className={cn(
-          "fixed pointer-events-none z-50 pl-2 pr-4 py-1 rounded-[999px] text-base font-semibold whitespace-nowrap flex items-center gap-1.5 backdrop-blur-[10px]",
+          "fixed pointer-events-none z-50 pl-2 pr-4 py-1 rounded-[999px] text-base font-medium whitespace-nowrap flex items-center gap-1.5 backdrop-blur-[10px]",
           isDark ? "text-white" : "text-black"
         )}
         style={{
@@ -164,7 +160,7 @@ export function ExportButton() {
         }}
       >
         <CdnIcon iconId="general-warning-circle" className="w-4 h-4" />
-        Please select icons to export
+        Please select icons to download
       </div>
     )}
     </>

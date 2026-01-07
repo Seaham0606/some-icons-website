@@ -15,6 +15,7 @@ import { ColorPicker } from '@/components/controls/ColorPicker'
 import { SizeSelector } from '@/components/controls/SizeSelector'
 import { FormatSelector } from '@/components/controls/FormatSelector'
 import { ExportButton } from '@/components/controls/ExportButton'
+import { Button } from '@/components/ui/button'
 import { IconGrid } from '@/components/icons/IconGrid'
 import { useChangelog, getLatestVersion } from '@/hooks/useChangelog'
 import { useIcons } from '@/hooks/useIcons'
@@ -147,38 +148,40 @@ export default function HomePage() {
             </div>
           </div>
 
-          {/* Export section */}
+          {/* Download section */}
           <div className="space-y-5">
             <h3 className="text-lg font-semibold text-foreground mb-4">
-              Export
+              Download
             </h3>
             <div>
               <label className="text-[13px] font-semibold text-[var(--item-tertiary)] pl-0.5 mb-2 block">
-                Icon size
+                Size
               </label>
               <SizeSelector />
             </div>
             <div>
               <label className="text-[13px] font-semibold text-[var(--item-tertiary)] pl-0.5 mb-2 block">
-                File format
+                Format
               </label>
               <FormatSelector />
             </div>
             <ExportButton />
             {count > 0 && (
               <div className="flex justify-between items-center px-0.5">
-                <button
+                <Button
                   onClick={handleSelectAll}
-                  className="text-base font-semibold text-[var(--primary)] hover:underline cursor-pointer"
+                  variant="link"
+                  className="text-base font-semibold text-[var(--primary)]"
                 >
                   Select all
-                </button>
-                <button
+                </Button>
+                <Button
                   onClick={handleDeselect}
-                  className="text-base font-semibold text-[var(--color-warning)] hover:underline cursor-pointer"
+                  variant="link"
+                  className="text-base font-semibold text-[var(--color-warning)]"
                 >
                   Deselect
-                </button>
+                </Button>
               </div>
             )}
           </div>

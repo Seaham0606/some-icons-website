@@ -219,7 +219,6 @@
 /* Light mode (default) - aligned with vanilla */
 :root {
   /* Semantic color tokens (--color-* naming for compatibility with vanilla) */
-  --color-background-primary: var(--background);
   --color-background: var(--background);
   --color-background-secondary: var(--background-secondary);
   --color-background-weak: var(--background-weak);
@@ -229,13 +228,6 @@
   --color-background-active-dark: var(--background-active-dark);
   --color-background-overlay: var(--background-overlay);
   --color-background-footer: var(--background-footer);
-  --color-text-primary: var(--foreground);
-  --color-text-secondary: var(--foreground-secondary);
-  --color-text-tertiary: var(--foreground-tertiary);
-  --color-text-quaternary: var(--foreground-quaternary);
-  --color-text-disabled: var(--foreground-disabled);
-  --color-text-inverse: var(--foreground-inverse);
-  --color-text-primary-inverted: var(--foreground-inverted);
   --color-item-primary: var(--item-primary);
   --color-item-secondary: var(--item-secondary);
   --color-item-tertiary: var(--item-tertiary);
@@ -244,15 +236,37 @@
   --color-item-grid: var(--item-grid);
   --color-border: var(--border);
   --color-border-subtle: var(--border-subtle);
-  --color-border-base: var(--border-base);
   --color-primary: var(--primary);
   --color-primary-hover: var(--primary-hover);
   --color-focus: var(--border-focus);
   --color-warning: var(--destructive);
-  --color-cta-button-bg: var(--cta-bg);
-  --color-cta-button-bg-hover: var(--cta-bg-hover);
-  --color-cta-button-bg-disabled: var(--cta-bg-disabled);
-  --color-cta-button-text: var(--cta-fg);
+  --color-cta-button-bg: var(--color-gray-800);
+  --color-cta-button-bg-hover: var(--color-gray-700);
+  --color-cta-button-text: var(--color-white);
+
+  /* Input colors */
+  --color-input-bg: var(--color-white);
+  --color-input-stroke: var(--color-gray-50);
+  --color-input-stroke-hover: var(--color-gray-100);
+  --color-input-stroke-typing: var(--color-blue-400);
+  --color-input-secondary-bg-hover: var(--color-gray-25);
+  --color-text-primary: var(--color-gray-800);
+  --color-text-tertiary: var(--color-gray-300);
+
+  /* Segmented button colors */
+  --color-seg-button-bg: var(--color-gray-100);
+  --color-text-primary-inverted: var(--color-gray-800);
+  --color-seg-button-bg-hover: var(--color-gray-200);
+  --color-seg-button-stroke: var(--color-black-alpha-25);
+
+  /* Divider colors */
+  --color-divider-stroke: var(--color-black-alpha-100);
+
+  /* Toggle colors */
+  --color-toggle-bg: var(--color-gray-100);
+  --color-toggle-stroke: var(--color-black-alpha-25);
+  --color-toggle-stroke-hover: var(--color-gray-100);
+  --color-toggle-control-bg: var(--color-white);
 
   /* Background */
   --background: #ffffff;
@@ -312,11 +326,6 @@
   --input: var(--color-black-alpha-50);
   --ring: var(--color-black-alpha-100);
 
-  /* CTA Button */
-  --cta-bg: var(--color-gray-900);
-  --cta-bg-hover: var(--color-gray-700);
-  --cta-bg-disabled: var(--color-gray-200);
-  --cta-fg: #ffffff;
 
   --icon-color: var(--color-gray-900);
 
@@ -326,7 +335,6 @@
 /* Dark mode - aligned with vanilla */
 [data-theme="dark"] {
   /* Semantic color tokens (--color-* naming for compatibility with vanilla) */
-  --color-background-primary: var(--background);
   --color-background: var(--background);
   --color-background-secondary: var(--background-secondary);
   --color-background-weak: var(--background-weak);
@@ -336,13 +344,6 @@
   --color-background-active-dark: var(--background-active-dark);
   --color-background-overlay: var(--background-overlay);
   --color-background-footer: var(--background-footer);
-  --color-text-primary: var(--foreground);
-  --color-text-secondary: var(--foreground-secondary);
-  --color-text-tertiary: var(--foreground-tertiary);
-  --color-text-quaternary: var(--foreground-quaternary);
-  --color-text-disabled: var(--foreground-disabled);
-  --color-text-inverse: var(--foreground-inverse);
-  --color-text-primary-inverted: var(--foreground-inverted);
   --color-item-primary: var(--item-primary);
   --color-item-secondary: var(--item-secondary);
   --color-item-tertiary: var(--item-tertiary);
@@ -351,15 +352,37 @@
   --color-item-grid: var(--item-grid);
   --color-border: var(--border);
   --color-border-subtle: var(--border-subtle);
-  --color-border-base: var(--border-base);
   --color-primary: var(--primary);
   --color-primary-hover: var(--primary-hover);
   --color-focus: var(--border-focus);
   --color-warning: var(--destructive);
-  --color-cta-button-bg: var(--cta-bg);
-  --color-cta-button-bg-hover: var(--cta-bg-hover);
-  --color-cta-button-bg-disabled: var(--cta-bg-disabled);
-  --color-cta-button-text: var(--cta-fg);
+  --color-cta-button-bg: var(--color-gray-25);
+  --color-cta-button-bg-hover: var(--color-gray-75);
+  --color-cta-button-text: var(--color-gray-800);
+
+  /* Input colors */
+  --color-input-bg: var(--color-gray-850);
+  --color-input-stroke: var(--color-gray-800);
+  --color-input-stroke-hover: var(--color-gray-700);
+  --color-input-stroke-typing: var(--color-blue-400);
+  --color-input-secondary-bg-hover: var(--color-gray-800);
+  --color-text-primary: var(--color-gray-50);
+  --color-text-tertiary: var(--color-gray-600);
+
+  /* Segmented button colors */
+  --color-seg-button-bg: var(--color-gray-700);
+  --color-text-primary-inverted: var(--color-gray-50);
+  --color-seg-button-bg-hover: var(--color-gray-600);
+  --color-seg-button-stroke: var(--color-white-alpha-25);
+
+  /* Divider colors */
+  --color-divider-stroke: var(--color-white-alpha-100);
+
+  /* Toggle colors */
+  --color-toggle-bg: var(--color-gray-800);
+  --color-toggle-stroke: var(--color-white-alpha-25);
+  --color-toggle-stroke-hover: var(--color-gray-700);
+  --color-toggle-control-bg: var(--color-gray-600);
 
   /* Background */
   --background: #000000;
@@ -419,11 +442,6 @@
   --input: var(--color-white-alpha-50);
   --ring: var(--color-white-alpha-100);
 
-  /* CTA Button */
-  --cta-bg: var(--color-gray-100);
-  --cta-bg-hover: var(--color-gray-300);
-  --cta-bg-disabled: var(--color-gray-800);
-  --cta-fg: #000000;
 
   --icon-color: var(--color-gray-300);
 }
@@ -432,15 +450,7 @@
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme]) {
     /* Semantic color tokens (--color-* naming for compatibility with vanilla) */
-    --color-background-primary: var(--background);
     --color-background: var(--background);
-    --color-text-primary: var(--foreground);
-    --color-text-secondary: var(--foreground-secondary);
-    --color-text-tertiary: var(--foreground-tertiary);
-    --color-text-quaternary: var(--foreground-quaternary);
-    --color-text-disabled: var(--foreground-disabled);
-    --color-text-inverse: var(--foreground-inverse);
-    --color-text-primary-inverted: var(--foreground-inverted);
     --color-item-primary: var(--item-primary);
     --color-item-secondary: var(--item-secondary);
     --color-item-tertiary: var(--item-tertiary);
@@ -450,10 +460,27 @@
     --color-border: var(--border);
     --color-primary-hover: var(--primary-hover);
     --color-warning: var(--destructive);
-    --color-cta-button-bg: var(--cta-bg);
-    --color-cta-button-bg-hover: var(--cta-bg-hover);
-    --color-cta-button-bg-disabled: var(--cta-bg-disabled);
-    --color-cta-button-text: var(--cta-fg);
+    --color-cta-button-bg: var(--color-gray-25);
+    --color-cta-button-bg-hover: var(--color-gray-75);
+    --color-cta-button-text: var(--color-gray-800);
+
+    /* Input colors */
+    --color-input-bg: var(--color-gray-850);
+    --color-input-stroke: var(--color-gray-800);
+    --color-input-stroke-hover: var(--color-gray-700);
+    --color-input-stroke-typing: var(--color-blue-400);
+    --color-input-secondary-bg-hover: var(--color-gray-850);
+    --color-text-primary: var(--color-gray-50);
+    --color-text-tertiary: var(--color-gray-600);
+
+    /* Divider colors */
+    --color-divider-stroke: var(--color-white-alpha-100);
+
+    /* Toggle colors */
+    --color-toggle-bg: var(--color-gray-800);
+    --color-toggle-stroke: var(--color-white-alpha-25);
+    --color-toggle-stroke-hover: var(--color-gray-700);
+    --color-toggle-control-bg: var(--color-gray-600);
 
     /* Background */
     --background: #000000;
@@ -513,11 +540,6 @@
     --input: var(--color-white-alpha-50);
     --ring: var(--color-white-alpha-100);
 
-    /* CTA Button */
-    --cta-bg: var(--color-gray-100);
-    --cta-bg-hover: var(--color-gray-300);
-    --cta-bg-disabled: var(--color-gray-800);
-    --cta-fg: #000000;
 
     --icon-color: var(--color-gray-300);
   }

@@ -11,13 +11,13 @@ export function CategorySelect() {
   const setCategory = useFilterStore((state) => state.setCategory)
 
   return (
-    <div className="relative h-12">
+    <div className="relative w-full">
       <select
         value={category}
         onChange={(e) => setCategory(e.target.value)}
         className={cn(
           inputBaseStyles,
-          "pr-8 appearance-none cursor-pointer"
+          "pr-[40px] appearance-none cursor-pointer"
         )}
       >
         <option value="all">All icons</option>
@@ -27,8 +27,8 @@ export function CategorySelect() {
           </option>
         ))}
       </select>
-      <div className="absolute right-2 top-1/2 -translate-y-1/2 w-6 h-6 text-[var(--item-tertiary)] pointer-events-none">
-        <CdnIcon iconId="arrow-down-triangle" className="h-6 w-6" />
+      <div className="absolute right-3 top-1/2 -translate-y-1/2 h-5 w-5 flex items-center justify-center pointer-events-none text-[var(--color-text-tertiary)]">
+        <CdnIcon iconId="arrow-down-triangle" className="h-5 w-5" />
       </div>
     </div>
   )
