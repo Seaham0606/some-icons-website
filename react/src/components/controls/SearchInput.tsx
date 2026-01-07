@@ -1,5 +1,4 @@
 import { Input } from '@/components/ui/input'
-import { CdnIcon } from '@/components/ui/cdn-icon'
 import { useFilterStore } from '@/stores/filterStore'
 
 export function SearchInput() {

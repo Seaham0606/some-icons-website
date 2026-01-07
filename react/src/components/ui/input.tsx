@@ -38,8 +38,6 @@ interface InputProps extends Omit<React.ComponentProps<"input">, "className"> {
 }
 
 function Input({ className, leadingIcon, trailingIcons, ...props }: InputProps) {
-  const [isFocused, setIsFocused] = React.useState(false)
-
   // Calculate right padding for trailing icons
   // 12px base + (icon width * count) + (gap * (count - 1)) + 8px gap after last icon
   const trailingPadding = trailingIcons && trailingIcons.length > 0
@@ -71,14 +69,8 @@ function Input({ className, leadingIcon, trailingIcons, ...props }: InputProps) 
         style={{
           ...(trailingPadding && { paddingRight: `${trailingPadding}px` })
         }}
-        onFocus={(e) => {
-          setIsFocused(true)
-          props.onFocus?.(e)
-        }}
-        onBlur={(e) => {
-          setIsFocused(false)
-          props.onBlur?.(e)
-        }}
+        onFocus={props.onFocus}
+        onBlur={props.onBlur}
         {...props}
       />
 
