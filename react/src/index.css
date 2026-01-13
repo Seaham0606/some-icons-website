@@ -128,6 +128,16 @@
   --color-blue-100: rgb(204, 231, 255);
   --color-blue-50: rgb(230, 243, 255);
   --color-blue-25: rgb(242, 249, 255);
+  
+  /* Blue alpha variants */
+  --color-blue-alpha-25: rgba(128, 194, 255, 0.10);
+  --color-blue-alpha-50: rgba(128, 194, 255, 0.20);
+  --color-blue-alpha-75: rgba(128, 194, 255, 0.30);
+  
+  /* Red alpha variants */
+  --color-red-alpha-25: rgba(255, 143, 143, 0.10);
+  --color-red-alpha-50: rgba(255, 143, 143, 0.20);
+  --color-red-alpha-75: rgba(255, 143, 143, 0.30);
 
   /* Purple */
   --color-purple-900: rgb(49, 18, 92);
@@ -219,7 +229,7 @@
 /* Light mode (default) - aligned with vanilla */
 :root {
   /* Semantic color tokens (--color-* naming for compatibility with vanilla) */
-  --color-background: var(--background);
+  --color-background: #ffffff;
   --color-background-secondary: var(--background-secondary);
   --color-background-weak: var(--background-weak);
   --color-background-hover: var(--background-hover);
@@ -235,11 +245,13 @@
   --color-item-disabled: var(--item-disabled);
   --color-item-grid: var(--item-grid);
   --color-border: var(--border);
-  --color-border-subtle: var(--border-subtle);
+  --color-border-subtle: var(--color-black-alpha-50);
   --color-primary: var(--primary);
   --color-primary-hover: var(--primary-hover);
   --color-focus: var(--border-focus);
   --color-warning: var(--destructive);
+  --color-selection-selected: var(--color-blue-400);
+  --color-selection-disabled: var(--color-gray-100);
   --color-cta-button-bg: var(--color-gray-800);
   --color-cta-button-bg-hover: var(--color-gray-700);
   --color-cta-button-text: var(--color-white);
@@ -251,7 +263,9 @@
   --color-input-stroke-typing: var(--color-blue-400);
   --color-input-secondary-bg-hover: var(--color-gray-25);
   --color-text-primary: var(--color-gray-800);
+  --color-text-secondary: var(--color-gray-700);
   --color-text-tertiary: var(--color-gray-300);
+  --color-text-secondary-hover: var(--color-gray-600);
 
   /* Segmented button colors */
   --color-seg-button-bg: var(--color-gray-100);
@@ -259,8 +273,13 @@
   --color-seg-button-bg-hover: var(--color-gray-200);
   --color-seg-button-stroke: var(--color-black-alpha-25);
 
+  /* Dropdown colors */
+  --color-dropdown-bg: var(--color-white-alpha-800);
+  --color-dropdown-bg-blur: blur(10px);
+
   /* Divider colors */
   --color-divider-stroke: var(--color-black-alpha-100);
+  --color-category-divider: var(--color-black-alpha-100);
 
   /* Toggle colors */
   --color-toggle-bg: var(--color-gray-100);
@@ -298,7 +317,7 @@
 
   /* Border */
   --border: var(--color-gray-800);
-  --border-subtle: var(--color-gray-50);
+  --border-subtle: var(--color-black-alpha-50);
   --border-base: var(--color-black-alpha-50);
   --border-focus: var(--color-black-alpha-100);
 
@@ -335,7 +354,7 @@
 /* Dark mode - aligned with vanilla */
 [data-theme="dark"] {
   /* Semantic color tokens (--color-* naming for compatibility with vanilla) */
-  --color-background: var(--background);
+  --color-background: var(--color-gray-925);
   --color-background-secondary: var(--background-secondary);
   --color-background-weak: var(--background-weak);
   --color-background-hover: var(--background-hover);
@@ -351,11 +370,13 @@
   --color-item-disabled: var(--item-disabled);
   --color-item-grid: var(--item-grid);
   --color-border: var(--border);
-  --color-border-subtle: var(--border-subtle);
+  --color-border-subtle: var(--color-white-alpha-50);
   --color-primary: var(--primary);
   --color-primary-hover: var(--primary-hover);
   --color-focus: var(--border-focus);
   --color-warning: var(--destructive);
+  --color-selection-selected: var(--color-blue-400);
+  --color-selection-disabled: var(--color-gray-700);
   --color-cta-button-bg: var(--color-gray-25);
   --color-cta-button-bg-hover: var(--color-gray-75);
   --color-cta-button-text: var(--color-gray-800);
@@ -367,7 +388,9 @@
   --color-input-stroke-typing: var(--color-blue-400);
   --color-input-secondary-bg-hover: var(--color-gray-800);
   --color-text-primary: var(--color-gray-50);
+  --color-text-secondary: var(--color-gray-200);
   --color-text-tertiary: var(--color-gray-600);
+  --color-text-secondary-hover: var(--color-gray-500);
 
   /* Segmented button colors */
   --color-seg-button-bg: var(--color-gray-700);
@@ -377,6 +400,11 @@
 
   /* Divider colors */
   --color-divider-stroke: var(--color-white-alpha-100);
+  --color-category-divider: var(--color-white-alpha-100);
+
+  /* Dropdown colors */
+  --color-dropdown-bg: var(--color-gray-850);
+  --color-dropdown-bg-blur: blur(10px);
 
   /* Toggle colors */
   --color-toggle-bg: var(--color-gray-800);
@@ -389,7 +417,7 @@
   --background-secondary: var(--color-gray-900);
   --background-weak: var(--color-white-alpha-50);
   --background-hover: var(--color-white-alpha-200);
-  --background-hover-light: var(--color-white-alpha-50);
+  --background-hover-light: var(--color-white-alpha-75);
   --background-active: var(--color-white-alpha-50);
   --background-active-dark: var(--color-white-alpha-75);
   --background-overlay: var(--color-black-alpha-950);
@@ -414,7 +442,7 @@
 
   /* Border */
   --border: var(--color-gray-200);
-  --border-subtle: var(--color-gray-900);
+  --border-subtle: var(--color-white-alpha-50);
   --border-base: var(--color-white-alpha-50);
   --border-focus: var(--color-white-alpha-100);
 
@@ -450,7 +478,7 @@
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme]) {
     /* Semantic color tokens (--color-* naming for compatibility with vanilla) */
-    --color-background: var(--background);
+    --color-background: var(--color-gray-925);
     --color-item-primary: var(--item-primary);
     --color-item-secondary: var(--item-secondary);
     --color-item-tertiary: var(--item-tertiary);
@@ -458,8 +486,11 @@
     --color-item-disabled: var(--item-disabled);
     --color-item-grid: var(--item-grid);
     --color-border: var(--border);
+    --color-border-subtle: var(--color-white-alpha-50);
     --color-primary-hover: var(--primary-hover);
     --color-warning: var(--destructive);
+    --color-selection-selected: var(--color-blue-400);
+    --color-selection-disabled: var(--color-gray-800);
     --color-cta-button-bg: var(--color-gray-25);
     --color-cta-button-bg-hover: var(--color-gray-75);
     --color-cta-button-text: var(--color-gray-800);
@@ -512,7 +543,7 @@
 
     /* Border */
     --border: var(--color-gray-200);
-    --border-subtle: var(--color-gray-900);
+    --border-subtle: var(--color-white-alpha-50);
     --border-base: var(--color-white-alpha-50);
     --border-focus: var(--color-white-alpha-100);
 
@@ -557,13 +588,86 @@ html {
 body {
   font-family: var(--font-family-sans);
   font-size: 14px;
-  background-color: var(--background);
+  background-color: var(--color-background);
   color: var(--foreground);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   margin: 0;
   padding: 0;
   overflow: hidden;
+}
+
+/* React Colorful custom styling */
+.custom-color-picker {
+  width: 220px;
+  height: 220px;
+}
+
+.custom-color-picker .react-colorful {
+  width: 100%;
+  height: 100%;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.custom-color-picker .react-colorful__saturation {
+  border-radius: 8px 8px 0 0;
+  cursor: crosshair;
+}
+
+.custom-color-picker .react-colorful__hue {
+  border-radius: 0 0 8px 8px;
+  height: 24px;
+  cursor: pointer;
+}
+
+.custom-color-picker .react-colorful__pointer {
+  width: 20px;
+  height: 20px;
+  border: 3px solid var(--color-white);
+  box-shadow: 
+    0 2px 8px rgba(0, 0, 0, 0.15),
+    0 0 0 1px rgba(0, 0, 0, 0.1);
+  border-radius: 50%;
+  cursor: grab;
+  transition: transform 0.1s ease;
+}
+
+.custom-color-picker .react-colorful__pointer:active {
+  cursor: grabbing;
+  transform: scale(0.95);
+}
+
+.custom-color-picker .react-colorful__hue-pointer {
+  width: 20px;
+  height: 24px;
+  border: 3px solid var(--color-white);
+  box-shadow: 
+    0 2px 8px rgba(0, 0, 0, 0.15),
+    0 0 0 1px rgba(0, 0, 0, 0.1);
+  border-radius: 4px;
+  cursor: grab;
+  transition: transform 0.1s ease;
+}
+
+.custom-color-picker .react-colorful__hue-pointer:active {
+  cursor: grabbing;
+  transform: scale(0.95);
+}
+
+/* Dark mode adjustments for color picker */
+[data-theme="dark"] .custom-color-picker .react-colorful__pointer,
+[data-theme="dark"] .custom-color-picker .react-colorful__hue-pointer {
+  border-color: var(--color-gray-900);
+  box-shadow: 
+    0 2px 8px rgba(0, 0, 0, 0.4),
+    0 0 0 1px rgba(255, 255, 255, 0.1);
+}
+
+/* Popover styling */
+.color-picker-popover {
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
 }
 
 

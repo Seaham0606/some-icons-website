@@ -15,7 +15,7 @@ import { ColorPicker } from '@/components/controls/ColorPicker'
 import { SizeSelector } from '@/components/controls/SizeSelector'
 import { FormatSelector } from '@/components/controls/FormatSelector'
 import { ExportButton } from '@/components/controls/ExportButton'
-import { Button } from '@/components/ui/button'
+import { SegmentedButton } from '@/components/ui/segmented-control'
 import { IconGrid } from '@/components/icons/IconGrid'
 import { useChangelog, getLatestVersion } from '@/hooks/useChangelog'
 import { useIcons } from '@/hooks/useIcons'
@@ -113,7 +113,7 @@ export default function HomePage() {
           />
         </SidebarHeader>
 
-        <SidebarContent className="space-y-5">
+        <SidebarContent className="space-y-6">
           {/* Search */}
           <div>
             <SearchInput />
@@ -137,7 +137,7 @@ export default function HomePage() {
 
           {/* Customize section */}
           <div className="space-y-5">
-            <h3 className="text-lg font-semibold text-foreground mb-4">
+            <h3 className="text-lg font-semibold text-[var(--color-text-secondary)] pt-2 mb-4">
               Customize
             </h3>
             <div>
@@ -150,7 +150,7 @@ export default function HomePage() {
 
           {/* Download section */}
           <div className="space-y-5">
-            <h3 className="text-lg font-semibold text-foreground mb-4">
+            <h3 className="text-lg font-semibold text-[var(--color-text-secondary)] pt-2 mb-4">
               Download
             </h3>
             <div>
@@ -167,21 +167,23 @@ export default function HomePage() {
             </div>
             <ExportButton />
             {count > 0 && (
-              <div className="flex justify-between items-center px-0.5">
-                <Button
+              <div className="flex gap-2 items-center mt-0">
+                <SegmentedButton
                   onClick={handleSelectAll}
-                  variant="link"
-                  className="text-base font-semibold text-[var(--primary)]"
-                >
-                  Select all
-                </Button>
-                <Button
+                  isActive={false}
+                  variant="secondary"
+                  tint="blue"
+                  textString="Select all"
+                  className="text-base font-semibold !rounded-[10px]"
+                />
+                <SegmentedButton
                   onClick={handleDeselect}
-                  variant="link"
-                  className="text-base font-semibold text-[var(--color-warning)]"
-                >
-                  Deselect
-                </Button>
+                  isActive={false}
+                  variant="secondary"
+                  tint="red"
+                  textString="Deselect"
+                  className="text-base font-semibold !rounded-[10px]"
+                />
               </div>
             )}
           </div>

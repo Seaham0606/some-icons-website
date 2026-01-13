@@ -1,9 +1,3 @@
-import {
-  InfoIcon,
-  Loader2Icon,
-  OctagonXIcon,
-  TriangleAlertIcon,
-} from "lucide-react"
 import { Toaster as Sonner, type ToasterProps } from "sonner"
 import { useUIStore } from "@/stores/uiStore"
 import { CdnIcon } from "@/components/ui/cdn-icon"
@@ -16,11 +10,11 @@ const Toaster = ({ ...props }: ToasterProps) => {
       theme={theme}
       className="toaster group"
       icons={{
-        success: <CdnIcon iconId="interface-check-mark" className="w-8 h-8" />,
-        info: <InfoIcon className="size-8" />,
-        warning: <TriangleAlertIcon className="size-8" />,
-        error: <OctagonXIcon className="size-8" />,
-        loading: <Loader2Icon className="size-8 animate-spin" />,
+        success: <CdnIcon iconId="symbol-check-circle" className="w-8 h-8" />,
+        info: <CdnIcon iconId="symbol-information-circle" className="w-8 h-8" />,
+        warning: <CdnIcon iconId="symbol-check-circle" className="w-8 h-8" />,
+        error: <CdnIcon iconId="symbol-warning-octagon" className="w-8 h-8" />,
+        loading: <CdnIcon iconId="interface-loading" className="w-8 h-8 animate-spin" />,
       }}
       toastOptions={{
         classNames: {

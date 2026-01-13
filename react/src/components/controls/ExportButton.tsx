@@ -159,7 +159,7 @@ export function ExportButton() {
             : 'var(--color-black-alpha-100)',
         }}
       >
-        <CdnIcon iconId="interface-warning-circle" className="w-4 h-4" />
+        <CdnIcon iconId="symbol-warning-circle" className="w-4 h-4" />
         Please select icons to download
       </div>
     )}

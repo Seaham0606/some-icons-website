@@ -128,9 +128,9 @@ export function IconCard({ icon }: IconCardProps) {
         onMouseLeave={handleMouseLeave}
         title={icon.id}
         className={cn(
-          'group relative aspect-square rounded-[10px] transition-all overflow-hidden cursor-pointer',
-          'bg-background',
+          'group relative aspect-square rounded-[10px] overflow-hidden cursor-pointer',
           'border border-border-subtle',
+          'transition-[background-color,border-color] duration-200 ease-in-out',
           'hover:bg-background-hover-light hover:border-primary',
           isSelected && 'border-primary'
         )}
@@ -144,16 +144,19 @@ export function IconCard({ icon }: IconCardProps) {
         onClick={handleRadioClick}
         className={cn(
           'absolute top-1 right-1 w-5 h-5 rounded flex items-center justify-center',
-          'transition-opacity',
+          'transition-[opacity,color] duration-200 ease-in-out',
           isSelected ? 'opacity-100' : 'opacity-0 group-hover:opacity-100',
           'hover:opacity-80'
         )}
+        style={{
+          color: isSelected ? 'var(--color-selection-selected)' : 'var(--color-selection-disabled)'
+        }}
         aria-label={isSelected ? 'Deselect icon' : 'Select icon'}
       >
         {isSelected ? (
-          <CdnIcon iconId="interface-button-radio-selected" className="w-5 h-5 text-primary" />
+          <CdnIcon iconId="symbol-check-circle" style="filled" className="w-5 h-5" />
         ) : (
-          <CdnIcon iconId="interface-button-radio" className="w-5 h-5 text-[var(--item-disabled)]" />
+          <CdnIcon iconId="interface-button-radio" className="w-5 h-5" />
         )}
       </button>
     </button>
@@ -173,7 +176,7 @@ export function IconCard({ icon }: IconCardProps) {
               : 'var(--color-black-alpha-100)',
           }}
         >
-          <CdnIcon iconId="interface-check-mark" className="w-4 h-4" />
+          <CdnIcon iconId="symbol-check-mark" className="w-4 h-4" />
           Copied
         </div>
       )}
