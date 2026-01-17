@@ -1,4 +1,4 @@
-import { IconPreview } from './IconPreview'
+import { LazyIconPreview } from './LazyIconPreview'
 import { useSelectionStore } from '@/stores/selectionStore'
 import { useFilterStore } from '@/stores/filterStore'
 import { useColorStore } from '@/stores/colorStore'
@@ -8,13 +8,13 @@ import { applyColorToSvg, ensureViewBox } from '@/lib/svg-utils'
 import { cn } from '@/lib/utils'
 import { CdnIcon } from '@/components/ui/cdn-icon'
 import type { Icon } from '@/types/icon'
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, memo } from 'react'
 
 interface IconCardProps {
   icon: Icon
 }
 
-export function IconCard({ icon }: IconCardProps) {
+export const IconCard = memo(function IconCard({ icon }: IconCardProps) {
   const style = useFilterStore((state) => state.style)
   const selectedColor = useColorStore((state) => state.selectedColor)
   const isSelected = useSelectionStore((state) => state.isSelected(icon.id))
@@ -136,7 +136,7 @@ export function IconCard({ icon }: IconCardProps) {
         )}
       >
       <div className="w-full h-full grid place-items-center p-4">
-        <IconPreview path={icon.files[style]} className="w-[60%] h-[60%]" />
+        <LazyIconPreview path={icon.files[style]} className="w-[60%] h-[60%]" />
       </div>
 
       {/* Selection indicator - always visible when selected, only on hover when unselected */}
@@ -182,4 +182,4 @@ export function IconCard({ icon }: IconCardProps) {
       )}
     </>
   )
-}
+})

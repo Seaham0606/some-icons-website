@@ -1,0 +1,926 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Figtree:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+    <style>
+      :root {
+        font-family: 'Figtree', system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+        font-size: 12px;
+        color: #111;
+        
+        /* Color variables matching website */
+        --color-white: #FFFFFF;
+        --color-gray-800: #262626;
+        --color-gray-100: #E6E6E6;
+        --color-gray-50: #F2F2F2;
+        --color-gray-25: #F9F9F9;
+        --color-gray-300: #B3B3B3;
+        --color-gray-700: #333333;
+        --color-gray-600: #4D4D4D;
+        --color-gray-850: #1A1A1A;
+        --color-blue-400: rgb(128, 194, 255);
+        --color-black-alpha-25: rgba(0, 0, 0, 0.025);
+        --color-black-alpha-50: rgba(0, 0, 0, 0.05);
+        --color-black-alpha-100: rgba(0, 0, 0, 0.1);
+        --color-white-alpha-25: rgba(255, 255, 255, 0.025);
+        --color-white-alpha-100: rgba(255, 255, 255, 0.1);
+        
+        /* Input colors */
+        --color-input-bg: var(--color-white);
+        --color-input-stroke: var(--color-gray-50);
+        --color-input-stroke-hover: var(--color-gray-100);
+        --color-input-stroke-typing: var(--color-blue-400);
+        --color-input-secondary-bg-hover: var(--color-gray-25);
+        --color-text-primary: var(--color-gray-800);
+        --color-text-tertiary: var(--color-gray-300);
+        --color-text-secondary-hover: var(--color-gray-600);
+        
+        /* Segmented button colors */
+        --color-seg-button-bg: var(--color-gray-100);
+        --color-text-primary-inverted: var(--color-gray-800);
+        --color-seg-button-stroke: var(--color-black-alpha-25);
+        
+        /* Divider colors */
+        --color-divider-stroke: var(--color-black-alpha-100);
+        
+        /* Background */
+        --color-background-secondary: var(--color-gray-25);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html,
+      body {
+        width: 100%;
+        height: 100%;
+        margin: 0;
+        background: #fff;
+        overflow: hidden;
+      }
+
+      /* App shell */
+      .app {
+        height: 100vh;
+        display: flex;
+        flex-direction: column;
+        background: #fff;
+      }
+
+      /* Top function area (fixed height, no scroll) */
+      .topbar {
+        flex-shrink: 0;
+        padding: 12px;
+        background: var(--color-background-secondary);
+        border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+        z-index: 2;
+      }
+
+      .controls {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+        margin-top: 8px;
+      }
+
+      /* Search wrapper - matching Input component */
+      .search-wrapper {
+        position: relative;
+        width: 100%;
+        display: flex;
+        align-items: center;
+        height: 44px;
+        min-width: 0;
+        border-radius: 10px;
+        background: var(--color-input-bg);
+        border: 1px solid var(--color-input-stroke);
+        padding: 0 12px 0 12px;
+        transition: border-color 0.2s, box-shadow 0.2s, background-color 0.2s;
+      }
+
+      .search-wrapper:hover {
+        border-color: var(--color-input-stroke-hover);
+      }
+
+      .search-wrapper:focus-within {
+        border-color: var(--color-input-stroke-typing);
+      }
+
+      .search-wrapper .search-icon {
+        position: absolute;
+        left: 12px;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 20px;
+        height: 20px;
+        flex-shrink: 0;
+        pointer-events: none;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--color-text-tertiary);
+      }
+
+      .search-wrapper input {
+        flex: 1;
+        width: 100%;
+        height: 100%;
+        padding: 0 0 0 28px;
+        border: none;
+        background: transparent;
+        font-family: inherit;
+        font-size: 15px;
+        line-height: 100%;
+        font-weight: 500;
+        color: var(--color-text-primary);
+        outline: none;
+      }
+
+      .search-wrapper input::placeholder {
+        color: var(--color-text-tertiary);
+        font-weight: 500;
+      }
+
+      /* Segmented control - matching SegmentedControl component */
+      .segmented-control {
+        display: flex;
+        width: 100%;
+        height: 44px;
+        border-radius: 10px;
+        background: var(--color-input-bg);
+        border: 1px solid var(--color-input-stroke);
+        padding: 4px;
+        gap: 4px;
+        align-items: center;
+        transition: border-color 0.2s;
+      }
+
+      .segmented-control:hover {
+        border-color: var(--color-input-stroke-hover);
+      }
+
+      .segment-button {
+        flex: 1;
+        height: 100%;
+        padding: 0 8px;
+        border: none;
+        background: transparent;
+        color: var(--color-text-tertiary);
+        font-family: inherit;
+        font-size: 15px;
+        line-height: 100%;
+        font-weight: 500;
+        cursor: pointer;
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 6px;
+        transition: background-color 0.5s cubic-bezier(0.33, 1, 0.68, 1),
+                    color 0.5s cubic-bezier(0.33, 1, 0.68, 1),
+                    box-shadow 0.5s cubic-bezier(0.33, 1, 0.68, 1),
+                    transform 0.5s cubic-bezier(0.33, 1, 0.68, 1),
+                    font-weight 0.5s cubic-bezier(0.33, 1, 0.68, 1),
+                    border-color 0.5s cubic-bezier(0.33, 1, 0.68, 1);
+        will-change: background-color, color, box-shadow, border-color;
+      }
+
+      .segment-button:active {
+        transform: scale(0.98);
+      }
+
+      .segment-button:not(:last-child)::after {
+        content: '';
+        position: absolute;
+        right: -2px;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 1px;
+        height: 12px;
+        background: var(--color-divider-stroke);
+        border-radius: 0.5px;
+        z-index: 2;
+      }
+
+      .segment-button.active {
+        background: var(--color-seg-button-bg);
+        color: var(--color-text-primary-inverted);
+        font-weight: 600;
+        box-shadow: inset 0 0 0 1px var(--color-seg-button-stroke);
+        z-index: 1;
+      }
+
+      .segment-button:hover:not(.active) {
+        background: var(--color-input-secondary-bg-hover);
+        color: var(--color-text-secondary-hover);
+      }
+
+      .segment-button.active:hover {
+        background: var(--color-seg-button-bg);
+        opacity: 0.9;
+      }
+
+      /* Category select wrapper - matching CategorySelect component */
+      .category-select-wrapper {
+        position: relative;
+        width: 100%;
+      }
+
+      .category-select-button {
+        width: 100%;
+        height: 44px;
+        min-width: 0;
+        border-radius: 10px;
+        background: var(--color-input-bg);
+        border: 1px solid var(--color-input-stroke);
+        padding: 0 40px 0 12px;
+        text-align: left;
+        cursor: pointer;
+        font-family: inherit;
+        font-size: 15px;
+        line-height: 100%;
+        font-weight: 500;
+        color: var(--color-text-primary);
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        transition: border-color 0.2s, box-shadow 0.2s, background-color 0.2s;
+        outline: none;
+      }
+
+      .category-select-button:hover {
+        border-color: var(--color-input-stroke-hover);
+      }
+
+      .category-select-button:focus {
+        border-color: var(--color-input-stroke-typing);
+      }
+
+      .category-select-icon {
+        width: 20px;
+        height: 20px;
+        flex-shrink: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--color-text-primary);
+        transition: all 0.5s cubic-bezier(0.33, 1, 0.68, 1);
+      }
+
+      .category-select-text {
+        flex: 1;
+        transition: all 0.5s cubic-bezier(0.33, 1, 0.68, 1);
+      }
+
+      .category-select-arrow {
+        position: absolute;
+        right: 12px;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 20px;
+        height: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        pointer-events: none;
+        color: var(--color-text-tertiary);
+      }
+
+      /* Category list dropdown - matching CategoryList component */
+      .category-list {
+        position: absolute;
+        top: calc(100% + 8px);
+        left: 0;
+        min-width: 272px;
+        width: auto;
+        max-height: 320px;
+        overflow-y: auto;
+        border-radius: 10px;
+        border: 1px solid var(--color-input-stroke);
+        background: var(--color-input-bg);
+        padding: 4px;
+        z-index: 50;
+        transition: border-color 0.2s;
+        box-shadow: 0px 100px 80px 0px rgba(0, 0, 0, 0.07),
+                    0px 42px 33px 0px rgba(0, 0, 0, 0.05),
+                    0px 23px 18px 0px rgba(0, 0, 0, 0.045),
+                    0px 13px 10px 0px rgba(0, 0, 0, 0.035),
+                    0px 7px 6px 0px rgba(0, 0, 0, 0.04),
+                    0px 4px 2px 0px rgba(0, 0, 0, 0.02);
+        display: none;
+      }
+
+      .category-list.open {
+        display: block;
+      }
+
+      .category-list:hover {
+        border-color: var(--color-input-stroke-hover);
+      }
+
+      .category-list-items {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+        width: 100%;
+      }
+
+      .category-list-item {
+        width: 100%;
+        flex: none;
+        height: 44px;
+      }
+
+      .category-list-button {
+        width: 100%;
+        height: 100%;
+        border-radius: 6px;
+        border: none;
+        background: transparent;
+        padding: 0 8px;
+        cursor: pointer;
+        font-family: inherit;
+        font-size: 15px;
+        line-height: 100%;
+        font-weight: 500;
+        color: var(--color-text-tertiary);
+        display: flex;
+        align-items: center;
+        justify-content: flex-start;
+        gap: 8px;
+        transition: background-color 0.5s cubic-bezier(0.33, 1, 0.68, 1),
+                    color 0.5s cubic-bezier(0.33, 1, 0.68, 1),
+                    box-shadow 0.5s cubic-bezier(0.33, 1, 0.68, 1),
+                    transform 0.5s cubic-bezier(0.33, 1, 0.68, 1),
+                    font-weight 0.5s cubic-bezier(0.33, 1, 0.68, 1);
+        will-change: background-color, color, box-shadow;
+        text-align: left;
+        outline: none;
+      }
+
+      .category-list-button:active {
+        transform: scale(0.98);
+      }
+
+      .category-list-button.active {
+        background: var(--color-seg-button-bg);
+        color: var(--color-text-primary-inverted);
+        font-weight: 600;
+        box-shadow: inset 0 0 0 1px var(--color-seg-button-stroke);
+      }
+
+      .category-list-button:hover:not(.active) {
+        background: var(--color-input-secondary-bg-hover);
+        color: var(--color-text-secondary-hover);
+      }
+
+      .category-list-icon {
+        width: 20px;
+        height: 20px;
+        flex-shrink: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: opacity 0.5s cubic-bezier(0.33, 1, 0.68, 1),
+                    color 0.5s cubic-bezier(0.33, 1, 0.68, 1);
+      }
+
+      .category-list-divider {
+        height: 1px;
+        margin: 0 6px;
+        border-radius: 9999px;
+        background: var(--color-divider-stroke);
+      }
+
+      /* Scroll area (ONLY this scrolls) */
+      .content {
+        flex: 1;
+        overflow-y: auto;
+        overflow-x: hidden;
+        display: flex;
+        flex-direction: column;
+        min-height: 0;
+      }
+
+      .grid {
+        padding: 12px;
+        display: grid;
+        grid-template-columns: repeat(6, minmax(0, 1fr));
+        gap: 2px;
+      }
+
+      /* Icon card */
+      .card {
+        aspect-ratio: 1 / 1;
+        border-radius: 10px;
+        background: #fff;
+        cursor: pointer;
+        display: grid;
+        place-items: center;
+        user-select: none;
+        overflow: hidden;
+      }
+
+      .card:hover {
+        background: rgba(0, 0, 0, 0.03);
+      }
+
+      .iconBox {
+        width: 100%;
+        height: 100%;
+        display: grid;
+        place-items: center;
+      }
+
+      .iconBox img {
+        width: 50%;
+        height: 50%;
+        object-fit: contain;
+        pointer-events: none;
+        user-select: none;
+      }
+
+      .muted {
+        color: #b1b1b1;
+        font-size: 12px;
+      }
+
+      /* Footer */
+      .footer {
+        padding: 12px;
+        border-top: 1px solid rgba(0, 0, 0, 0.06);
+        margin-top: auto;
+        flex-shrink: 0;
+      }
+
+      .footer-content {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        font-size: 12px;
+        color: #777;
+      }
+
+      .footer-left {
+        display: flex;
+        align-items: center;
+      }
+
+      .footer-right {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .footer-content a {
+        color: #5DB0FC;
+        text-decoration: none;
+        cursor: pointer;
+      }
+
+      .footer-content a:hover {
+        text-decoration: underline;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="app">
+      <div class="topbar">
+        <div class="search-wrapper">
+          <div class="search-icon" id="search-icon"></div>
+          <input id="search" placeholder="Search icons..." />
+        </div>
+
+        <div class="controls">
+          <div class="segmented-control" id="style-control">
+            <button class="segment-button active" data-value="outline">Outline</button>
+            <button class="segment-button" data-value="filled">Filled</button>
+          </div>
+
+          <div class="category-select-wrapper">
+            <button type="button" class="category-select-button" id="category-button">
+              <div class="category-select-icon" id="category-icon"></div>
+              <span class="category-select-text" id="category-text">All icons</span>
+              <div class="category-select-arrow" id="category-arrow"></div>
+            </button>
+            <div class="category-list" id="category-list">
+              <div class="category-list-items" id="category-list-items"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="content">
+        <div id="grid" class="grid"></div>
+        <footer class="footer">
+          <div class="footer-content" id="footer-content">
+            <div class="footer-left" id="footer-left"></div>
+            <div class="footer-right" id="footer-right"></div>
+          </div>
+        </footer>
+      </div>
+    </div>
+
+    <script>
+      const BASE_URL =
+        "https://raw.githubusercontent.com/Seaham0606/some-icons-cdn/main/";
+
+      let ICONS = [];
+
+      const elSearch = document.getElementById("search");
+      const elStyleControl = document.getElementById("style-control");
+      const elCategoryButton = document.getElementById("category-button");
+      const elCategoryText = document.getElementById("category-text");
+      const elCategoryIcon = document.getElementById("category-icon");
+      const elCategoryArrow = document.getElementById("category-arrow");
+      const elCategoryList = document.getElementById("category-list");
+      const elCategoryListItems = document.getElementById("category-list-items");
+      const elGrid = document.getElementById("grid");
+      
+      let currentStyle = "outline";
+      let currentCategory = "all";
+      let isCategoryListOpen = false;
+      let hasSelection = false;
+
+      const INSERT_SIZE = 16;
+      const svgCache = new Map();
+
+      // Category to icon mapping - updated with new icons
+      const CATEGORY_ICONS = {
+        all: 'interface-grid',
+        arrow: 'arrow-up-right-circle',
+        commerce: 'commerce-shopping-bag-alt',
+        chat: 'chat-message',
+        content: 'content-book-alt',
+        device: 'device-phone',
+        file: 'file-file',
+        formatting: 'formatting-pen-alt',
+        gesture: 'gesture-point-4-finger-alt',
+        interface: 'interface-home',
+        map: 'map-map-alt',
+        media: 'media-play',
+        symbol: 'symbol-shape-spade',
+        time: 'time-clock-05',
+        weather: 'weather-cloud',
+      };
+
+      function getCategoryIcon(category) {
+        return CATEGORY_ICONS[category] || 'symbol-information-circle';
+      }
+
+      function uniq(arr) {
+        return Array.from(new Set(arr)).sort();
+      }
+
+      async function loadIndex() {
+        const res = await fetch(`${BASE_URL}index.json`, { cache: "no-store" });
+        const data = await res.json();
+        ICONS = data.icons || [];
+      }
+
+      function buildCategories() {
+        const cats = uniq(
+          ICONS.map((i) => i.category).filter(Boolean)
+        );
+        
+        // Sort categories: "general" first, then alphabetical
+        const sortedCats = [...cats];
+        const generalIndex = sortedCats.indexOf("general");
+        if (generalIndex > -1) {
+          sortedCats.splice(generalIndex, 1);
+          sortedCats.unshift("general");
+        }
+        
+        const allCategories = ['all', ...sortedCats];
+        
+        // Build category list HTML
+        elCategoryListItems.innerHTML = '';
+        allCategories.forEach((cat, index) => {
+          const item = document.createElement('div');
+          item.className = 'category-list-item';
+          
+          const button = document.createElement('button');
+          button.type = 'button';
+          button.className = 'category-list-button';
+          if (cat === currentCategory) {
+            button.classList.add('active');
+          }
+          button.dataset.value = cat;
+          
+          const icon = document.createElement('div');
+          icon.className = 'category-list-icon';
+          icon.id = `category-list-icon-${cat}`;
+          
+          const text = document.createElement('span');
+          text.textContent = cat === 'all' ? 'All icons' : cat.charAt(0).toUpperCase() + cat.slice(1);
+          
+          button.appendChild(icon);
+          button.appendChild(text);
+          item.appendChild(button);
+          
+          elCategoryListItems.appendChild(item);
+          
+          // Add divider after "all"
+          if (index === 0) {
+            const divider = document.createElement('div');
+            divider.className = 'category-list-divider';
+            elCategoryListItems.appendChild(divider);
+          }
+          
+          // Load icon
+          loadUIIcon(getCategoryIcon(cat), `category-list-icon-${cat}`, 'outline');
+        });
+      }
+
+      function updateCategoryDisplay() {
+        const label = currentCategory === 'all' ? 'All icons' : currentCategory.charAt(0).toUpperCase() + currentCategory.slice(1);
+        elCategoryText.textContent = label;
+        loadUIIcon(getCategoryIcon(currentCategory), 'category-icon', 'outline');
+      }
+
+      function toggleCategoryList() {
+        isCategoryListOpen = !isCategoryListOpen;
+        if (isCategoryListOpen) {
+          elCategoryList.classList.add('open');
+          loadUIIcon('arrow-up-triangle', 'category-arrow', 'outline');
+          hasSelection = false;
+          
+          // Scroll selected category into view
+          setTimeout(() => {
+            const selectedButton = elCategoryListItems.querySelector(`[data-value="${currentCategory}"]`);
+            if (selectedButton && elCategoryList) {
+              const selectedOffsetTop = selectedButton.offsetTop;
+              elCategoryList.scrollTo({
+                top: selectedOffsetTop - 4,
+                behavior: 'smooth'
+              });
+            }
+          }, 0);
+        } else {
+          elCategoryList.classList.remove('open');
+          loadUIIcon('arrow-down-triangle', 'category-arrow', 'outline');
+        }
+      }
+
+      function selectCategory(category) {
+        currentCategory = category;
+        updateCategoryDisplay();
+        toggleCategoryList();
+        hasSelection = true;
+        render();
+      }
+
+      // Handle click outside
+      document.addEventListener('mousedown', (event) => {
+        if (isCategoryListOpen && !elCategoryButton.contains(event.target) && !elCategoryList.contains(event.target)) {
+          if (hasSelection) {
+            toggleCategoryList();
+          }
+        }
+      });
+
+      // Handle mouse leave
+      elCategoryList.addEventListener('mouseleave', () => {
+        if (hasSelection && isCategoryListOpen) {
+          toggleCategoryList();
+        }
+      });
+
+      // Category button click
+      elCategoryButton.addEventListener('click', () => {
+        toggleCategoryList();
+      });
+
+      // Category list item clicks
+      elCategoryListItems.addEventListener('click', (event) => {
+        const button = event.target.closest('.category-list-button');
+        if (button) {
+          selectCategory(button.dataset.value);
+        }
+      });
+
+      function normalizeQuery(s) {
+        return (s || "").trim().toLowerCase();
+      }
+
+      function getDerivedSortKey(iconId) {
+        if (!iconId) return "";
+        const normalized = iconId.toLowerCase();
+        const firstDashIndex = normalized.indexOf("-");
+        if (firstDashIndex === -1) return normalized;
+        return normalized.substring(firstDashIndex + 1);
+      }
+
+      function matches(icon, q) {
+        if (!q) return true;
+        return `${icon.id} ${icon.category} ${(icon.tags || []).join(" ")}`
+          .toLowerCase()
+          .includes(q);
+      }
+
+      function getSelectedStyle(icon) {
+        return currentStyle;
+      }
+
+      async function fetchSvgText(icon, style) {
+        const relPath = icon.files?.[style];
+        const key = `${style}:${relPath}`;
+        if (svgCache.has(key)) return svgCache.get(key);
+
+        const res = await fetch(`${BASE_URL}${relPath}`, { cache: "no-store" });
+        const text = await res.text();
+        svgCache.set(key, text);
+        return text;
+      }
+
+      async function loadUIIcon(iconId, containerId, style = "outline") {
+        const icon = ICONS.find((i) => i.id === iconId);
+        if (!icon || !icon.files?.[style]) return;
+
+        const svg = await fetchSvgText(icon, style);
+        let s = svg;
+        if (!/\bviewBox=/i.test(s)) {
+          s = s.replace(/<svg/i, '<svg viewBox="0 0 16 16"');
+        }
+        s = s.replaceAll("currentColor", "#000000");
+        const encoded = encodeURIComponent(s)
+          .replace(/'/g, "%27")
+          .replace(/"/g, "%22");
+        
+        const container = document.getElementById(containerId);
+        if (container) {
+          container.innerHTML = "";
+          const img = document.createElement("img");
+          img.src = `data:image/svg+xml,${encoded}`;
+          img.style.width = "100%";
+          img.style.height = "100%";
+          img.style.objectFit = "contain";
+          img.style.opacity = containerId.includes('category-list-icon') ? "1" : (containerId === 'search-icon' ? "0.3" : "1");
+          container.appendChild(img);
+        }
+      }
+
+      async function loadUIIcons() {
+        await loadUIIcon("interface-search", "search-icon", "outline");
+        await loadUIIcon("arrow-down-triangle", "category-arrow", "outline");
+        await loadUIIcon(getCategoryIcon(currentCategory), "category-icon", "outline");
+      }
+
+      function initFooter() {
+        const year = new Date().getFullYear();
+        const version = "1.1.0";
+        const footerLeft = document.getElementById("footer-left");
+        const footerRight = document.getElementById("footer-right");
+        
+        if (footerLeft) {
+          footerLeft.innerHTML = `© ${year} Sihan Liu`;
+        }
+        
+        if (footerRight) {
+          const versionSpan = document.createElement("span");
+          versionSpan.textContent = `v${version}`;
+          
+          const licenseLink = document.createElement("a");
+          licenseLink.href = "#";
+          licenseLink.id = "license-link";
+          licenseLink.textContent = "License";
+          licenseLink.addEventListener("click", (e) => {
+            e.preventDefault();
+            if (parent && parent.postMessage) {
+              parent.postMessage(
+                {
+                  pluginMessage: {
+                    type: "OPEN_EXTERNAL",
+                    payload: { url: "https://choosealicense.com/licenses/mit/" },
+                  },
+                },
+                "*"
+              );
+            }
+          });
+          
+          const fullLibraryLink = document.createElement("a");
+          fullLibraryLink.href = "#";
+          fullLibraryLink.id = "full-library-link";
+          fullLibraryLink.textContent = "Full library";
+          fullLibraryLink.addEventListener("click", (e) => {
+            e.preventDefault();
+            if (parent && parent.postMessage) {
+              parent.postMessage(
+                {
+                  pluginMessage: {
+                    type: "OPEN_EXTERNAL",
+                    payload: { url: "https://someicons.com/" },
+                  },
+                },
+                "*"
+              );
+            }
+          });
+          
+          footerRight.appendChild(versionSpan);
+          footerRight.appendChild(licenseLink);
+          footerRight.appendChild(fullLibraryLink);
+        }
+      }
+
+      function render() {
+        const q = normalizeQuery(elSearch.value);
+
+        const filtered = ICONS.filter((icon) => {
+          if (!q && currentCategory !== "all" && icon.category !== currentCategory)
+            return false;
+          if (!icon.files?.[currentStyle])
+            return false;
+          return matches(icon, q);
+        });
+
+        const isAllIconsView = currentCategory === "all";
+        const sorted = [...filtered].sort((a, b) => {
+          if (isAllIconsView) {
+            const aSortKey = getDerivedSortKey(a.id || "");
+            const bSortKey = getDerivedSortKey(b.id || "");
+            const keyComparison = aSortKey.localeCompare(bSortKey);
+            if (keyComparison !== 0) return keyComparison;
+            return (a.id || "").localeCompare(b.id || "");
+          }
+          return (a.id || "").localeCompare(b.id || "");
+        });
+
+        elGrid.innerHTML = "";
+
+        sorted.forEach((icon) => {
+          const style = getSelectedStyle(icon);
+          const card = document.createElement("div");
+          card.className = "card";
+          card.title = icon.id;
+
+          const box = document.createElement("div");
+          box.className = "iconBox";
+          box.innerHTML = `<span class="muted">…</span>`;
+          card.appendChild(box);
+
+          (async () => {
+            const svg = await fetchSvgText(icon, style);
+            let s = svg;
+            if (!/\bviewBox=/i.test(s)) {
+              s = s.replace(/<svg/i, '<svg viewBox="0 0 16 16"');
+            }
+            s = s.replaceAll("currentColor", "#111");
+            const encoded = encodeURIComponent(s)
+              .replace(/'/g, "%27")
+              .replace(/"/g, "%22");
+            const img = document.createElement("img");
+            img.src = `data:image/svg+xml,${encoded}`;
+            box.innerHTML = "";
+            box.appendChild(img);
+          })();
+
+          card.onclick = async () => {
+            const svg = await fetchSvgText(icon, style);
+            parent.postMessage(
+              {
+                pluginMessage: {
+                  type: "INSERT_ICON",
+                  payload: { name: icon.id, svg, size: INSERT_SIZE },
+                },
+              },
+              "*"
+            );
+          };
+
+          elGrid.appendChild(card);
+        });
+      }
+
+      elSearch.oninput = render;
+      
+      // Handle segmented control clicks
+      if (elStyleControl) {
+        const buttons = elStyleControl.querySelectorAll(".segment-button");
+        buttons.forEach((button) => {
+          button.addEventListener("click", () => {
+            buttons.forEach((btn) => btn.classList.remove("active"));
+            button.classList.add("active");
+            currentStyle = button.getAttribute("data-value");
+            render();
+          });
+        });
+      }
+
+      (async () => {
+        await loadIndex();
+        buildCategories();
+        await loadUIIcons();
+        initFooter();
+        render();
+      })();
+    </script>
+  </body>
+</html>

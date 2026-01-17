@@ -14,8 +14,8 @@ interface CategoryListProps {
 // Category to icon mapping
 export const CATEGORY_ICONS: Record<string, string> = {
   all: 'interface-grid',
-  arrow: 'arrow-up-right',
-  commerce: 'symbol-currency-dollar',
+  arrow: 'arrow-up-right-circle',
+  commerce: 'commerce-shopping-bag-alt',
   chat: 'chat-message',
   content: 'content-book-alt',
   device: 'device-phone',
@@ -24,7 +24,7 @@ export const CATEGORY_ICONS: Record<string, string> = {
   gesture: 'gesture-point-4-finger-alt',
   interface: 'interface-home',
   map: 'map-map-alt',
-  media: 'media-sound-wave',
+  media: 'media-play',
   symbol: 'symbol-shape-spade',
   time: 'time-clock-05',
   weather: 'weather-cloud',
