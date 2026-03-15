@@ -1,0 +1,32 @@
+{
+  "name": "design-system",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./tokens/theme.css": "./src/tokens/theme.css",
+    "./tokens/semantic.css": "./src/tokens/semantic.css",
+    "./tokens": "./src/tokens/index.css"
+  },
+  "peerDependencies": {
+    "react": "^18.0.0 || ^19.0.0",
+    "@radix-ui/react-label": "*",
+    "@radix-ui/react-switch": "*"
+  },
+  "peerDependenciesMeta": {
+    "@radix-ui/react-label": { "optional": true },
+    "@radix-ui/react-switch": { "optional": true }
+  },
+  "devDependencies": {
+    "@types/react": "^19.2.5",
+    "clsx": "^2.1.1",
+    "tailwind-merge": "^3.4.0",
+    "typescript": "~5.9.3"
+  },
+  "dependencies": {
+    "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1",
+    "tailwind-merge": "^3.4.0"
+  }
+}

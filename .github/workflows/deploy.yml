@@ -27,17 +27,13 @@ jobs:
         with:
           node-version: '18'
           cache: 'npm'
-          cache-dependency-path: react/package-lock.json
+          cache-dependency-path: package-lock.json
       
       - name: Install dependencies
-        run: |
-          cd react
-          npm ci
+        run: npm ci
       
-      - name: Build React app
-        run: |
-          cd react
-          npm run build
+      - name: Build icons app
+        run: npm run build --workspace=apps/icons
       
       - name: Setup Pages
         uses: actions/configure-pages@v4
@@ -45,7 +41,7 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: './dist'
+          path: 'apps/icons/dist'
 
   deploy:
     environment:

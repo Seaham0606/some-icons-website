@@ -1,15 +1,24 @@
 {
   "name": "some-icons-website",
   "version": "1.0.0",
-  "description": "Some Icons website with changelog generator",
+  "description": "Monorepo: Some Icons website and shared design system",
+  "private": true,
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
   "scripts": {
-    "dev": "node server.js",
-    "start": "node server.js",
-    "build": "cd react && npm run build",
-    "build:react": "cd react && npm run build",
-    "dev:react": "cd react && npm run dev",
-    "generate-changelog": "node scripts/generate-changelog-index.js",
-    "watch-changelog": "node scripts/watch-changelog.js"
+    "dev": "npm run dev --workspace=apps/icons",
+    "start": "npm run start --workspace=apps/icons",
+    "build": "npm run build --workspace=apps/icons",
+    "build:icons": "npm run build --workspace=apps/icons",
+    "dev:icons": "npm run dev --workspace=apps/icons",
+    "dev:ui-docs": "npm run dev --workspace=apps/ui-docs",
+    "storybook": "npm run storybook --workspace=apps/ui-docs",
+    "build:storybook": "npm run build-storybook --workspace=apps/ui-docs",
+    "dev:marketing": "npm run dev --workspace=apps/marketing",
+    "generate-changelog": "npm run generate-changelog --workspace=apps/icons",
+    "watch-changelog": "npm run watch-changelog --workspace=apps/icons"
   },
   "keywords": [],
   "author": "",
@@ -17,7 +26,5 @@
   "dependencies": {
     "express": "^4.18.2",
     "cors": "^2.8.5"
-  },
-  "devDependencies": {}
+  }
 }
-

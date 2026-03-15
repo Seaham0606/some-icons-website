@@ -3,7 +3,7 @@ name: Update Changelog Index
 on:
   push:
     paths:
-      - 'content/changelog/**/*.md'
+      - 'apps/icons/content/changelog/**/*.md'
   workflow_dispatch: # Allow manual trigger
 
 permissions:
@@ -23,27 +23,23 @@ jobs:
           node-version: '18'
       
       - name: Generate changelog index
-        run: node scripts/generate-changelog-index.js
+        run: node apps/icons/scripts/generate-changelog-index.cjs
       
       - name: Check for changes
         id: verify-changed-files
         run: |
-          if [ -n "$(git status --porcelain assets/js/changelog-index.json)" ]; then
+          if [ -n "$(git status --porcelain apps/icons/public/assets/js/changelog-index.json)" ]; then
             echo "changed=true" >> $GITHUB_OUTPUT
           else
             echo "changed=false" >> $GITHUB_OUTPUT
           fi
-      
-      - name: Copy to React app
-        if: steps.verify-changed-files.outputs.changed == 'true'
-        run: cp assets/js/changelog-index.json react/public/assets/js/changelog-index.json
 
       - name: Commit and push changes
         if: steps.verify-changed-files.outputs.changed == 'true'
         run: |
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
-          git add assets/js/changelog-index.json react/public/assets/js/changelog-index.json
+          git add apps/icons/public/assets/js/changelog-index.json
           git commit -m "chore: auto-update changelog index" || exit 0
           git push
 

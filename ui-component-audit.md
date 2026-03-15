@@ -21,11 +21,11 @@ This document provides a comprehensive inventory of all UI components currently 
 
 ## UI Primitives
 
-Components located in `/react/src/components/ui/` that serve as reusable building blocks.
+Components located in `/apps/icons/src/components/ui/` that serve as reusable building blocks.
 
 ### Textarea
 
-- **File Path:** `react/src/components/ui/textarea.tsx`
+- **File Path:** `apps/icons/src/components/ui/textarea.tsx`
 - **Base HTML Element:** `<textarea>`
 - **Where Used:**
   - `GeneratorForm` (summary, added, changed, fixed, removed, deprecated, notes fields)
@@ -36,7 +36,7 @@ Components located in `/react/src/components/ui/` that serve as reusable buildin
 
 ### Toaster (Sonner)
 
-- **File Path:** `react/src/components/ui/sonner.tsx`
+- **File Path:** `apps/icons/src/components/ui/sonner.tsx`
 - **Base HTML Element:** Sonner toast library component (renders as portal with custom DOM structure)
 - **Where Used:**
   - `App.tsx` (global toast notifications)
@@ -47,11 +47,11 @@ Components located in `/react/src/components/ui/` that serve as reusable buildin
 
 ## Layout Components
 
-Components located in `/react/src/components/layout/` that structure the page layout.
+Components located in `/apps/icons/src/components/layout/` that structure the page layout.
 
 ### Sidebar
 
-- **File Path:** `react/src/components/layout/Sidebar.tsx`
+- **File Path:** `apps/icons/src/components/layout/Sidebar.tsx`
 - **Base HTML Element:** `<aside>`
 - **Where Used:**
   - `HomePage` (main sidebar with filters and controls)
@@ -61,7 +61,7 @@ Components located in `/react/src/components/layout/` that structure the page la
 
 ### SidebarHeader
 
-- **File Path:** `react/src/components/layout/Sidebar.tsx`
+- **File Path:** `apps/icons/src/components/layout/Sidebar.tsx`
 - **Base HTML Element:** `<div>`
 - **Where Used:**
   - `HomePage` (logo section)
@@ -71,7 +71,7 @@ Components located in `/react/src/components/layout/` that structure the page la
 
 ### SidebarContent
 
-- **File Path:** `react/src/components/layout/Sidebar.tsx`
+- **File Path:** `apps/icons/src/components/layout/Sidebar.tsx`
 - **Base HTML Element:** `<div>`
 - **Where Used:**
   - `HomePage` (search, filters, customize, export sections)
@@ -81,7 +81,7 @@ Components located in `/react/src/components/layout/` that structure the page la
 
 ### SidebarFooter
 
-- **File Path:** `react/src/components/layout/Sidebar.tsx`
+- **File Path:** `apps/icons/src/components/layout/Sidebar.tsx`
 - **Base HTML Element:** `<div>`
 - **Where Used:**
   - `HomePage` (theme toggle and version)
@@ -91,7 +91,7 @@ Components located in `/react/src/components/layout/` that structure the page la
 
 ### MainContent
 
-- **File Path:** `react/src/components/layout/MainContent.tsx`
+- **File Path:** `apps/icons/src/components/layout/MainContent.tsx`
 - **Base HTML Element:** `<main>`
 - **Where Used:**
   - `HomePage` (main content area with icon grid)
@@ -101,7 +101,7 @@ Components located in `/react/src/components/layout/` that structure the page la
 
 ### ScrollArea
 
-- **File Path:** `react/src/components/layout/MainContent.tsx`
+- **File Path:** `apps/icons/src/components/layout/MainContent.tsx`
 - **Base HTML Element:** `<div>`
 - **Where Used:**
   - `HomePage` (scrollable area containing IconGrid)
@@ -111,7 +111,7 @@ Components located in `/react/src/components/layout/` that structure the page la
 
 ### Footer
 
-- **File Path:** `react/src/components/layout/Footer.tsx`
+- **File Path:** `apps/icons/src/components/layout/Footer.tsx`
 - **Base HTML Element:** `<footer>`
 - **Where Used:**
   - `HomePage` (page footer)
@@ -121,7 +121,7 @@ Components located in `/react/src/components/layout/` that structure the page la
 
 ### MobileHeader
 
-- **File Path:** `react/src/components/layout/MobileHeader.tsx`
+- **File Path:** `apps/icons/src/components/layout/MobileHeader.tsx`
 - **Base HTML Element:** `<header>`
 - **Where Used:**
   - `HomePage` (mobile header with hamburger menu)
@@ -130,7 +130,7 @@ Components located in `/react/src/components/layout/` that structure the page la
 
 ### ThemeToggle
 
-- **File Path:** `react/src/components/layout/ThemeToggle.tsx`
+- **File Path:** `apps/icons/src/components/layout/ThemeToggle.tsx`
 - **Base HTML Element:** `<div>` wrapper around `Switch` component
 - **Where Used:**
   - `HomePage` (in SidebarFooter)
@@ -143,11 +143,11 @@ Components located in `/react/src/components/layout/` that structure the page la
 
 ## Control Components
 
-Components located in `/react/src/components/controls/` that provide user interaction controls.
+Components located in `/apps/icons/src/components/controls/` that provide user interaction controls.
 
 ### SearchInput
 
-- **File Path:** `react/src/components/controls/SearchInput.tsx`
+- **File Path:** `apps/icons/src/components/controls/SearchInput.tsx`
 - **Base HTML Element:** `<div>` wrapper around `Input` component
 - **Where Used:**
   - `HomePage` (in SidebarContent)
@@ -156,7 +156,7 @@ Components located in `/react/src/components/controls/` that provide user intera
 
 ### StyleToggle
 
-- **File Path:** `react/src/components/controls/StyleToggle.tsx`
+- **File Path:** `apps/icons/src/components/controls/StyleToggle.tsx`
 - **Base HTML Element:** `SegmentedControl` component
 - **Where Used:**
   - `HomePage` (in SidebarContent)
@@ -165,7 +165,7 @@ Components located in `/react/src/components/controls/` that provide user intera
 
 ### CategorySelect
 
-- **File Path:** `react/src/components/controls/CategorySelect.tsx`
+- **File Path:** `apps/icons/src/components/controls/CategorySelect.tsx`
 - **Base HTML Element:** `<select>` with custom styling
 - **Where Used:**
   - `HomePage` (in SidebarContent)
@@ -174,7 +174,7 @@ Components located in `/react/src/components/controls/` that provide user intera
 
 ### ColorPicker
 
-- **File Path:** `react/src/components/controls/ColorPicker.tsx`
+- **File Path:** `apps/icons/src/components/controls/ColorPicker.tsx`
 - **Base HTML Element:** `<div>` wrapper containing `Input` and native `<input type="color">`
 - **Where Used:**
   - `HomePage` (in SidebarContent)
@@ -183,7 +183,7 @@ Components located in `/react/src/components/controls/` that provide user intera
 
 ### SizeSelector
 
-- **File Path:** `react/src/components/controls/SizeSelector.tsx`
+- **File Path:** `apps/icons/src/components/controls/SizeSelector.tsx`
 - **Base HTML Element:** `<div>` wrapper containing `SegmentedControl` and native `<input type="number">`
 - **Where Used:**
   - `HomePage` (in SidebarContent)
@@ -192,7 +192,7 @@ Components located in `/react/src/components/controls/` that provide user intera
 
 ### FormatSelector
 
-- **File Path:** `react/src/components/controls/FormatSelector.tsx`
+- **File Path:** `apps/icons/src/components/controls/FormatSelector.tsx`
 - **Base HTML Element:** `SegmentedControl` component
 - **Where Used:**
   - `HomePage` (in SidebarContent)
@@ -201,7 +201,7 @@ Components located in `/react/src/components/controls/` that provide user intera
 
 ### ExportButton
 
-- **File Path:** `react/src/components/controls/ExportButton.tsx`
+- **File Path:** `apps/icons/src/components/controls/ExportButton.tsx`
 - **Base HTML Element:** `<button>`
 - **Where Used:**
   - `HomePage` (in SidebarContent)
@@ -212,11 +212,11 @@ Components located in `/react/src/components/controls/` that provide user intera
 
 ## Icon Components
 
-Components located in `/react/src/components/icons/` that display and manage icons.
+Components located in `/apps/icons/src/components/icons/` that display and manage icons.
 
 ### IconCard
 
-- **File Path:** `react/src/components/icons/IconCard.tsx`
+- **File Path:** `apps/icons/src/components/icons/IconCard.tsx`
 - **Base HTML Element:** `<button>` (main card) and nested `<button>` (selection indicator)
 - **Where Used:**
   - `IconGrid` (renders multiple IconCard instances)
@@ -225,7 +225,7 @@ Components located in `/react/src/components/icons/` that display and manage ico
 
 ### IconGrid
 
-- **File Path:** `react/src/components/icons/IconGrid.tsx`
+- **File Path:** `apps/icons/src/components/icons/IconGrid.tsx`
 - **Base HTML Element:** `<div>` with CSS Grid layout
 - **Where Used:**
   - `HomePage` (in ScrollArea)
@@ -234,7 +234,7 @@ Components located in `/react/src/components/icons/` that display and manage ico
 
 ### IconPreview
 
-- **File Path:** `react/src/components/icons/IconPreview.tsx`
+- **File Path:** `apps/icons/src/components/icons/IconPreview.tsx`
 - **Base HTML Element:** `<div>` with CSS mask
 - **Where Used:**
   - `IconCard` (displays the icon)
@@ -245,11 +245,11 @@ Components located in `/react/src/components/icons/` that display and manage ico
 
 ## Changelog Components
 
-Components located in `/react/src/components/changelog/` for displaying changelog content.
+Components located in `/apps/icons/src/components/changelog/` for displaying changelog content.
 
 ### ChangelogEntry
 
-- **File Path:** `react/src/components/changelog/ChangelogEntry.tsx`
+- **File Path:** `apps/icons/src/components/changelog/ChangelogEntry.tsx`
 - **Base HTML Element:** `<article>`
 - **Where Used:**
   - `ChangelogPage` (renders multiple ChangelogEntry instances)
@@ -258,7 +258,7 @@ Components located in `/react/src/components/changelog/` for displaying changelo
 
 ### VersionList
 
-- **File Path:** `react/src/components/changelog/VersionList.tsx`
+- **File Path:** `apps/icons/src/components/changelog/VersionList.tsx`
 - **Base HTML Element:** `<nav>` containing `<a>` elements
 - **Where Used:**
   - `ChangelogPage` (in SidebarContent)
@@ -269,11 +269,11 @@ Components located in `/react/src/components/changelog/` for displaying changelo
 
 ## Generator Components
 
-Components located in `/react/src/components/generator/` for the changelog generator page.
+Components located in `/apps/icons/src/components/generator/` for the changelog generator page.
 
 ### GeneratorForm
 
-- **File Path:** `react/src/components/generator/GeneratorForm.tsx`
+- **File Path:** `apps/icons/src/components/generator/GeneratorForm.tsx`
 - **Base HTML Element:** `<div>` container with form elements
 - **Where Used:**
   - `GeneratorPage` (main form)

@@ -1,0 +1,7 @@
+/* Storybook preview: Tailwind + design-system tokens so components render correctly. */
+@import "tailwindcss";
+
+@source "../../../packages/design-system/src";
+
+@import "design-system/tokens/theme.css";
+@import "design-system/tokens/semantic.css";

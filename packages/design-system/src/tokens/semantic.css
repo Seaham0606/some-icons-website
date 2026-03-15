@@ -1,0 +1,350 @@
+
+/* Light mode (default) - aligned with vanilla */
+:root {
+  /* Semantic color tokens (--color-* naming for compatibility with vanilla) */
+  --color-background: #ffffff;
+  --color-background-secondary: var(--background-secondary);
+  --color-background-weak: var(--background-weak);
+  --color-background-hover: var(--background-hover);
+  --color-background-hover-light: var(--background-hover-light);
+  --color-background-active: var(--background-active);
+  --color-background-active-dark: var(--background-active-dark);
+  --color-background-overlay: var(--background-overlay);
+  --color-background-footer: var(--background-footer);
+  --color-item-primary: var(--item-primary);
+  --color-item-secondary: var(--item-secondary);
+  --color-item-tertiary: var(--item-tertiary);
+  --color-item-quaternary: var(--item-quaternary);
+  --color-item-disabled: var(--item-disabled);
+  --color-item-grid: var(--item-grid);
+  --color-border: var(--border);
+  --color-border-subtle: var(--color-black-alpha-50);
+  --color-primary: var(--primary);
+  --color-primary-hover: var(--primary-hover);
+  --color-focus: var(--border-focus);
+  --color-warning: var(--destructive);
+  --color-selection-selected: var(--color-blue-400);
+  --color-selection-disabled: var(--color-gray-100);
+  --color-cta-button-bg: var(--color-gray-800);
+  --color-cta-button-bg-hover: var(--color-gray-700);
+  --color-cta-button-text: var(--color-white);
+
+  /* Input colors */
+  --color-input-bg: var(--color-white);
+  --color-input-stroke: var(--color-gray-50);
+  --color-input-stroke-hover: var(--color-gray-100);
+  --color-input-stroke-typing: var(--color-blue-400);
+  --color-input-secondary-bg-hover: var(--color-gray-25);
+  --color-text-primary: var(--color-gray-800);
+  --color-text-secondary: var(--color-gray-700);
+  --color-text-tertiary: var(--color-gray-300);
+  --color-text-secondary-hover: var(--color-gray-600);
+
+  /* Segmented button colors */
+  --color-seg-button-bg: var(--color-gray-100);
+  --color-text-primary-inverted: var(--color-gray-800);
+  --color-seg-button-bg-hover: var(--color-gray-200);
+  --color-seg-button-stroke: var(--color-black-alpha-25);
+
+  /* Dropdown colors */
+  --color-dropdown-bg: var(--color-white-alpha-800);
+  --color-dropdown-bg-blur: blur(10px);
+
+  /* Divider colors */
+  --color-divider-stroke: var(--color-black-alpha-100);
+  --color-category-divider: var(--color-black-alpha-100);
+
+  /* Toggle colors */
+  --color-toggle-bg: var(--color-gray-100);
+  --color-toggle-stroke: var(--color-black-alpha-25);
+  --color-toggle-stroke-hover: var(--color-gray-100);
+  --color-toggle-control-bg: var(--color-white);
+
+  /* Background */
+  --background: #ffffff;
+  --background-secondary: var(--color-gray-25);
+  --background-weak: var(--color-black-alpha-50);
+  --background-hover: var(--color-black-alpha-50);
+  --background-hover-light: var(--color-black-alpha-25);
+  --background-active: var(--color-black-alpha-50);
+  --background-active-dark: var(--color-black-alpha-75);
+  --background-overlay: var(--color-white-alpha-950);
+  --background-footer: var(--color-white-alpha-700);
+
+  /* Text/Foreground */
+  --foreground: var(--color-gray-900);
+  --foreground-secondary: var(--color-gray-600);
+  --foreground-tertiary: var(--color-gray-300);
+  --foreground-quaternary: var(--color-gray-300);
+  --foreground-disabled: var(--color-gray-200);
+  --foreground-inverse: #ffffff;
+  --foreground-inverted: var(--color-gray-100);
+
+  /* Item colors (icons, controls) */
+  --item-primary: var(--color-gray-900);
+  --item-secondary: var(--color-gray-600);
+  --item-tertiary: var(--color-gray-300);
+  --item-quaternary: var(--color-gray-100);
+  --item-disabled: var(--color-gray-100);
+  --item-grid: var(--color-gray-900);
+
+  /* Border */
+  --border: var(--color-gray-800);
+  --border-subtle: var(--color-black-alpha-50);
+  --border-base: var(--color-black-alpha-50);
+  --border-focus: var(--color-black-alpha-100);
+
+  /* Interactive */
+  --primary: var(--color-blue-400);
+  --primary-hover: var(--color-blue-500);
+  --primary-foreground: #ffffff;
+
+  --destructive: var(--color-red-400);
+  --destructive-foreground: #ffffff;
+
+  /* UI components */
+  --muted: var(--color-gray-100);
+  --muted-foreground: var(--color-gray-500);
+
+  --accent: var(--color-gray-100);
+  --accent-foreground: var(--color-gray-900);
+
+  --card: #ffffff;
+  --card-foreground: var(--color-gray-900);
+
+  --popover: #ffffff;
+  --popover-foreground: var(--color-gray-900);
+
+  --input: var(--color-black-alpha-50);
+  --ring: var(--color-black-alpha-100);
+
+
+  --icon-color: var(--color-gray-900);
+
+  --radius: 10px;
+}
+
+/* Dark mode - aligned with vanilla */
+[data-theme="dark"] {
+  /* Semantic color tokens (--color-* naming for compatibility with vanilla) */
+  --color-background: var(--color-gray-925);
+  --color-background-secondary: var(--background-secondary);
+  --color-background-weak: var(--background-weak);
+  --color-background-hover: var(--background-hover);
+  --color-background-hover-light: var(--background-hover-light);
+  --color-background-active: var(--background-active);
+  --color-background-active-dark: var(--background-active-dark);
+  --color-background-overlay: var(--background-overlay);
+  --color-background-footer: var(--background-footer);
+  --color-item-primary: var(--item-primary);
+  --color-item-secondary: var(--item-secondary);
+  --color-item-tertiary: var(--item-tertiary);
+  --color-item-quaternary: var(--item-quaternary);
+  --color-item-disabled: var(--item-disabled);
+  --color-item-grid: var(--item-grid);
+  --color-border: var(--border);
+  --color-border-subtle: var(--color-white-alpha-50);
+  --color-primary: var(--primary);
+  --color-primary-hover: var(--primary-hover);
+  --color-focus: var(--border-focus);
+  --color-warning: var(--destructive);
+  --color-selection-selected: var(--color-blue-400);
+  --color-selection-disabled: var(--color-gray-700);
+  --color-cta-button-bg: var(--color-gray-25);
+  --color-cta-button-bg-hover: var(--color-gray-75);
+  --color-cta-button-text: var(--color-gray-800);
+
+  /* Input colors */
+  --color-input-bg: var(--color-gray-850);
+  --color-input-stroke: var(--color-gray-800);
+  --color-input-stroke-hover: var(--color-gray-700);
+  --color-input-stroke-typing: var(--color-blue-400);
+  --color-input-secondary-bg-hover: var(--color-gray-800);
+  --color-text-primary: var(--color-gray-50);
+  --color-text-secondary: var(--color-gray-200);
+  --color-text-tertiary: var(--color-gray-600);
+  --color-text-secondary-hover: var(--color-gray-500);
+
+  /* Segmented button colors */
+  --color-seg-button-bg: var(--color-gray-700);
+  --color-text-primary-inverted: var(--color-gray-50);
+  --color-seg-button-bg-hover: var(--color-gray-600);
+  --color-seg-button-stroke: var(--color-white-alpha-25);
+
+  /* Divider colors */
+  --color-divider-stroke: var(--color-white-alpha-100);
+  --color-category-divider: var(--color-white-alpha-100);
+
+  /* Dropdown colors */
+  --color-dropdown-bg: var(--color-gray-850);
+  --color-dropdown-bg-blur: blur(10px);
+
+  /* Toggle colors */
+  --color-toggle-bg: var(--color-gray-800);
+  --color-toggle-stroke: var(--color-white-alpha-25);
+  --color-toggle-stroke-hover: var(--color-gray-700);
+  --color-toggle-control-bg: var(--color-gray-600);
+
+  /* Background */
+  --background: #000000;
+  --background-secondary: var(--color-gray-900);
+  --background-weak: var(--color-white-alpha-50);
+  --background-hover: var(--color-white-alpha-200);
+  --background-hover-light: var(--color-white-alpha-75);
+  --background-active: var(--color-white-alpha-50);
+  --background-active-dark: var(--color-white-alpha-75);
+  --background-overlay: var(--color-black-alpha-950);
+  --background-footer: var(--color-black-alpha-700);
+
+  /* Text/Foreground */
+  --foreground: #ffffff;
+  --foreground-secondary: var(--color-gray-400);
+  --foreground-tertiary: var(--color-gray-500);
+  --foreground-quaternary: var(--color-gray-600);
+  --foreground-disabled: var(--color-gray-600);
+  --foreground-inverse: #000000;
+  --foreground-inverted: var(--color-gray-900);
+
+  /* Item colors (icons, controls) */
+  --item-primary: #ffffff;
+  --item-secondary: var(--color-gray-400);
+  --item-tertiary: var(--color-gray-500);
+  --item-quaternary: var(--color-gray-900);
+  --item-disabled: var(--color-gray-600);
+  --item-grid: var(--color-gray-300);
+
+  /* Border */
+  --border: var(--color-gray-200);
+  --border-subtle: var(--color-white-alpha-50);
+  --border-base: var(--color-white-alpha-50);
+  --border-focus: var(--color-white-alpha-100);
+
+  /* Interactive */
+  --primary: var(--color-blue-400);
+  --primary-hover: var(--color-blue-300);
+  --primary-foreground: #000000;
+
+  --destructive: var(--color-red-500);
+  --destructive-foreground: #ffffff;
+
+  /* UI components */
+  --muted: var(--color-gray-800);
+  --muted-foreground: var(--color-gray-400);
+
+  --accent: var(--color-gray-800);
+  --accent-foreground: #ffffff;
+
+  --card: #000000;
+  --card-foreground: #ffffff;
+
+  --popover: var(--color-gray-900);
+  --popover-foreground: #ffffff;
+
+  --input: var(--color-white-alpha-50);
+  --ring: var(--color-white-alpha-100);
+
+
+  --icon-color: var(--color-gray-300);
+}
+
+/* System preference dark mode */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme]) {
+    /* Semantic color tokens (--color-* naming for compatibility with vanilla) */
+    --color-background: var(--color-gray-925);
+    --color-item-primary: var(--item-primary);
+    --color-item-secondary: var(--item-secondary);
+    --color-item-tertiary: var(--item-tertiary);
+    --color-item-quaternary: var(--item-quaternary);
+    --color-item-disabled: var(--item-disabled);
+    --color-item-grid: var(--item-grid);
+    --color-border: var(--border);
+    --color-border-subtle: var(--color-white-alpha-50);
+    --color-primary-hover: var(--primary-hover);
+    --color-warning: var(--destructive);
+    --color-selection-selected: var(--color-blue-400);
+    --color-selection-disabled: var(--color-gray-800);
+    --color-cta-button-bg: var(--color-gray-25);
+    --color-cta-button-bg-hover: var(--color-gray-75);
+    --color-cta-button-text: var(--color-gray-800);
+
+    /* Input colors */
+    --color-input-bg: var(--color-gray-850);
+    --color-input-stroke: var(--color-gray-800);
+    --color-input-stroke-hover: var(--color-gray-700);
+    --color-input-stroke-typing: var(--color-blue-400);
+    --color-input-secondary-bg-hover: var(--color-gray-850);
+    --color-text-primary: var(--color-gray-50);
+    --color-text-tertiary: var(--color-gray-600);
+
+    /* Divider colors */
+    --color-divider-stroke: var(--color-white-alpha-100);
+
+    /* Toggle colors */
+    --color-toggle-bg: var(--color-gray-800);
+    --color-toggle-stroke: var(--color-white-alpha-25);
+    --color-toggle-stroke-hover: var(--color-gray-700);
+    --color-toggle-control-bg: var(--color-gray-600);
+
+    /* Background */
+    --background: #000000;
+    --background-secondary: var(--color-gray-900);
+    --background-weak: var(--color-white-alpha-50);
+    --background-hover: var(--color-white-alpha-200);
+    --background-hover-light: var(--color-white-alpha-50);
+    --background-active: var(--color-white-alpha-50);
+    --background-active-dark: var(--color-white-alpha-75);
+    --background-overlay: var(--color-black-alpha-950);
+    --background-footer: var(--color-black-alpha-700);
+
+    /* Text/Foreground */
+    --foreground: #ffffff;
+    --foreground-secondary: var(--color-gray-400);
+    --foreground-tertiary: var(--color-gray-500);
+    --foreground-quaternary: var(--color-gray-600);
+    --foreground-disabled: var(--color-gray-600);
+    --foreground-inverse: #000000;
+    --foreground-inverted: var(--color-gray-900);
+
+    /* Item colors (icons, controls) */
+    --item-primary: #ffffff;
+    --item-secondary: var(--color-gray-400);
+    --item-tertiary: var(--color-gray-500);
+    --item-quaternary: var(--color-gray-900);
+    --item-disabled: var(--color-gray-600);
+    --item-grid: var(--color-gray-300);
+
+    /* Border */
+    --border: var(--color-gray-200);
+    --border-subtle: var(--color-white-alpha-50);
+    --border-base: var(--color-white-alpha-50);
+    --border-focus: var(--color-white-alpha-100);
+
+    /* Interactive */
+    --primary: var(--color-blue-400);
+    --primary-hover: var(--color-blue-300);
+    --primary-foreground: #000000;
+
+    --destructive: var(--color-red-500);
+    --destructive-foreground: #ffffff;
+
+    /* UI components */
+    --muted: var(--color-gray-800);
+    --muted-foreground: var(--color-gray-400);
+
+    --accent: var(--color-gray-800);
+    --accent-foreground: #ffffff;
+
+    --card: #000000;
+    --card-foreground: #ffffff;
+
+    --popover: var(--color-gray-900);
+    --popover-foreground: #ffffff;
+
+    --input: var(--color-white-alpha-50);
+    --ring: var(--color-white-alpha-100);
+
+
+    --icon-color: var(--color-gray-300);
+  }
+}

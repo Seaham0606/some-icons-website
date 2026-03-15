@@ -1,0 +1,10 @@
+{
+  "files": [],
+  "references": [
+    { "path": "./apps/icons" },
+    { "path": "./apps/marketing" },
+    { "path": "./apps/ui-docs" },
+    { "path": "./packages/design-system" }
+  ],
+  "exclude": ["react"]
+}

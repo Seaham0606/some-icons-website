@@ -39,27 +39,31 @@ Official website for browsing, customizing, and downloading [Some Icons](https:/
 - Click any icon to copy SVG to clipboard (when no icons are selected)
 - Press Enter in color input to apply the color
 
-## Project Structure
+## Monorepo Structure
+
+This repository is a **monorepo** with multiple deployable apps and a shared design system. Icon assets are not stored here; they are loaded from the [Some Icons CDN](https://github.com/Seaham0606/some-icons-cdn) repository.
 
 ```
 some-icons-website/
-├── react/              # React application (main app)
-│   ├── src/            # React source code
-│   │   ├── components/ # React components
-│   │   ├── pages/      # Page components
-│   │   ├── stores/     # State management
-│   │   └── index.css   # Tailwind CSS with color tokens
-│   └── dist/           # Production build (generated)
-├── assets/
-│   ├── js/
-│   │   └── changelog-index.json  # Changelog metadata
-│   └── images/         # Static images
-├── content/
-│   └── changelog/      # Changelog markdown files
-├── server.js         # Development server
-├── LICENSE            # MIT License
-└── README.md          # This file
+├── apps/
+│   ├── icons/           # Some Icons browser app (main site)
+│   │   ├── src/         # React source, components, pages, stores
+│   │   ├── content/     # Changelog markdown files
+│   │   ├── scripts/     # Changelog index generator & watch
+│   │   ├── server.js    # Local dev server (optional)
+│   │   └── dist/        # Production build (generated)
+│   ├── ui-docs/         # Design system documentation (placeholder)
+│   └── marketing/       # Marketing site (placeholder)
+├── packages/
+│   └── design-system/   # Shared UI foundations
+│       ├── components/  # Reusable components (Label, Switch, Textarea, etc.)
+│       └── tokens/      # Design tokens (theme + semantic CSS)
+├── LICENSE
+└── README.md
 ```
+
+- **apps/** – Deployable web apps; each can be built and run independently.
+- **packages/design-system** – Shared components and design tokens used by apps. Icon assets are out of scope (hosted on a separate CDN repo).
 
 ## Color System
 
@@ -120,30 +124,41 @@ Dark mode is supported via:
 
 ### Local Setup
 
-1. Clone the repository
-2. Install dependencies:
+1. Clone the repository.
+2. From the **repo root**, install dependencies (links workspace packages):
    ```bash
-   cd react
    npm install
    ```
-3. Start the development server:
+3. Start the icons app in development mode:
    ```bash
    npm run dev
    ```
-   Or from the root directory:
+   Or run only the icons app:
    ```bash
-   npm run dev
+   npm run dev --workspace=apps/icons
    ```
-4. The app will be available at `http://localhost:8000` (or next available port)
+4. The app will be available at the port Vite prints (e.g. `http://localhost:5173`).  
+   To use the optional Node server (changelog API, etc.), run from the repo root:
+   ```bash
+   npm run start --workspace=apps/icons
+   ```
+   That server runs on port 8000 (or next available).
 
 ### Building for Production
 
+From the repo root:
+
 ```bash
-cd react
 npm run build
 ```
 
-The built files will be in `react/dist/` and can be served by the development server or any static file server.
+Or build only the icons app:
+
+```bash
+npm run build --workspace=apps/icons
+```
+
+The built files are in `apps/icons/dist/` and can be served by the optional Node server or any static file host.
 
 ### Tech Stack
 
@@ -156,24 +171,25 @@ The built files will be in `react/dist/` and can be served by the development se
 
 ### Changelog Management
 
-The changelog page displays entries from markdown files in `content/changelog/`. Each markdown file should include frontmatter with `title`, `version`, and `date` fields.
+The changelog page displays entries from markdown files in `apps/icons/content/changelog/`. Each markdown file should include frontmatter with `title`, `version`, and `date` fields.
 
 **To update the changelog:**
 
-1. **Manual generation** (one-time):
+1. **Manual generation** (one-time), from repo root:
    ```bash
-   node scripts/generate-changelog-index.js
+   npm run generate-changelog
    ```
+   Or from the icons app: `node scripts/generate-changelog-index.js` inside `apps/icons`.
 
-2. **Watch mode** (automatic, recommended for development):
+2. **Watch mode** (automatic, recommended for development), from repo root:
    ```bash
-   node scripts/watch-changelog.js
+   npm run watch-changelog
    ```
-   This will watch the `content/changelog/` directory and automatically regenerate the JSON index whenever markdown files are added, modified, or deleted. Press `Ctrl+C` to stop.
+   This will watch the `apps/icons/content/changelog/` directory and automatically regenerate the JSON index whenever markdown files are added, modified, or deleted. Press `Ctrl+C` to stop.
 
 The watch script will:
 - Generate an initial index on startup
-- Automatically regenerate when files change
+- Automatically regenerate when files in `apps/icons/content/changelog/` change
 - Debounce changes (waits 300ms after last change) to avoid excessive regeneration
 - Handle file additions, modifications, and deletions
 
