@@ -1,6 +1,13 @@
 {
   "entries": [
     {
+      "title": "Version 3.0.0",
+      "version": "3.0.0",
+      "date": "2026-03-15",
+      "content": "<h2>Website v3.0.0</h2>\n<ul>\n  <li>This update introduces a major structural upgrade to the SomeIcons website and development architecture.</li>\n</ul>\n<h3>Highlights</h3>\n<ul>\n  <li><strong>Monorepo Architecture</strong></li>\n</ul>\n<p>The project has been reorganized into a modern monorepo structure to better support the growth of the SomeIcons ecosystem. This allows multiple applications and shared resources to live within a single repository while remaining independently deployable.</p>\n<p><strong>Design System Foundation</strong></p>\n<p>A new design system package has been introduced to host shared UI components and design tokens. This lays the groundwork for a consistent visual and interaction system across the website, documentation, and future projects.</p>\n<p><strong>Component Documentation with Storybook</strong></p>\n<p>A dedicated documentation environment has been added using Storybook. This will serve as the public-facing reference for UI components, patterns, and design tokens as the design system evolves.</p>\n<p><strong>Improved Project Scalability</strong></p>\n<p>The new structure prepares the project for future expansion, including:</p>\n<ul>\n  <li>a dedicated design system documentation site</li>\n  <li>a future marketing site</li>\n  <li>shared UI infrastructure across applications</li>\n</ul>\n<p>This update focuses on long-term maintainability and scalability while keeping the current icon library experience unchanged.</p>",
+      "anchorId": "3-0-0-version-3-0-0"
+    },
+    {
       "title": "Refined Icon Category Taxonomy",
       "version": "1.2.0",
       "date": "2025-12-30",
@@ -20,13 +27,6 @@
       "date": "2025-12-26",
       "content": "<h2>Added</h2>\n<ul>\n  <li>First stable public release of the Some Icons icon set</li>\n  <li>Initial curated set of icons released under a unified design system</li>\n  <li>Outline and filled styles available at launch</li>\n  <li>Core categories and tags implemented for search and filtering</li>\n</ul>\n<h2>Design System</h2>\n<ul>\n  <li>Consistent grid and geometry across all icons</li>\n  <li>Harmonized stroke weight and corner radii between styles</li>\n  <li>Designed for clarity and legibility at common UI sizes</li>\n</ul>\n<h2>Supported Platforms</h2>\n<ul>\n  <li>Website library browser</li>\n  <li>Figma plugin for direct insertion and export</li>\n</ul>\n<h2>License</h2>\n<ul>\n  <li>Released under the MIT License</li>\n  <li>Free for personal and commercial use</li>\n</ul>\n<h2>Notes</h2>\n<ul>\n  <li>Some icons are still undergoing refinement and may receive visual adjustments in future releases</li>\n  <li>Icon names and IDs introduced in this release are considered stable unless explicitly noted in future changelogs</li>\n</ul>",
       "anchorId": "1-0-0-some-icons-1-0-launch"
-    },
-    {
-      "title": "Version 3.0.0",
-      "version": "3.0.0",
-      "date": "2025-03-15",
-      "content": "<h2>Changed</h2>\n<ul>\n  <li>Bump to version 3.0.0.</li>\n</ul>",
-      "anchorId": "3-0-0-version-3-0-0"
     }
   ]
 }
