@@ -13,6 +13,7 @@
     "watch-changelog": "node scripts/watch-changelog.cjs"
   },
   "dependencies": {
+    "@vercel/analytics": "^1.4.1",
     "design-system": "file:../../packages/design-system",
     "@radix-ui/react-label": "^2.1.8",
     "@radix-ui/react-select": "^2.2.6",

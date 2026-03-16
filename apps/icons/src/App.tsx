@@ -1,3 +1,4 @@
+import { Analytics } from '@vercel/analytics/react'
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { Toaster } from '@/components/ui/sonner'
@@ -24,6 +25,7 @@ export default function App() {
           <Route path="/generator" element={<GeneratorPage />} />
         </Routes>
         <Toaster position="bottom-center" />
+        <Analytics />
       </BrowserRouter>
     </QueryClientProvider>
   )

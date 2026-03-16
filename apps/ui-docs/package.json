@@ -11,6 +11,7 @@
     "build-storybook": "storybook build"
   },
   "dependencies": {
+    "@vercel/analytics": "^1.4.1",
     "design-system": "file:../../packages/design-system",
     "react": "^19.2.0",
     "react-dom": "^19.2.0"
