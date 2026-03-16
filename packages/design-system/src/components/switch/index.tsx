@@ -4,13 +4,13 @@ import * as React from "react"
 import * as SwitchPrimitive from "@radix-ui/react-switch"
 import { cn } from "../../utils"
 
-function Switch({
+function ThemeToggle({
   className,
   ...props
 }: React.ComponentProps<typeof SwitchPrimitive.Root>) {
   return (
     <SwitchPrimitive.Root
-      data-slot="switch"
+      data-slot="themeToggle"
       className={cn(
         "peer inline-flex h-5 w-10 shrink-0 items-center rounded-[100px] transition-colors outline-none cursor-pointer p-0.5",
         "bg-[var(--color-toggle-bg)]",
@@ -23,7 +23,7 @@ function Switch({
       {...props}
     >
       <SwitchPrimitive.Thumb
-        data-slot="switch-thumb"
+        data-slot="themeToggleThumb"
         className={cn(
           "pointer-events-none block h-4 w-4 rounded-full transition-transform",
           "bg-[var(--color-toggle-control-bg)] shadow-sm",
@@ -34,4 +34,4 @@ function Switch({
   )
 }
 
-export { Switch }
+export { ThemeToggle }
