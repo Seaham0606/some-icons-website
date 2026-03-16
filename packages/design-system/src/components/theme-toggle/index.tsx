@@ -34,4 +34,6 @@ function ThemeToggle({
   )
 }
 
-export { ThemeToggle }
+const Switch = ThemeToggle
+
+export { ThemeToggle, Switch }
