@@ -2,6 +2,7 @@ import type { Meta, StoryObj } from "@storybook/react";
 import { Switch } from "design-system";
 
 const meta: Meta<typeof Switch> = {
+  title: "ThemeToggle",
   component: Switch,
   tags: ["autodocs"],
 };
