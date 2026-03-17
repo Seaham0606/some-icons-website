@@ -27,6 +27,7 @@ export const IconCard = memo(function IconCard({ icon }: IconCardProps) {
   const [showTooltip, setShowTooltip] = useState(false)
   const [tooltipPosition, setTooltipPosition] = useState({ x: 0, y: 0 })
   const [isDark, setIsDark] = useState(false)
+  const [isHovered, setIsHovered] = useState(false)
   const timeoutRef = useRef<NodeJS.Timeout | null>(null)
 
   // Check theme
@@ -109,6 +110,7 @@ export const IconCard = memo(function IconCard({ icon }: IconCardProps) {
   }
 
   const handleMouseLeave = () => {
+    setIsHovered(false)
     setShowTooltip(false)
     if (timeoutRef.current) {
       clearTimeout(timeoutRef.current)
@@ -125,15 +127,22 @@ export const IconCard = memo(function IconCard({ icon }: IconCardProps) {
       <button
         ref={cardRef}
         onClick={handleCardClick}
+        onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={handleMouseLeave}
         title={icon.id}
         className={cn(
           'group relative aspect-square rounded-[10px] overflow-hidden cursor-pointer',
           'border border-border-subtle',
           'transition-[background-color,border-color] duration-200 ease-in-out',
-          'hover:bg-background-hover-light hover:border-primary',
-          isSelected && 'border-primary'
+          isSelected
+            ? 'border-primary'
+            : 'hover:bg-background-hover-light hover:border-primary'
         )}
+        style={{
+          backgroundColor: isSelected
+            ? (isHovered ? 'var(--color-blue-alpha-50)' : 'var(--color-blue-alpha-25)')
+            : undefined,
+        }}
       >
       <div className="w-full h-full grid place-items-center p-4">
         <LazyIconPreview path={icon.files[style]} className="w-[60%] h-[60%]" />

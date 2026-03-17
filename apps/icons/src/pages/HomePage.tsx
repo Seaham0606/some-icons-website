@@ -23,6 +23,7 @@ import { useSelectionStore } from '@/stores/selectionStore'
 import { useFilterStore } from '@/stores/filterStore'
 import { useMemo } from 'react'
 import type { Icon } from '@/types/icon'
+import { Link } from 'react-router-dom'
 
 function normalizeQuery(s: string): string {
   return s.trim().toLowerCase()
@@ -165,27 +166,29 @@ export default function HomePage() {
               </label>
               <FormatSelector />
             </div>
-            <ExportButton />
-            {count > 0 && (
-              <div className="flex gap-2 items-center mt-0">
-                <SegmentedButton
-                  onClick={handleSelectAll}
-                  isActive={false}
-                  variant="secondary"
-                  tint="blue"
-                  textString="Select all"
-                  className="text-base font-semibold !rounded-[10px]"
-                />
-                <SegmentedButton
-                  onClick={handleDeselect}
-                  isActive={false}
-                  variant="secondary"
-                  tint="red"
-                  textString="Deselect"
-                  className="text-base font-semibold !rounded-[10px]"
-                />
-              </div>
-            )}
+            <div className="space-y-2">
+              <ExportButton />
+              {count > 0 && (
+                <div className="flex gap-2 items-center mt-0">
+                  <SegmentedButton
+                    onClick={handleSelectAll}
+                    isActive={false}
+                    variant="secondary"
+                    tint="blue"
+                    textString="Select all"
+                    className="text-base font-semibold !rounded-[10px]"
+                  />
+                  <SegmentedButton
+                    onClick={handleDeselect}
+                    isActive={false}
+                    variant="secondary"
+                    tint="red"
+                    textString="Deselect"
+                    className="text-base font-semibold !rounded-[10px]"
+                  />
+                </div>
+              )}
+            </div>
           </div>
         </SidebarContent>
 
@@ -193,9 +196,12 @@ export default function HomePage() {
         <SidebarFooter>
           <ThemeToggle />
           {version && (
-            <span className="text-[var(--foreground-quaternary)]">
+            <Link
+              to="/changelog"
+              className="text-[var(--foreground-quaternary)] hover:text-foreground transition-colors"
+            >
               v{version}
-            </span>
+            </Link>
           )}
         </SidebarFooter>
       </Sidebar>
