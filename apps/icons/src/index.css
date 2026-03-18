@@ -1,5 +1,9 @@
 @import "tailwindcss";
 
+/* v2 token variables for component preview */
+@import "design-system/tokens/index.v2.css";
+@import "design-system/components.css";
+
 /* Scan design-system so Switch and other components get their Tailwind classes */
 @source "../../../packages/design-system/src";
 
@@ -591,8 +595,8 @@ html {
 body {
   font-family: var(--font-family-sans);
   font-size: 14px;
-  background-color: var(--color-background);
-  color: var(--foreground);
+  background-color: var(--color-fill-background-elevation);
+  color: var(--color-main-primary);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   margin: 0;

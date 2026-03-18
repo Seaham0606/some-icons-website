@@ -1,0 +1,177 @@
+/* Design-system component styles (no Tailwind utilities) */
+
+.ds-label {
+  display: flex;
+  align-items: center;
+  user-select: none;
+  text-align: left;
+  font-size: 13px;
+  line-height: 150%;
+  font-weight: 600;
+  color: var(--color-text-tertiary);
+}
+
+.ds-label[aria-disabled="true"],
+.ds-label[data-disabled="true"] {
+  pointer-events: none;
+  opacity: 0.5;
+}
+
+.ds-theme-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: var(--size-5);
+  width: var(--size-10);
+  padding: var(--spacing-050);
+  border-radius: var(--radius-full);
+  transition: border-color 150ms ease, background-color 150ms ease, box-shadow 150ms ease;
+  outline: none;
+  cursor: pointer;
+
+  background: var(--color-toggle-bg);
+  border: var(--border-width-base) solid var(--color-toggle-stroke);
+}
+
+.ds-theme-toggle:hover {
+  border-color: var(--color-toggle-stroke-hover);
+}
+
+.ds-theme-toggle:focus-visible {
+  box-shadow: 0 0 0 2px var(--ring);
+}
+
+.ds-theme-toggle:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.ds-theme-toggle__thumb {
+  pointer-events: none;
+  display: block;
+  height: var(--size-4);
+  width: var(--size-4);
+  border-radius: var(--radius-full);
+  background: var(--color-toggle-control-bg);
+
+  /* Tailwind's `shadow-sm` approximation */
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.15);
+
+  transition: transform 150ms ease;
+  transform: translateX(calc(var(--spacing-050) - 3px));
+}
+
+.ds-theme-toggle[data-state="checked"] .ds-theme-toggle__thumb {
+  transform: translateX(
+    calc(var(--size-10) - var(--size-4) - var(--spacing-050) - var(--spacing-050) - 1px)
+  );
+}
+
+.ds-textarea {
+  width: 100%;
+  border: var(--border-width-base) solid var(--color-input-stroke);
+  border-radius: var(--radius-md);
+  background: transparent;
+  color: inherit;
+  outline: none;
+
+  min-height: var(--size-16);
+  padding: var(--spacing-2) var(--spacing-3);
+  font-size: 16px;
+
+  transition: color 150ms ease, box-shadow 150ms ease, border-color 150ms ease;
+}
+
+.ds-textarea::placeholder {
+  color: var(--muted-foreground);
+}
+
+.ds-textarea:focus-visible {
+  border-color: var(--color-input-stroke-typing);
+  box-shadow: 0 0 0 3px var(--ring);
+}
+
+.ds-textarea:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.ds-textarea[aria-invalid="true"] {
+  border-color: var(--destructive);
+}
+
+@media (min-width: 768px) {
+  .ds-textarea {
+    font-size: 14px;
+  }
+}
+
+.ds-sidebar-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 40;
+}
+
+.ds-sidebar {
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 50;
+
+  width: var(--spacing-80);
+  display: flex;
+  flex-direction: column;
+
+  row-gap: var(--spacing-gap-2);
+  overflow: hidden;
+
+  padding: var(--spacing-padding-6);
+  padding-right: var(--spacing-padding-0);
+
+  transform: translateX(-100%);
+  transition: transform 300ms ease;
+}
+
+.ds-sidebar[data-open="true"] {
+  transform: translateX(0);
+}
+
+/* Desktop (md+) */
+@media (min-width: 768px) {
+  .ds-sidebar-backdrop {
+    display: none;
+  }
+
+  .ds-sidebar {
+    position: relative;
+    top: auto;
+    bottom: auto;
+    left: auto;
+    z-index: auto;
+    transform: none;
+    transition: none;
+  }
+}
+
+.ds-sidebar__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-shrink: 0;
+}
+
+.ds-sidebar__content {
+  flex: 1;
+  overflow-y: auto;
+}
+
+.ds-sidebar__footer {
+  margin-top: auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-shrink: 0;
+}
+

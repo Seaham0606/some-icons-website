@@ -6,15 +6,22 @@ import { cn } from "../../utils"
 
 function Label({
   className,
+  style,
   ...props
 }: React.ComponentProps<typeof LabelPrimitive.Root>) {
   return (
     <LabelPrimitive.Root
       data-slot="label"
       className={cn(
-        "px-0.5 flex items-center gap-2 text-[13px] leading-[150%] font-semibold text-[var(--color-text-tertiary)] select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50",
+        "ds-label",
         className
       )}
+      style={{
+        paddingLeft: "var(--spacing-050)",
+        paddingRight: "var(--spacing-050)",
+        gap: "var(--spacing-2)",
+        ...style,
+      }}
       {...props}
     />
   )

@@ -50,7 +50,7 @@ export function Sidebar({ children, className }: SidebarProps) {
       <aside
         className={cn(
           // Desktop: always visible
-          'hidden md:flex w-80 shrink-0 bg-background-secondary flex-col h-full overflow-hidden',
+          'hidden md:flex w-80 shrink-0 bg-[var(--color-fill-background-base)] flex-col h-full overflow-hidden p-4 pr-0',
           // Mobile: slide-in overlay
           'max-md:fixed max-md:inset-y-0 max-md:left-0 max-md:z-50 max-md:w-80 max-md:transform max-md:transition-transform max-md:duration-300',
           sidebarOpen ? 'max-md:flex max-md:translate-x-0' : 'max-md:translate-x-[-100%]',
@@ -102,6 +102,32 @@ export function SidebarFooter({ children, className }: SidebarFooterProps) {
         className
       )}
     >
+      {children}
+    </div>
+  )
+}
+
+// ─── v2 slot aliases (Figma-spec padding) ────────────────────────────────────
+
+export function SidebarAsideHeader({ children, className }: SidebarHeaderProps) {
+  return (
+    <div className={cn('flex items-center justify-between shrink-0', className)}>
+      {children}
+    </div>
+  )
+}
+
+export function SidebarContentSlot({ children, className }: SidebarContentProps) {
+  return (
+    <div className={cn('flex-1 overflow-y-auto', className)}>
+      {children}
+    </div>
+  )
+}
+
+export function SidebarAsideFooter({ children, className }: SidebarFooterProps) {
+  return (
+    <div className={cn('mt-auto flex items-center justify-between shrink-0', className)}>
       {children}
     </div>
   )

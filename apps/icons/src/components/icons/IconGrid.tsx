@@ -110,7 +110,7 @@ export function IconGrid() {
   if (isLoading) {
     return (
       <div 
-        className="flex items-center justify-center h-64 text-foreground-secondary"
+        className="flex items-center justify-center h-64 text-[var(--color-main-secondary)]"
         style={{ paddingBottom: `${bottomPadding}px` }}
       >
         Loading icons...
@@ -121,7 +121,7 @@ export function IconGrid() {
   if (error) {
     return (
       <div 
-        className="flex items-center justify-center h-64 text-destructive"
+        className="flex items-center justify-center h-64 text-[var(--color-red-400)]"
         style={{ paddingBottom: `${bottomPadding}px` }}
       >
         Failed to load icons. Please try again.
@@ -132,7 +132,7 @@ export function IconGrid() {
   if (filteredIcons.length === 0) {
     return (
       <div 
-        className="flex items-center justify-center h-64 text-foreground-secondary"
+        className="flex items-center justify-center h-64 text-[var(--color-main-secondary)]"
         style={{ paddingBottom: `${bottomPadding}px` }}
       >
         No icons found matching your criteria.

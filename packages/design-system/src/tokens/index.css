@@ -1,5 +1,0 @@
-/* Design system tokens - import after tailwindcss in your app's main CSS.
- * For Tailwind v4: @import "tailwindcss"; @import "design-system/tokens/theme.css"; @import "design-system/tokens/semantic.css";
- */
-@import "./theme.css";
-@import "./semantic.css";

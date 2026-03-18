@@ -6,20 +6,20 @@ import { cn } from "@/lib/utils"
 import { CdnIcon } from "@/components/ui/cdn-icon"
 
 const buttonVariants = cva(
-  "inline-flex items-center justify-center gap-1 whitespace-nowrap transition-all outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive disabled:opacity-10",
+  "inline-flex items-center justify-center gap-1 whitespace-nowrap transition-all outline-none focus-visible:border-[var(--color-border-weak)] focus-visible:ring-[var(--color-border-weak)] focus-visible:ring-opacity-50 focus-visible:ring-[3px] aria-invalid:ring-[var(--color-red-400)] aria-invalid:ring-opacity-20 dark:aria-invalid:ring-[var(--color-red-400)] dark:aria-invalid:ring-opacity-40 aria-invalid:border-[var(--color-red-400)] disabled:opacity-10",
   {
     variants: {
       variant: {
         default: "bg-[var(--color-cta-button-bg)] text-[var(--color-cta-button-text)] hover:bg-[var(--color-cta-button-bg-hover)] text-[15px] leading-[100%]",
         destructive:
-          "bg-destructive text-white hover:bg-destructive/90 focus-visible:ring-destructive/20 dark:focus-visible:ring-destructive/40 dark:bg-destructive/60",
+          "bg-[var(--color-red-400)] text-white hover:bg-[var(--color-red-400)] focus-visible:ring-[var(--color-red-400)] focus-visible:ring-opacity-20 dark:focus-visible:ring-[var(--color-red-400)] dark:focus-visible:ring-opacity-40 dark:bg-[var(--color-red-400)]",
         outline:
-          "border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50",
+          "border border-[var(--color-border-base)] bg-[var(--color-fill-background-elevation)] shadow-xs hover:bg-[var(--color-main-accent)] hover:text-[var(--color-main-inverse)] dark:bg-[var(--color-fill-input-enabled)] dark:border-[var(--color-border-weak)] dark:hover:bg-[var(--color-fill-input-enabled)]",
         secondary:
-          "bg-secondary text-secondary-foreground hover:bg-secondary/80",
+          "bg-[var(--color-fill-background-base)] text-[var(--color-main-primary)] hover:bg-[var(--color-fill-overlay-weak)]",
         ghost:
-          "hover:bg-accent hover:text-accent-foreground dark:hover:bg-accent/50",
-        link: "text-primary underline-offset-4 hover:underline",
+          "hover:bg-[var(--color-main-accent)] hover:text-[var(--color-main-inverse)] dark:hover:bg-[var(--color-main-accent)]",
+        link: "text-[var(--color-main-accent)] underline-offset-4 hover:underline",
       },
       size: {
         default: "h-[44px] px-3",

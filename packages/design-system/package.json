@@ -5,8 +5,13 @@
   "type": "module",
   "exports": {
     ".": "./src/index.ts",
+    "./components.css": "./src/components.css",
     "./tokens/theme.css": "./src/tokens/theme.css",
+    "./tokens/theme.legacy.css": "./src/tokens/theme.legacy.css",
+    "./tokens/theme.v2.css": "./src/tokens/theme.v2.css",
     "./tokens/semantic.css": "./src/tokens/semantic.css",
+    "./tokens/semantic.v2.css": "./src/tokens/semantic.v2.css",
+    "./tokens/index.v2.css": "./src/tokens/index.v2.css",
     "./tokens": "./src/tokens/index.css"
   },
   "peerDependencies": {

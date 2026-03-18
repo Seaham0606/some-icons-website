@@ -1,0 +1,86 @@
+:root {
+  /* main */
+  --color-main-primary: var(--color-gray-925);
+  --color-main-secondary: var(--color-gray-600);
+  --color-main-tertiary: var(--color-gray-200);
+  --color-main-disabled: var(--color-gray-25);
+  --color-main-inverse: var(--color-gray-10);
+  --color-main-accent: var(--color-blue-400);
+
+  /* fill / overlay */
+  --color-fill-overlay-weak: var(--color-black-alpha-a15);
+
+  /* fill / background */
+  --color-fill-background-base: var(--color-gray-10);
+  --color-fill-background-elevation: var(--color-white);
+
+  /* fill / input */
+  --color-fill-input-enabled: var(--color-black-alpha-a10);
+
+  /* border */
+  --color-border-base: var(--color-black-alpha-a50);
+  --color-border-weak: var(--color-black-alpha-a25);
+  --color-border-extra-weak: var(--color-black-alpha-a10);
+
+  /* segButton */
+  --color-seg-button-enabled: var(--color-white);
+  --color-seg-button-hover: var(--color-white);
+  --color-seg-button-disabled: var(--color-white);
+
+  /* Legacy aliases (required by design-system component CSS) */
+  --color-text-tertiary: var(--color-main-tertiary);
+  --color-toggle-bg: var(--color-fill-background-base);
+  --color-toggle-stroke: var(--color-border-weak);
+  --color-toggle-stroke-hover: var(--color-border-base);
+  --color-toggle-control-bg: var(--color-fill-background-elevation);
+  --ring: var(--color-border-base);
+  --muted-foreground: var(--color-main-secondary);
+  --destructive: var(--color-red-400);
+  --color-input-stroke: var(--color-border-extra-weak);
+  --color-input-stroke-hover: var(--color-border-weak);
+  --color-input-stroke-typing: var(--color-main-accent);
+}
+
+[data-theme="dark"] {
+  /* main */
+  --color-main-primary: var(--color-gray-10);
+  --color-main-secondary: var(--color-gray-300);
+  --color-main-tertiary: var(--color-gray-700);
+  --color-main-disabled: var(--color-gray-925);
+  --color-main-inverse: var(--color-gray-925);
+  --color-main-accent: var(--color-blue-400);
+
+  /* fill / overlay */
+  --color-fill-overlay-weak: var(--color-white-alpha-a15);
+
+  /* fill / background */
+  --color-fill-background-base: var(--color-gray-975);
+  --color-fill-background-elevation: var(--color-white-alpha-a15);
+
+  /* fill / input */
+  --color-fill-input-enabled: var(--color-white-alpha-a10);
+
+  /* border */
+  --color-border-base: var(--color-white-alpha-a50);
+  --color-border-weak: var(--color-white-alpha-a15);
+  --color-border-extra-weak: var(--color-white-alpha-a10);
+
+  /* segButton */
+  --color-seg-button-enabled: var(--color-gray-800);
+  --color-seg-button-hover: var(--color-white-alpha-a15);
+  --color-seg-button-disabled: var(--color-white-alpha-a15);
+
+  /* Legacy aliases (required by design-system component CSS) */
+  --color-text-tertiary: var(--color-main-tertiary);
+  --color-toggle-bg: var(--color-fill-background-base);
+  --color-toggle-stroke: var(--color-border-weak);
+  --color-toggle-stroke-hover: var(--color-border-base);
+  --color-toggle-control-bg: var(--color-fill-background-elevation);
+  --ring: var(--color-border-base);
+  --muted-foreground: var(--color-main-secondary);
+  --destructive: var(--color-red-500);
+  --color-input-stroke: var(--color-border-extra-weak);
+  --color-input-stroke-hover: var(--color-border-weak);
+  --color-input-stroke-typing: var(--color-main-accent);
+}
+

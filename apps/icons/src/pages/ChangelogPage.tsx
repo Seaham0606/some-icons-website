@@ -20,20 +20,20 @@ function ChangelogMobileHeader() {
   const toggleSidebar = useUIStore((state) => state.toggleSidebar)
 
   return (
-    <header className="md:hidden flex items-center justify-between px-4 py-3 border-b border-border-subtle bg-background">
+    <header className="md:hidden flex items-center justify-between px-4 py-3 border-b border-[var(--color-border-base)] bg-[var(--color-fill-background-elevation)]">
       <div className="flex items-center gap-3">
         <Link
           to="/"
-          className="flex items-center gap-2 text-sm text-foreground-secondary hover:text-foreground transition-colors"
+          className="flex items-center gap-2 text-sm text-[var(--color-main-secondary)] hover:text-[var(--color-main-primary)] transition-colors"
         >
           <CdnIcon iconId="arrow-left-triangle" className="h-4 w-4" />
         </Link>
         <img src="/favicon.png" alt="Some Icons" className="w-6 h-6" />
-        <h1 className="font-semibold text-foreground">Changelog</h1>
+        <h1 className="font-semibold text-[var(--color-main-primary)]">Changelog</h1>
       </div>
       <button
         onClick={toggleSidebar}
-        className="p-2 -mr-2 text-foreground-secondary hover:text-foreground transition-colors"
+        className="p-2 -mr-2 text-[var(--color-main-secondary)] hover:text-[var(--color-main-primary)] transition-colors"
         aria-label={sidebarOpen ? 'Close menu' : 'Open menu'}
       >
         {sidebarOpen ? (
@@ -74,7 +74,7 @@ export default function ChangelogPage() {
         <SidebarHeader>
           <Link
             to="/"
-            className="flex items-center gap-2 text-sm text-foreground-secondary hover:text-foreground transition-colors"
+            className="flex items-center gap-2 text-sm text-[var(--color-main-secondary)] hover:text-[var(--color-main-primary)] transition-colors"
           >
             <CdnIcon iconId="arrow-left-triangle" className="h-4 w-4" />
             Back to icons
@@ -85,15 +85,15 @@ export default function ChangelogPage() {
               alt="Some Icons"
               className="w-8 h-8"
             />
-            <h1 className="font-semibold text-foreground">Changelog</h1>
+            <h1 className="font-semibold text-[var(--color-main-primary)]">Changelog</h1>
           </div>
         </SidebarHeader>
 
         <SidebarContent>
           {isLoading ? (
-            <div className="text-sm text-foreground-secondary">Loading...</div>
+            <div className="text-sm text-[var(--color-main-secondary)]">Loading...</div>
           ) : error ? (
-            <div className="text-sm text-destructive">Failed to load</div>
+            <div className="text-sm text-[var(--color-red-400)]">Failed to load</div>
           ) : entries ? (
             <VersionList entries={entries} activeId={activeId} />
           ) : null}
@@ -107,9 +107,9 @@ export default function ChangelogPage() {
       <MainContent>
         <ScrollArea className="p-6 max-sm:p-4">
           {isLoading ? (
-            <div className="text-foreground-secondary">Loading changelog...</div>
+            <div className="text-[var(--color-main-secondary)]">Loading changelog...</div>
           ) : error ? (
-            <div className="text-destructive">
+            <div className="text-[var(--color-red-400)]">
               Failed to load changelog. Please try again.
             </div>
           ) : entries && entries.length > 0 ? (
@@ -119,7 +119,7 @@ export default function ChangelogPage() {
               ))}
             </div>
           ) : (
-            <div className="text-foreground-secondary">No changelog entries found.</div>
+            <div className="text-[var(--color-main-secondary)]">No changelog entries found.</div>
           )}
         </ScrollArea>
         <Footer />

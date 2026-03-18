@@ -5,3 +5,10 @@ export { cn } from "./utils"
 export { Label } from "./components/label"
 export { Switch } from "./components/theme-toggle"
 export { Textarea } from "./components/textarea"
+
+export {
+  Sidebar,
+  SidebarAsideHeader,
+  SidebarContentSlot,
+  SidebarAsideFooter,
+} from "./components/sidebar"

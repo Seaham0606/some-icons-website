@@ -198,7 +198,7 @@ export default function HomePage() {
           {version && (
             <Link
               to="/changelog"
-              className="text-[var(--foreground-quaternary)] hover:text-foreground transition-colors"
+              className="text-[var(--foreground-quaternary)] hover:text-[var(--color-main-primary)] transition-colors"
             >
               v{version}
             </Link>

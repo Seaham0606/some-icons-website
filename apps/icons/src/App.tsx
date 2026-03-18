@@ -5,6 +5,7 @@ import { Toaster } from '@/components/ui/sonner'
 import HomePage from '@/pages/HomePage'
 import ChangelogPage from '@/pages/ChangelogPage'
 import GeneratorPage from '@/pages/GeneratorPage'
+import SidebarTestPage from '@/pages/SidebarTestPage'
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -23,6 +24,7 @@ export default function App() {
           <Route path="/" element={<HomePage />} />
           <Route path="/changelog" element={<ChangelogPage />} />
           <Route path="/generator" element={<GeneratorPage />} />
+          <Route path="/sidebar-test" element={<SidebarTestPage />} />
         </Routes>
         <Toaster position="bottom-center" />
         <Analytics />

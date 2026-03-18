@@ -18,10 +18,10 @@ const inputBaseStyles = [
   "focus:border-[var(--color-input-stroke-typing)]",
   "focus-visible:border-[var(--color-input-stroke-typing)]",
   "disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50",
-  "selection:bg-primary selection:text-primary-foreground",
-  "aria-invalid:border-destructive aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40",
+  "selection:bg-[var(--color-main-accent)] selection:text-[var(--color-main-inverse)]",
+  "aria-invalid:border-[var(--color-red-400)] aria-invalid:ring-[var(--color-red-400)] aria-invalid:ring-opacity-20 dark:aria-invalid:ring-[var(--color-red-400)] dark:aria-invalid:ring-opacity-40",
   // File input specific styles
-  "file:text-foreground file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium",
+  "file:text-[var(--color-main-primary)] file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium",
 ]
 
 interface InputProps extends Omit<React.ComponentProps<"input">, "className"> {

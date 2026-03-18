@@ -33,7 +33,7 @@ export function Footer() {
       id="main-footer"
       className="
         absolute bottom-0 left-0 right-0 z-50
-        border-t border-border-subtle
+        border-t border-[var(--color-border-base)]
         bg-[var(--background-footer)] backdrop-blur-[10px]
         px-4 py-3 sm:px-6 sm:py-4
       "
@@ -45,7 +45,7 @@ export function Footer() {
             href="https://choosealicense.com/licenses/mit/"
             target="_blank"
             rel="noopener noreferrer"
-            className="hover:text-foreground transition-colors"
+            className="hover:text-[var(--color-main-primary)] transition-colors"
           >
             License
           </a>
@@ -55,7 +55,7 @@ export function Footer() {
             href="https://www.figma.com/community/plugin/1581870303104890341/some-icons"
             target="_blank"
             rel="noopener noreferrer"
-            className="hover:text-foreground transition-colors"
+            className="hover:text-[var(--color-main-primary)] transition-colors"
             aria-label="Some Icons Figma plugin"
           >
             <img
@@ -68,7 +68,7 @@ export function Footer() {
             href="https://github.com/Seaham0606/some-icons-cdn"
             target="_blank"
             rel="noopener noreferrer"
-            className="hover:text-foreground transition-colors"
+            className="hover:text-[var(--color-main-primary)] transition-colors"
             aria-label="Some Icons GitHub repository"
           >
             <svg

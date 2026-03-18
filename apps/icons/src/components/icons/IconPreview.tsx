@@ -13,13 +13,17 @@ export function IconPreview({ path, className }: IconPreviewProps) {
 
   if (isLoading) {
     return (
-      <div className={cn('animate-pulse bg-muted rounded', className)} />
+      <div
+        className={cn('animate-pulse bg-[var(--color-fill-background-base)] rounded', className)}
+      />
     )
   }
 
   if (error || !svg) {
     return (
-      <div className={cn('flex items-center justify-center text-foreground-tertiary', className)}>
+      <div
+        className={cn('flex items-center justify-center text-[var(--color-main-tertiary)]', className)}
+      >
         ?
       </div>
     )
