@@ -14,7 +14,8 @@ export function IconPreview({ path, className }: IconPreviewProps) {
   if (isLoading) {
     return (
       <div
-        className={cn('animate-pulse bg-[var(--color-fill-background-base)] rounded', className)}
+        // Use the same grid color as real icon previews so the UI isn't "white on white".
+        className={cn('animate-pulse bg-[var(--item-grid)] rounded', className)}
       />
     )
   }

@@ -1,5 +1,38 @@
 /* Design-system component styles (no Tailwind utilities) */
 
+.label-sm {
+  font-family: 'Figtree';
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 110%;
+}
+
+.label-3xs {
+  font-family: 'Figtree';
+  font-size: 10px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 110%;
+}
+
+.ds-versionChip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+  white-space: nowrap;
+
+  padding-top: var(--spacing-padding-1);
+  padding-bottom: var(--spacing-padding-1);
+  padding-left: var(--spacing-padding-2);
+  padding-right: var(--spacing-padding-2);
+
+  color: var(--color-main-tertiary);
+  border-radius: var(--radius-full);
+  background: var(--color-fill-overlay-weak);
+}
+
 .ds-label {
   display: flex;
   align-items: center;
@@ -106,72 +139,182 @@
   }
 }
 
-.ds-sidebar-backdrop {
-  position: fixed;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.5);
-  z-index: 40;
-}
-
+/* Sidebar (structural layout, token-driven placeholders) */
 .ds-sidebar {
   position: fixed;
   top: 0;
-  bottom: 0;
   left: 0;
-  z-index: 50;
-
+  height: 100vh;
+  height: 100dvh;
   width: var(--spacing-80);
+
   display: flex;
   flex-direction: column;
 
-  row-gap: var(--spacing-gap-2);
+  overflow: hidden;
+  box-sizing: border-box;
+
+  /* Keep the container visually unstyled (no background). */
+  padding: var(--spacing-padding-6);
+}
+
+.ds-sidebar__asideHeader {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-gap-3);
+
+  width: 320px;
+  box-sizing: border-box;
+  flex: 0 0 auto; /* hug header content height */
+}
+
+.ds-sidebar__pageName {
+  flex: 1;
+  min-width: 0;
+
+  color: var(--color-text-tertiary);
+  font-size: var(--size-3);
+
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ds-sidebar__contentSlot {
+  flex: 1 1 auto;
+  min-height: 0;
+
+  overflow: hidden;
+}
+
+.ds-sidebar__asideFooter {
+  flex: 0 0 auto; /* hug footer content height */
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--spacing-gap-3);
+
+  width: 320px;
+  box-sizing: border-box;
+}
+
+.ds-sidebar__copyright {
+  color: var(--color-text-tertiary);
+  white-space: nowrap;
+}
+
+/* Square placeholder "assets" (easy to replace later) */
+.ds-sidebar__squareAssetPlaceholder {
+  height: var(--size-10);
+  width: var(--size-10);
+
+  border-radius: var(--radius-md);
+  border: var(--border-width-base) solid var(--color-toggle-stroke);
+  background: var(--color-black-alpha-0);
+}
+
+.ds-sidebar__squareButtonPlaceholder {
+  height: var(--size-10);
+  width: var(--size-10);
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: var(--spacing-padding-0);
+  border-radius: var(--radius-md);
+  border: var(--border-width-base) solid var(--color-toggle-stroke);
+  background: var(--color-black-alpha-0);
+
+  cursor: pointer;
+}
+
+.ds-sidebar__squareButtonPlaceholder:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 var(--spacing-050) var(--ring);
+}
+
+.ds-sidebar__socialButtons {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--spacing-gap-2);
+}
+
+/* Input section (Figma node: 56:5302) */
+.ds-inputSection {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--spacing-gap-3);
+
+  width: 320px;
+  box-sizing: border-box;
   overflow: hidden;
 
-  padding: var(--spacing-padding-6);
-  padding-right: var(--spacing-padding-0);
-
-  transform: translateX(-100%);
-  transition: transform 300ms ease;
+  padding: var(--spacing-padding-3);
+  border-radius: var(--radius-2xl);
+  border: var(--border-width-base) solid var(--color-border-weak);
+  background: var(--color-fill-background-elevation);
 }
 
-.ds-sidebar[data-open="true"] {
-  transform: translateX(0);
+/**
+ * Dark mode: semantic `--color-fill-background-elevation` is extremely subtle
+ * (white @ 10% opacity). On a near-black base it reads as “invisible”, so
+ * layered surfaces like this card need a stronger fill to match the Figma intent.
+ */
+[data-theme="dark"] .ds-inputSection {
+  background: var(--color-fill-background-elevation);
+  border-color: var(--color-border-weak);
 }
 
-/* Desktop (md+) */
-@media (min-width: 768px) {
-  .ds-sidebar-backdrop {
-    display: none;
-  }
-
-  .ds-sidebar {
-    position: relative;
-    top: auto;
-    bottom: auto;
-    left: auto;
-    z-index: auto;
-    transform: none;
-    transition: none;
-  }
-}
-
-.ds-sidebar__header {
-  display: flex;
+.ds-inputSection__labelRow {
+  display: inline-flex;
   align-items: center;
-  justify-content: space-between;
-  flex-shrink: 0;
+  gap: var(--spacing-gap-2);
+  flex: 0 0 auto;
 }
 
-.ds-sidebar__content {
-  flex: 1;
-  overflow-y: auto;
-}
-
-.ds-sidebar__footer {
-  margin-top: auto;
-  display: flex;
+.ds-inputSection__leadSlot {
+  display: inline-flex;
   align-items: center;
-  justify-content: space-between;
-  flex-shrink: 0;
+  justify-content: center;
+  width: var(--size-icon-sm);
+  height: var(--size-icon-sm);
+  flex: 0 0 auto;
 }
+
+.ds-inputSection__leadIcon {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.ds-inputSection__labelText {
+  color: var(--color-main-primary);
+  font-family: var(--font-family-sans);
+  font-size: 15px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: 16px;
+  white-space: nowrap;
+}
+
+.ds-inputSection__contentSlot {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+}
+
+.ds-inputSection__contentPlaceholder {
+  width: 100%;
+  height: 44px;
+  box-sizing: border-box;
+  border-radius: var(--radius-md);
+  border: var(--border-width-base) dashed var(--color-red-300);
+  background: var(--color-red-alpha-25);
+}
+
 

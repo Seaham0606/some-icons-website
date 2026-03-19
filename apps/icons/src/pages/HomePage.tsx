@@ -1,217 +1,108 @@
-import {
-  Sidebar,
-  SidebarHeader,
-  SidebarContent,
-  SidebarFooter,
-} from '@/components/layout/Sidebar'
-import { MainContent, ScrollArea } from '@/components/layout/MainContent'
-import { MobileHeader } from '@/components/layout/MobileHeader'
-import { Footer } from '@/components/layout/Footer'
-import { ThemeToggle } from '@/components/layout/ThemeToggle'
-import { SearchInput } from '@/components/controls/SearchInput'
-import { StyleToggle } from '@/components/controls/StyleToggle'
-import { CategorySelect } from '@/components/controls/CategorySelect'
-import { ColorPicker } from '@/components/controls/ColorPicker'
-import { SizeSelector } from '@/components/controls/SizeSelector'
-import { FormatSelector } from '@/components/controls/FormatSelector'
-import { ExportButton } from '@/components/controls/ExportButton'
-import { SegmentedButton } from '@/components/ui/segmented-control'
-import { IconGrid } from '@/components/icons/IconGrid'
-import { useChangelog, getLatestVersion } from '@/hooks/useChangelog'
-import { useIcons } from '@/hooks/useIcons'
-import { useSelectionStore } from '@/stores/selectionStore'
-import { useFilterStore } from '@/stores/filterStore'
-import { useMemo } from 'react'
-import type { Icon } from '@/types/icon'
-import { Link } from 'react-router-dom'
-
-function normalizeQuery(s: string): string {
-  return s.trim().toLowerCase()
-}
-
-function matches(icon: Icon, query: string): boolean {
-  const q = normalizeQuery(query)
-  if (!q) return true
-
-  const searchableText = [
-    icon.id,
-    icon.category,
-    ...(icon.tags ?? []),
-  ]
-    .join(' ')
-    .toLowerCase()
-
-  return q.split(/\s+/).every((term) => searchableText.includes(term))
-}
-
-function getDerivedSortKey(iconId: string): string {
-  const parts = iconId.split('-')
-  if (parts.length > 1) {
-    return parts.slice(1).join('-')
-  }
-  return iconId
-}
+import logoSymbol from '../../assets/images/logo-some-icons-symbol.svg'
+import figmaIcon from '../../assets/images/logo-figma-icon.svg'
+import githubIcon from '../../assets/images/logo-github-icon.svg'
+import { useUIStore } from '@/stores/uiStore'
+import { useEffect } from 'react'
+import { InputSection, VersionChip } from 'design-system'
+import { getHighestVersion, useChangelog } from '@/hooks/useChangelog'
 
 export default function HomePage() {
+  const setTheme = useUIStore((state) => state.setTheme)
   const { data: entries } = useChangelog()
-  const version = getLatestVersion(entries)
-  const { data: icons } = useIcons()
-  const count = useSelectionStore((state) => state.count)
-  const selectAll = useSelectionStore((state) => state.selectAll)
-  const clear = useSelectionStore((state) => state.clear)
-  const searchQuery = useFilterStore((state) => state.searchQuery)
-  const category = useFilterStore((state) => state.category)
-  const style = useFilterStore((state) => state.style)
+  const version = getHighestVersion(entries)
 
-  // Get filtered icons for select all functionality
-  const filteredIcons = useMemo(() => {
-    if (!icons) return []
-
-    let result = icons
-
-    if (category !== 'all') {
-      result = result.filter((icon) => icon.category === category)
-    }
-
-    if (searchQuery) {
-      result = result.filter((icon) => matches(icon, searchQuery))
-    }
-
-    result = result.filter((icon) => icon.files[style])
-
-    if (category === 'all') {
-      result = [...result].sort((a, b) =>
-        getDerivedSortKey(a.id).localeCompare(getDerivedSortKey(b.id))
-      )
-    } else {
-      result = [...result].sort((a, b) => a.id.localeCompare(b.id))
-    }
-
-    return result
-  }, [icons, searchQuery, category, style])
-
-  const handleSelectAll = () => {
-    const iconIds = filteredIcons.map((icon) => icon.id)
-    selectAll(iconIds)
-  }
-
-  const handleDeselect = () => {
-    clear()
-  }
+  // Always follow system theme when landing on this page.
+  useEffect(() => {
+    setTheme('system')
+  }, [setTheme])
 
   return (
-    <div className="flex flex-col h-dvh md:flex-row">
-      {/* Mobile header with hamburger menu */}
-      <MobileHeader />
+    <div className="homepage-shell">
+      <aside className="homepage-aside">
+        {/* asideHeader: hugs its content height */}
+        <div className="homepage-asideHeader">
+          <div className="homepage-asideHeaderGroup">
+            <img
+              src={logoSymbol}
+              alt="Some Icons"
+              width={28}
+              height={28}
+              className="homepage-logoIcon"
+            />
 
-      <Sidebar>
-        {/* Logo section - centered like vanilla */}
-        <SidebarHeader className="flex justify-center">
-          <img
-            src="/logo.svg"
-            alt="Some Icons"
-            className="h-6 w-auto"
+            <div className="homepage-titleBlock">
+              <div className="homepage-pageName">Some Icons</div>
+              {version ? <VersionChip version={version} /> : null}
+            </div>
+          </div>
+
+          <button
+            type="button"
+            className="homepage-themeButton"
+            aria-label="Theme"
           />
-        </SidebarHeader>
+        </div>
 
-        <SidebarContent className="space-y-6">
-          {/* Search */}
-          <div>
-            <SearchInput />
+        {/* contentSlot: fills remaining available height */}
+        <div className="homepage-contentSlot" data-slot="contentSlot">
+          <div className="homepage-inputSections">
+            <InputSection label="sidebarCard" />
+            <InputSection label="filters" />
+            <InputSection label="export" />
+          </div>
+        </div>
+
+        {/* asideFooter: hugs its content height */}
+        <div className="homepage-asideFooter">
+          <div className="label-sm homepage-footerCopyright">
+            © {new Date().getFullYear()} Some UI
           </div>
 
-          {/* Style control */}
-          <div>
-            <label className="text-[13px] font-semibold text-[var(--item-tertiary)] pl-0.5 mb-2 block">
-              Style
-            </label>
-            <StyleToggle />
-          </div>
-
-          {/* Category control */}
-          <div>
-            <label className="text-[13px] font-semibold text-[var(--item-tertiary)] pl-0.5 mb-2 block">
-              Category
-            </label>
-            <CategorySelect />
-          </div>
-
-          {/* Customize section */}
-          <div className="space-y-5">
-            <h3 className="text-lg font-semibold text-[var(--color-text-secondary)] pt-2 mb-4">
-              Customize
-            </h3>
-            <div>
-              <label className="text-[13px] font-semibold text-[var(--item-tertiary)] pl-0.5 mb-2 block">
-                Color
-              </label>
-              <ColorPicker />
-            </div>
-          </div>
-
-          {/* Download section */}
-          <div className="space-y-5">
-            <h3 className="text-lg font-semibold text-[var(--color-text-secondary)] pt-2 mb-4">
-              Download
-            </h3>
-            <div>
-              <label className="text-[13px] font-semibold text-[var(--item-tertiary)] pl-0.5 mb-2 block">
-                Size
-              </label>
-              <SizeSelector />
-            </div>
-            <div>
-              <label className="text-[13px] font-semibold text-[var(--item-tertiary)] pl-0.5 mb-2 block">
-                Format
-              </label>
-              <FormatSelector />
-            </div>
-            <div className="space-y-2">
-              <ExportButton />
-              {count > 0 && (
-                <div className="flex gap-2 items-center mt-0">
-                  <SegmentedButton
-                    onClick={handleSelectAll}
-                    isActive={false}
-                    variant="secondary"
-                    tint="blue"
-                    textString="Select all"
-                    className="text-base font-semibold !rounded-[10px]"
-                  />
-                  <SegmentedButton
-                    onClick={handleDeselect}
-                    isActive={false}
-                    variant="secondary"
-                    tint="red"
-                    textString="Deselect"
-                    className="text-base font-semibold !rounded-[10px]"
-                  />
-                </div>
-              )}
-            </div>
-          </div>
-        </SidebarContent>
-
-        {/* Footer with theme toggle and version */}
-        <SidebarFooter>
-          <ThemeToggle />
-          {version && (
-            <Link
-              to="/changelog"
-              className="text-[var(--foreground-quaternary)] hover:text-[var(--color-main-primary)] transition-colors"
+          {/* social icons (no wrapper border; no spacing between icons) */}
+          <div className="homepage-social">
+            <a
+              href="https://www.figma.com/community/plugin/1581870303104890341/some-icons"
+              target="_blank"
+              rel="noreferrer"
+              className="homepage-socialLink"
+              aria-label="Figma community plugin"
             >
-              v{version}
-            </Link>
-          )}
-        </SidebarFooter>
-      </Sidebar>
+              <img
+                src={figmaIcon}
+                alt="Figma"
+                className="homepage-socialIconImg"
+              />
+            </a>
+            <a
+              href="https://github.com/Seaham0606/some-icons-cdn"
+              target="_blank"
+              rel="noreferrer"
+              className="homepage-socialLink"
+              aria-label="GitHub repository"
+            >
+              {/* Use mask so the SVG can be tinted with --color-main-primary */}
+              <span
+                aria-hidden="true"
+                className="homepage-socialGithubMask"
+                style={{
+                  backgroundColor: 'var(--color-main-primary)',
+                  WebkitMaskImage: `url("${githubIcon}")`,
+                  maskImage: `url("${githubIcon}")`,
+                  maskMode: 'alpha',
+                  WebkitMaskRepeat: 'no-repeat',
+                  maskRepeat: 'no-repeat',
+                  WebkitMaskSize: 'contain',
+                  maskSize: 'contain',
+                  WebkitMaskPosition: 'center',
+                  maskPosition: 'center',
+                }}
+              />
+            </a>
+          </div>
+        </div>
+      </aside>
 
-      <MainContent>
-        <ScrollArea>
-          <IconGrid />
-        </ScrollArea>
-        <Footer />
-      </MainContent>
+      <main className="homepage-main" />
     </div>
   )
 }

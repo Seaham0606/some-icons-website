@@ -1,115 +1,131 @@
+"use client"
+
+import * as React from "react"
 import { cn } from "../../utils"
-import { useEffect } from "react"
-import type { CSSProperties, ReactNode } from "react"
+import { VersionChip } from "../version-chip"
 
 export interface SidebarProps {
-  children: ReactNode
   className?: string
-  style?: CSSProperties
+  children?: React.ReactNode
+
   /**
-   * Controls whether the sidebar is open on mobile.
-   * On desktop (`md+`) the sidebar is always visible.
+   * Page label shown in `asideHeader`.
+   * Set to whatever you need (e.g. string or element).
    */
-  open: boolean
-  onOpenChange?: (open: boolean) => void
+  pageName?: React.ReactNode
+
+  /**
+   * Version string shown as a chip next to `pageName` (e.g. "v3.0.0").
+   * If omitted, no chip is rendered.
+   */
+  version?: string
+
+  /**
+   * Logo placeholder shown in `asideHeader`.
+   * If omitted, a square placeholder is rendered.
+   */
+  logo?: React.ReactNode
+
+  /**
+   * Theme button shown in `asideHeader`.
+   * If omitted, a square button placeholder is rendered.
+   */
+  themeButton?: React.ReactNode
+
+  /**
+   * Copyright shown in `asideFooter`.
+   * If omitted, a simple `© <year>` placeholder is rendered.
+   */
+  copyright?: React.ReactNode
+
+  /**
+   * Social buttons shown in `asideFooter`.
+   * If omitted, two square placeholder buttons are rendered.
+   */
+  socialButtons?: React.ReactNode
 }
 
-export function Sidebar({ children, className, open, onOpenChange, style }: SidebarProps) {
-  const setOpen = (next: boolean) => onOpenChange?.(next)
+function DefaultSquarePlaceholder({
+  "aria-label": ariaLabel,
+}: {
+  "aria-label": string
+}) {
+  return <div className="ds-sidebar__squareAssetPlaceholder" aria-label={ariaLabel} />
+}
 
-  // Close sidebar on window resize to desktop
-  useEffect(() => {
-    const handleResize = () => {
-      if (window.innerWidth >= 768 && open) {
-        setOpen(false)
-      }
-    }
-
-    window.addEventListener("resize", handleResize)
-    return () => window.removeEventListener("resize", handleResize)
-  }, [open])
-
-  // Prevent body scroll when sidebar is open on mobile
-  useEffect(() => {
-    const prevOverflow = document.body.style.overflow
-    document.body.style.overflow = open ? "hidden" : ""
-
-    return () => {
-      document.body.style.overflow = prevOverflow
-    }
-  }, [open])
-
+function DefaultThemeButton() {
   return (
-    <>
-      {/* Mobile backdrop */}
-      {open && (
-        <div
-          className="ds-sidebar-backdrop"
-          onClick={() => setOpen(false)}
-          aria-hidden="true"
-        />
-      )}
-
-      {/* Sidebar */}
-      <aside
-        className={cn("ds-sidebar", className)}
-        data-open={open}
-        style={{
-          // Sidebar layout defaults (Figma-spec-like spacing)
-          background: "transparent",
-          rowGap: "var(--spacing-gap-2)",
-          padding: "var(--spacing-padding-6)",
-          paddingRight: "var(--spacing-padding-0)",
-          ...style,
-        }}
-      >
-        {children}
-      </aside>
-    </>
+    <button
+      type="button"
+      className="ds-sidebar__squareButtonPlaceholder"
+      aria-label="Theme"
+    />
   )
 }
 
-// ─── asideHeader ───────────────────────────────────────────────────────────────
-
-export interface SidebarAsideHeaderProps {
-  children: ReactNode
-  className?: string
-}
-
-export function SidebarAsideHeader({ children, className }: SidebarAsideHeaderProps) {
+function DefaultSocialButtons() {
   return (
-    <div className={cn("ds-sidebar__header", className)}>
-      {children}
+    <div className="ds-sidebar__socialButtons" aria-label="Social buttons">
+      <button
+        type="button"
+        className="ds-sidebar__squareButtonPlaceholder"
+        aria-label="Social placeholder 1"
+      />
+      <button
+        type="button"
+        className="ds-sidebar__squareButtonPlaceholder"
+        aria-label="Social placeholder 2"
+      />
     </div>
   )
 }
 
-// ─── contentSlot ───────────────────────────────────────────────────────────────
+export function Sidebar({
+  className,
+  children,
+  pageName = "Page Name",
+  version,
+  logo,
+  themeButton,
+  copyright,
+  socialButtons,
+}: SidebarProps) {
+  const asideHeader = (
+    <div className="ds-sidebar__asideHeader" data-slot="asideHeader">
+      {logo ?? <DefaultSquarePlaceholder aria-label="Logo placeholder" />}
 
-export interface SidebarContentSlotProps {
-  children: ReactNode
-  className?: string
-}
+      <div className="ds-sidebar__pageName" data-slot="pageName">
+        {pageName}
+      </div>
 
-export function SidebarContentSlot({ children, className }: SidebarContentSlotProps) {
-  return (
-    <div className={cn("ds-sidebar__content", className)}>
+      {version ? <VersionChip version={version} /> : null}
+
+      {themeButton ?? <DefaultThemeButton />}
+    </div>
+  )
+
+  const contentSlot = (
+    <div className="ds-sidebar__contentSlot" data-slot="contentSlot">
       {children}
     </div>
   )
-}
 
-// ─── asideFooter ───────────────────────────────────────────────────────────────
-
-export interface SidebarAsideFooterProps {
-  children: ReactNode
-  className?: string
-}
-
-export function SidebarAsideFooter({ children, className }: SidebarAsideFooterProps) {
-  return (
-    <div className={cn("ds-sidebar__footer", className)}>
-      {children}
+  const year = new Date().getFullYear()
+  const asideFooter = (
+    <div className="ds-sidebar__asideFooter" data-slot="asideFooter">
+      <div className="ds-sidebar__copyright label-sm" data-slot="copyright">
+        {copyright ?? `© ${year} Some UI`}
+      </div>
+      {socialButtons ?? <DefaultSocialButtons />}
     </div>
   )
+
+  return (
+    <aside className={cn("ds-sidebar", className)} data-slot="sidebar">
+      {asideHeader}
+      {contentSlot}
+      {asideFooter}
+    </aside>
+  )
 }
+

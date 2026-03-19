@@ -55,7 +55,11 @@ export function LazyIconPreview({ path, className }: LazyIconPreviewProps) {
         <IconPreview path={path} className="w-full h-full" />
       ) : (
         // Placeholder with same dimensions to prevent layout shift
-        <div className="w-full h-full" style={{ backgroundColor: 'transparent' }} />
+        <div
+          className="w-full h-full"
+          style={{ backgroundColor: 'var(--item-grid)' }}
+          aria-hidden="true"
+        />
       )}
     </div>
   )
