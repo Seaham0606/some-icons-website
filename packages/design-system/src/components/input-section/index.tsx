@@ -1,75 +1,98 @@
 "use client"
 
+/**
+ * InputSection — Figma node 56:5302.
+ * `iconName` must match an `icons[].id` entry in the Some Icons CDN `index.json`.
+ */
+
 import * as React from "react"
-import type { SomeIconsIconStyle } from "../../constants/some-icons-cdn"
-import { someIconsIconUrl } from "../../constants/some-icons-cdn"
 import { cn } from "../../utils"
+import { SomeIconsCdnIcon } from "../some-icons-cdn-icon"
 
-export interface InputSectionProps {
-  className?: string
-  label?: React.ReactNode
-  /**
-   * Some Icons CDN icon id for the lead graphic (e.g. `interface-cursor`).
-   * Builds `icon-assets/{style}/{category}/{id}.svg` on the CDN.
-   * Ignored when `leadSlot` is set.
-   */
-  leadCdnIcon?: string
-  /**
-   * CDN asset variant for `leadCdnIcon`. Default `filled`.
-   * Ignored when `leadSlot` is set.
-   */
-  leadIconStyle?: SomeIconsIconStyle
-  /** When set, replaces the default CDN lead icon entirely. */
-  leadSlot?: React.ReactNode
-  contentSlot?: React.ReactNode
-  showLabel?: boolean
-}
-
-function CdnLeadSlot({
-  iconId,
-  style,
-}: {
-  iconId: string
-  style: SomeIconsIconStyle
-}) {
-  const url = someIconsIconUrl(iconId, style)
+/** Figma default empty state for the content region (node 115:8535). */
+export function InputSectionSlotPlaceholder() {
   return (
-    <div className="ds-inputSection__leadSlot" aria-hidden="true">
-      <img src={url} alt="" className="ds-inputSection__leadIcon" />
-    </div>
+    <div
+      className="ds-inputSection__slotPlaceholder"
+      data-part="slot-placeholder"
+      aria-hidden
+    />
   )
 }
 
-function DefaultContentSlotPlaceholder() {
-  return <div className="ds-inputSection__contentPlaceholder" aria-hidden="true" />
+export interface InputSectionProps {
+  className?: string
+  showLabel?: boolean
+  label?: string
+  /** When set (including `null`), replaces the CDN icon; omit to use `iconName` + `iconStyle`. */
+  leadSlot?: React.ReactNode
+  iconName?: string
+  iconStyle?: "outline" | "fill"
+  showContentSlot?: boolean
+  contentSlot?: React.ReactNode
+  cdnBaseUrl?: string
+  /**
+   * Sets `color` on the lead wrapper so CDN SVGs (currentColor) tint. Omit to inherit from context.
+   * Example: `"var(--color-main-accent)"`.
+   */
+  leadColor?: React.CSSProperties["color"]
 }
 
 export function InputSection({
   className,
-  label = "sidebarCard",
-  leadCdnIcon = "interface-cursor",
-  leadIconStyle = "filled",
-  leadSlot,
-  contentSlot,
   showLabel = true,
+  label = "",
+  leadSlot,
+  iconName,
+  iconStyle = "outline",
+  showContentSlot = true,
+  contentSlot,
+  cdnBaseUrl,
+  leadColor,
 }: InputSectionProps) {
-  const resolvedIconId = leadCdnIcon.trim() || "interface-cursor"
+  const useAutoCdnIcon = leadSlot === undefined
+
+  const showLead =
+    showLabel &&
+    (useAutoCdnIcon ? Boolean(iconName) : leadSlot != null)
+
+  const leadInner = useAutoCdnIcon ? (
+    iconName ? (
+      <SomeIconsCdnIcon
+        iconName={iconName}
+        iconStyle={iconStyle}
+        cdnBaseUrl={cdnBaseUrl}
+        className="ds-inputSection__leadIcon"
+        color={leadColor}
+      />
+    ) : null
+  ) : (
+    leadSlot
+  )
 
   return (
-    <section className={cn("ds-inputSection", className)} data-slot="inputSection">
+    <div className={cn("ds-inputSection", className)} data-component="input-section">
       {showLabel ? (
-        <div className="ds-inputSection__labelRow" data-slot="label">
-          {leadSlot ?? (
-            <CdnLeadSlot iconId={resolvedIconId} style={leadIconStyle} />
-          )}
-          <div className="ds-inputSection__labelText">{label}</div>
+        <div className="ds-inputSection__labelRow" data-part="label-row">
+          {showLead ? (
+            <div
+              className="ds-inputSection__lead"
+              data-part="lead"
+              style={leadColor != null ? { color: leadColor } : undefined}
+            >
+              {leadInner}
+            </div>
+          ) : null}
+          <div className="ds-inputSection__title" data-part="title">
+            {label}
+          </div>
         </div>
       ) : null}
-
-      <div className="ds-inputSection__contentSlot" data-slot="contentSlot">
-        {contentSlot ?? <DefaultContentSlotPlaceholder />}
-      </div>
-    </section>
+      {showContentSlot ? (
+        <div className="ds-inputSection__content" data-part="content">
+          {contentSlot ?? <InputSectionSlotPlaceholder />}
+        </div>
+      ) : null}
+    </div>
   )
 }
-

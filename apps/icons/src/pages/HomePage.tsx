@@ -3,6 +3,7 @@ import figmaIcon from '../../assets/images/logo-figma-icon.svg'
 import githubIcon from '../../assets/images/logo-github-icon.svg'
 import { useUIStore } from '@/stores/uiStore'
 import { useEffect } from 'react'
+import { PageContent } from '@/components/layout/PageContent'
 import { InputSection, VersionChip } from 'design-system'
 import { getHighestVersion, useChangelog } from '@/hooks/useChangelog'
 
@@ -45,11 +46,32 @@ export default function HomePage() {
 
         {/* contentSlot: fills remaining available height */}
         <div className="homepage-contentSlot" data-slot="contentSlot">
-          <div className="homepage-inputSections">
-            <InputSection label="sidebarCard" />
-            <InputSection label="filters" />
-            <InputSection label="export" />
-          </div>
+          {/*
+            InputSection lead icons load from the Some Icons CDN:
+            packages/design-system/package.json → someIconsCdnBaseUrl, then index.json + files.outline|filled for iconName.
+          */}
+          <InputSection
+            showLabel={false}
+          />
+          <InputSection
+            label="Customize"
+            iconName="interface-settings-wrench"
+            iconStyle="outline"
+            leadColor="var(--color-main-secondary)"
+          />
+          <InputSection
+            label="Download"
+            iconName="arrow-down-in"
+            iconStyle="outline"
+            leadColor="var(--color-main-secondary)"
+          />
+          <InputSection
+            label="Test"
+            iconName="symbol-bone"
+            iconStyle="fill"
+            leadColor="var(--color-main-accent)"
+            showContentSlot={false}
+          />
         </div>
 
         {/* asideFooter: hugs its content height */}
@@ -102,7 +124,9 @@ export default function HomePage() {
         </div>
       </aside>
 
-      <main className="homepage-main" />
+      <main className="homepage-main">
+        <PageContent />
+      </main>
     </div>
   )
 }

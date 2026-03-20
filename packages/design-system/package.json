@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "private": true,
   "type": "module",
+  "someIconsCdnBaseUrl": "https://raw.githubusercontent.com/Seaham0606/some-icons-cdn/main/",
   "exports": {
     ".": "./src/index.ts",
     "./components.css": "./src/components.css",
