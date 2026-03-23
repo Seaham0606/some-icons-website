@@ -1,6 +1,11 @@
 import { create } from 'zustand'
 import { persist, createJSONStorage } from 'zustand/middleware'
 
+/**
+ * Theme preference (persisted under `some-icons-ui`):
+ * - `system` (default): `data-theme` follows `prefers-color-scheme` and updates when OS changes.
+ * - `light` | `dark`: manual override from the header control (or Generator switch); no longer follows OS until set back to `system` if exposed later.
+ */
 type Theme = 'light' | 'dark' | 'system'
 
 interface UIState {
@@ -21,13 +26,36 @@ function applyEffectiveTheme(theme: Theme) {
   document.documentElement.setAttribute('data-theme', effective)
 }
 
+function themeTransitionDisabled(): boolean {
+  if (typeof window === 'undefined') return true
+  return window.matchMedia('(prefers-reduced-motion: reduce)').matches
+}
+
+/** Crossfade full-page paint when `data-theme` changes (View Transitions API). */
+function runWithThemeTransition(update: () => void) {
+  if (typeof document === 'undefined' || themeTransitionDisabled()) {
+    update()
+    return
+  }
+  const doc = document as Document & {
+    startViewTransition?: (callback: () => void) => unknown
+  }
+  if (typeof doc.startViewTransition === 'function') {
+    doc.startViewTransition(update)
+  } else {
+    update()
+  }
+}
+
 export const useUIStore = create<UIState>()(
   persist(
     (set, get) => ({
       theme: 'system',
       setTheme: (theme) => {
-        set({ theme })
-        applyEffectiveTheme(theme)
+        runWithThemeTransition(() => {
+          set({ theme })
+          applyEffectiveTheme(theme)
+        })
       },
       getEffectiveTheme: () => {
         const { theme } = get()
@@ -56,12 +84,18 @@ export function initTheme() {
 
   if (stored) {
     try {
-      const { state } = JSON.parse(stored)
-      if (state?.theme) {
+      const { state } = JSON.parse(stored) as { state?: { theme?: Theme } }
+      if (state?.theme === 'light' || state?.theme === 'dark' || state?.theme === 'system') {
         theme = state.theme
       }
     } catch {
       // Invalid JSON, use system theme
+    }
+  } else {
+    const legacy = localStorage.getItem('theme')
+    if (legacy === 'light' || legacy === 'dark') {
+      theme = legacy
+      useUIStore.setState({ theme: legacy })
     }
   }
 
@@ -71,7 +105,7 @@ export function initTheme() {
   window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
     const currentTheme = useUIStore.getState().theme
     if (currentTheme === 'system') {
-      applyEffectiveTheme('system')
+      runWithThemeTransition(() => applyEffectiveTheme('system'))
     }
   })
 }

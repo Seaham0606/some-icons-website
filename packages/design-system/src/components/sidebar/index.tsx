@@ -2,6 +2,7 @@
 
 import * as React from "react"
 import { cn } from "../../utils"
+import { Button } from "../button"
 import { VersionChip } from "../version-chip"
 
 export interface SidebarProps {
@@ -9,13 +10,13 @@ export interface SidebarProps {
   children?: React.ReactNode
 
   /**
-   * Page label shown in `asideHeader`.
-   * Set to whatever you need (e.g. string or element).
+   * Page label in the header title row (next to the version chip).
+   * Omit for a logo-only header row (unusual).
    */
   pageName?: React.ReactNode
 
   /**
-   * Version string shown as a chip next to `pageName` (e.g. "v3.0.0").
+   * Version string shown as a chip next to `pageName` (e.g. "3.0.0"; a leading "v" is stripped for display).
    * If omitted, no chip is rendered.
    */
   version?: string
@@ -28,7 +29,7 @@ export interface SidebarProps {
 
   /**
    * Theme button shown in `asideHeader`.
-   * If omitted, a square button placeholder is rendered.
+   * If omitted, a default transparent icon `Button` is rendered (same pattern as the icons app header).
    */
   themeButton?: React.ReactNode
 
@@ -38,43 +39,61 @@ export interface SidebarProps {
    */
   copyright?: React.ReactNode
 
-  /**
+  /** 
    * Social buttons shown in `asideFooter`.
-   * If omitted, two square placeholder buttons are rendered.
+   * If omitted, two default transparent icon `Button`s are rendered as placeholders (override with real links/icons in apps).
    */
   socialButtons?: React.ReactNode
 }
 
-function DefaultSquarePlaceholder({
+function DefaultLogoPlaceholder({
   "aria-label": ariaLabel,
 }: {
   "aria-label": string
 }) {
-  return <div className="ds-sidebar__squareAssetPlaceholder" aria-label={ariaLabel} />
+  return (
+    <div
+      className="ds-sidebar__logoPlaceholder"
+      aria-label={ariaLabel}
+      role="img"
+    />
+  )
 }
 
 function DefaultThemeButton() {
   return (
-    <button
+    <Button
       type="button"
-      className="ds-sidebar__squareButtonPlaceholder"
+      variant="transparent"
+      size="md"
       aria-label="Theme"
+      iconName="weather-moon"
+      iconStyle="fill"
+      contentColor="var(--color-main-tertiary)"
     />
   )
 }
 
 function DefaultSocialButtons() {
   return (
-    <div className="ds-sidebar__socialButtons" aria-label="Social buttons">
-      <button
+    <div className="ds-sidebar__social" aria-label="Social links">
+      <Button
         type="button"
-        className="ds-sidebar__squareButtonPlaceholder"
+        variant="transparent"
+        size="md"
         aria-label="Social placeholder 1"
+        iconName="formatting-pencil-alt"
+        iconStyle="outline"
+        contentColor="var(--color-main-tertiary)"
       />
-      <button
+      <Button
         type="button"
-        className="ds-sidebar__squareButtonPlaceholder"
+        variant="transparent"
+        size="md"
         aria-label="Social placeholder 2"
+        iconName="arrow-up-out"
+        iconStyle="outline"
+        contentColor="var(--color-main-tertiary)"
       />
     </div>
   )
@@ -83,7 +102,7 @@ function DefaultSocialButtons() {
 export function Sidebar({
   className,
   children,
-  pageName = "Page Name",
+  pageName,
   version,
   logo,
   themeButton,
@@ -92,13 +111,17 @@ export function Sidebar({
 }: SidebarProps) {
   const asideHeader = (
     <div className="ds-sidebar__asideHeader" data-slot="asideHeader">
-      {logo ?? <DefaultSquarePlaceholder aria-label="Logo placeholder" />}
-
-      <div className="ds-sidebar__pageName" data-slot="pageName">
-        {pageName}
+      <div className="ds-sidebar__headerGroup" data-slot="headerGroup">
+        {logo ?? <DefaultLogoPlaceholder aria-label="Logo placeholder" />}
+        <div className="ds-sidebar__titleBlock" data-slot="titleBlock">
+          {pageName != null && pageName !== "" ? (
+            <div className="ds-sidebar__pageName" data-slot="pageName">
+              {pageName}
+            </div>
+          ) : null}
+          {version ? <VersionChip version={version} /> : null}
+        </div>
       </div>
-
-      {version ? <VersionChip version={version} /> : null}
 
       {themeButton ?? <DefaultThemeButton />}
     </div>
@@ -106,7 +129,7 @@ export function Sidebar({
 
   const contentSlot = (
     <div className="ds-sidebar__contentSlot" data-slot="contentSlot">
-      {children}
+      {children ?? null}
     </div>
   )
 

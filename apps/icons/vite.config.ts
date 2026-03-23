@@ -13,8 +13,11 @@ export default defineConfig({
     // Ensure design-system and Radix use the app's React (prevents "Invalid hook call" / blank page)
     dedupe: ['react', 'react-dom'],
   },
+  // Don’t pre-bundle the linked design-system package: it can drop non-DOM props (e.g. leadingSlot)
+  // on Button and serve a stale cache. Source-transform the workspace package instead.
   optimizeDeps: {
-    include: ['react', 'react-dom', 'design-system'],
+    include: ['react', 'react-dom'],
+    exclude: ['design-system'],
   },
   build: {
     outDir: 'dist',

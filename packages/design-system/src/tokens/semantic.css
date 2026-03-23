@@ -1,14 +1,18 @@
 :root {
   /* main */
-  --color-main-primary: var(--color-gray-925);
-  --color-main-secondary: var(--color-gray-600);
-  --color-main-tertiary: var(--color-gray-200);
-  --color-main-disabled: var(--color-gray-25);
+  --color-main-primary: var(--color-black-alpha-950);
+  --color-main-secondary: var(--color-black-alpha-600);
+  --color-main-tertiary: var(--color-black-alpha-200);
+  --color-main-disabled: var(--color-black-alpha-25);
   --color-main-inverse: var(--color-gray-10);
   --color-main-accent: var(--color-blue-400);
 
   /* fill / overlay */
   --color-fill-overlay-weak: var(--color-black-alpha-15);
+  --color-fill-overlay-light-hover: var(--color-white-alpha-50);
+  --color-fill-overlay-light-pressed: var(--color-black-alpha-50);
+  --color-fill-overlay-dark-hover: var(--color-black-alpha-50);
+  --color-fill-overlay-dark-pressed: var(--color-black-alpha-50);
 
   /* fill / background */
   --color-fill-background-base: var(--color-gray-10);
@@ -22,20 +26,35 @@
   --color-border-weak: var(--color-black-alpha-25);
   --color-border-extra-weak: var(--color-black-alpha-10);
 
-  /* segButton */
-  --color-seg-button-enabled: var(--color-white);
-  --color-seg-button-hover: var(--color-white);
-  --color-seg-button-disabled: var(--color-white);
+  /* border / inverse */
+  --color-border-inverse-base: var(--color-white-alpha-50);
+  --color-border-inverse-weak: var(--color-white-alpha-15);
+  --color-border-inverse-extra-weak: var(--color-white-alpha-10);
 
-  /* Legacy aliases (required by design-system component CSS) */
+  /* Button gradients */
+  --button-gradient-primary: linear-gradient(
+    180deg,
+    var(--color-gray-900) 0%,
+    var(--color-gray-950) 100%
+  );
+  --button-gradient-secondary: linear-gradient(
+    180deg,
+    var(--color-gray-600) 0%,
+    var(--color-gray-800) 100%
+  );
+  --button-gradient-tertiary: linear-gradient(
+    180deg,
+    var(--color-gray-25) 0%,
+    var(--color-gray-50) 100%
+  );
+  --button-gradient-inverse: linear-gradient(
+    180deg,
+    var(--color-white) 0%,
+    var(--color-gray-25) 100%
+  );
+
+  /* App-facing aliases (inputs, tertiary text) */
   --color-text-tertiary: var(--color-main-tertiary);
-  --color-toggle-bg: var(--color-fill-background-base);
-  --color-toggle-stroke: var(--color-border-weak);
-  --color-toggle-stroke-hover: var(--color-border-base);
-  --color-toggle-control-bg: var(--color-fill-background-elevation);
-  --ring: var(--color-border-base);
-  --muted-foreground: var(--color-main-secondary);
-  --destructive: var(--color-red-400);
   --color-input-stroke: var(--color-border-extra-weak);
   --color-input-stroke-hover: var(--color-border-weak);
   --color-input-stroke-typing: var(--color-main-accent);
@@ -43,15 +62,19 @@
 
 [data-theme="dark"] {
   /* main */
-  --color-main-primary: var(--color-gray-10);
-  --color-main-secondary: var(--color-gray-300);
-  --color-main-tertiary: var(--color-gray-700);
-  --color-main-disabled: var(--color-gray-925);
+  --color-main-primary: var(--color-white-alpha-999);
+  --color-main-secondary: var(--color-white-alpha-700);
+  --color-main-tertiary: var(--color-white-alpha-300);
+  --color-main-disabled: var(--color-white-alpha-50);
   --color-main-inverse: var(--color-gray-925);
   --color-main-accent: var(--color-blue-400);
 
   /* fill / overlay */
   --color-fill-overlay-weak: var(--color-white-alpha-15);
+  --color-fill-overlay-light-hover: var(--color-black-alpha-50);
+  --color-fill-overlay-light-pressed: var(--color-white-alpha-50);
+  --color-fill-overlay-dark-hover: var(--color-white-alpha-50);
+  --color-fill-overlay-dark-pressed: var(--color-white-alpha-50);
 
   /* fill / background */
   --color-fill-background-base: var(--color-gray-975);
@@ -65,22 +88,36 @@
   --color-border-weak: var(--color-white-alpha-15);
   --color-border-extra-weak: var(--color-white-alpha-10);
 
-  /* segButton */
-  --color-seg-button-enabled: var(--color-gray-800);
-  --color-seg-button-hover: var(--color-white-alpha-15);
-  --color-seg-button-disabled: var(--color-white-alpha-15);
+  /* border / inverse */
+  --color-border-inverse-base: var(--color-black-alpha-50);
+  --color-border-inverse-weak: var(--color-black-alpha-25);
+  --color-border-inverse-extra-weak: var(--color-black-alpha-10);
 
-  /* Legacy aliases (required by design-system component CSS) */
+  /* Button gradients */
+  --button-gradient-primary: linear-gradient(
+    180deg,
+    var(--color-gray-10) 0%,
+    var(--color-gray-75) 100%
+  );
+  --button-gradient-secondary: linear-gradient(
+    180deg,
+    var(--color-gray-150) 0%,
+    var(--color-gray-300) 100%
+  );
+  --button-gradient-tertiary: linear-gradient(
+    180deg,
+    var(--color-gray-900) 0%,
+    var(--color-gray-925) 100%
+  );
+  --button-gradient-inverse: linear-gradient(
+    180deg,
+    var(--color-gray-925) 0%,
+    var(--color-gray-950) 100%
+  );
+
+  /* App-facing aliases (inputs, tertiary text) */
   --color-text-tertiary: var(--color-main-tertiary);
-  --color-toggle-bg: var(--color-fill-background-base);
-  --color-toggle-stroke: var(--color-border-weak);
-  --color-toggle-stroke-hover: var(--color-border-base);
-  --color-toggle-control-bg: var(--color-fill-background-elevation);
-  --ring: var(--color-border-base);
-  --muted-foreground: var(--color-main-secondary);
-  --destructive: var(--color-red-500);
   --color-input-stroke: var(--color-border-extra-weak);
   --color-input-stroke-hover: var(--color-border-weak);
   --color-input-stroke-typing: var(--color-main-accent);
 }
-

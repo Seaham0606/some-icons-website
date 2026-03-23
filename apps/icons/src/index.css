@@ -4,7 +4,7 @@
 @import "design-system/tokens/index.css";
 @import "design-system/components.css";
 
-/* Scan design-system so Switch and other components get their Tailwind classes */
+/* Scan design-system for Tailwind class discovery (Sidebar, InputSection, etc.) */
 @source "../../../packages/design-system/src";
 
 @custom-variant dark (&:where([data-theme=dark], [data-theme=dark] *));
@@ -28,6 +28,18 @@ body {
   margin: 0;
   padding: 0;
   overflow: hidden;
+}
+
+/*
+ * Theme toggle: root snapshot crossfade (document.startViewTransition in uiStore).
+ * No motion when user prefers reduced motion (transition skipped in JS too).
+ */
+@media (prefers-reduced-motion: no-preference) {
+  ::view-transition-old(root),
+  ::view-transition-new(root) {
+    animation-duration: 0.4s;
+    animation-timing-function: ease;
+  }
 }
 
 /* React Colorful custom styling */
@@ -103,6 +115,94 @@ body {
   -webkit-backdrop-filter: blur(10px);
 }
 
+/* Radix Switch + textarea (icons app only) */
+.ui-switch {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: var(--size-5);
+  width: var(--size-10);
+  padding: var(--spacing-050);
+  border-radius: var(--radius-full);
+  transition: border-color 150ms ease, background-color 150ms ease, box-shadow 150ms ease;
+  outline: none;
+  cursor: pointer;
+
+  background: var(--color-fill-background-base);
+  border: var(--border-width-base) solid var(--color-border-weak);
+}
+
+.ui-switch:hover {
+  border-color: var(--color-border-base);
+}
+
+.ui-switch:focus-visible {
+  box-shadow: 0 0 0 2px var(--color-border-base);
+}
+
+.ui-switch:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.ui-switch__thumb {
+  pointer-events: none;
+  display: block;
+  height: var(--size-4);
+  width: var(--size-4);
+  border-radius: var(--radius-full);
+  background: var(--color-fill-background-elevation);
+
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.15);
+
+  transition: transform 150ms ease;
+  transform: translateX(calc(var(--spacing-050) - 3px));
+}
+
+.ui-switch[data-state="checked"] .ui-switch__thumb {
+  transform: translateX(
+    calc(var(--size-10) - var(--size-4) - var(--spacing-050) - var(--spacing-050) - 1px)
+  );
+}
+
+.ui-textarea {
+  width: 100%;
+  border: var(--border-width-base) solid var(--color-input-stroke);
+  border-radius: var(--radius-md);
+  background: transparent;
+  color: inherit;
+  outline: none;
+
+  min-height: var(--size-16);
+  padding: var(--spacing-2) var(--spacing-3);
+  font-size: 16px;
+
+  transition: color 150ms ease, box-shadow 150ms ease, border-color 150ms ease;
+}
+
+.ui-textarea::placeholder {
+  color: var(--color-main-secondary);
+}
+
+.ui-textarea:focus-visible {
+  border-color: var(--color-input-stroke-typing);
+  box-shadow: 0 0 0 3px var(--color-border-base);
+}
+
+.ui-textarea:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.ui-textarea[aria-invalid="true"] {
+  border-color: var(--color-red-500);
+}
+
+@media (min-width: 768px) {
+  .ui-textarea {
+    font-size: 14px;
+  }
+}
 
 @layer utilities {
   /* Sidebar "page header" typography */
@@ -142,135 +242,4 @@ body {
   border: none;
   background: transparent;
 }
-
-.homepage-aside {
-  flex: 0 0 auto;
-  width: auto;
-  height: 100dvh;
-  overflow: hidden;
-
-  display: flex;
-  flex-direction: column;
-  gap: var(--spacing-gap-2);
-
-  box-sizing: border-box;
-  padding-top: var(--spacing-padding-6);
-  padding-left: var(--spacing-padding-6);
-  padding-bottom: var(--spacing-padding-6);
-  padding-right: 0;
-}
-
-.homepage-asideHeader {
-  flex: 0 0 auto; /* hug header content height */
-  display: flex;
-  align-items: center;
-  gap: var(--spacing-gap-3);
-  width: 320px;
-  box-sizing: border-box;
-  padding-top: var(--spacing-padding-2);
-  padding-left: var(--spacing-padding-2);
-  padding-bottom: var(--spacing-padding-4);
-  padding-right: 0;
-}
-
-.homepage-asideHeaderGroup {
-  flex: 1 1 auto;
-  min-width: 0;
-  display: flex;
-  align-items: center;
-  gap: var(--spacing-gap-3);
-}
-
-.homepage-titleBlock {
-  flex: 1 1 auto;
-  min-width: 0;
-  display: inline-flex;
-  align-items: center;
-  gap: var(--spacing-gap-3);
-}
-
-.homepage-logoIcon {
-  flex: 0 0 auto;
-  height: 28px;
-  width: 28px;
-}
-
-.homepage-pageName {
-  flex: 0 1 auto;
-  min-width: 0;
-  font-family: inherit;
-  font-size: 21px;
-  font-style: normal;
-  font-weight: 600;
-  line-height: 100%;
-  color: var(--color-main-primary);
-
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.homepage-themeButton {
-  flex: 0 0 auto;
-  height: var(--size-10);
-  width: var(--size-10);
-
-  border-radius: var(--radius-md);
-  border: var(--border-width-base) solid var(--color-toggle-stroke);
-  background: transparent;
-}
-
-/* Main column: stack sections; no inner padding (edge-aligned with column). */
-.homepage-contentSlot {
-  flex: 1 1 auto;
-  min-height: 0;
-  width: 320px;
-  box-sizing: border-box;
-  display: flex;
-  flex-direction: column;
-  gap: var(--spacing-gap-3);
-  overflow-x: hidden;
-  overflow-y: auto;
-  padding: 0;
-}
-
-.homepage-asideFooter {
-  flex: 0 0 auto; /* hug footer content height */
-  display: flex;
-  align-items: center;
-  padding-top: var(--spacing-padding-0); /* padding-0 */
-  padding-left: var(--spacing-padding-2); /* padding-2 */
-  padding-right: var(--spacing-padding-2); /* padding-2 */
-  padding-bottom: var(--spacing-padding-1); /* padding-1 */
-}
-
-.homepage-footerCopyright {
-  color: var(--color-main-tertiary);
-  white-space: nowrap;
-}
-
-.homepage-social {
-  margin-left: auto;
-  display: flex;
-  align-items: center;
-  gap: var(--spacing-gap-4);
-}
-
-.homepage-socialLink {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.homepage-socialIconImg {
-  height: var(--size-icon-sm);
-  width: var(--size-icon-sm);
-}
-
-.homepage-socialGithubMask {
-  display: inline-block;
-  height: var(--size-icon-sm);
-  width: var(--size-icon-sm);
-}
-
 

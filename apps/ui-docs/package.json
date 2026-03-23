@@ -17,11 +17,10 @@
     "react-dom": "^19.2.0"
   },
   "devDependencies": {
-    "@radix-ui/react-label": "^2.1.2",
-    "@radix-ui/react-switch": "^1.2.2",
-    "@tailwindcss/vite": "^4.1.18",
+    "@storybook/addon-docs": "^10.2.19",
     "@storybook/react": "10.2.19",
     "@storybook/react-vite": "10.2.19",
+    "@tailwindcss/vite": "^4.1.18",
     "@types/react": "^19.2.5",
     "@types/react-dom": "^19.2.3",
     "@vitejs/plugin-react": "^5.1.1",

@@ -2,16 +2,25 @@
 export { cn } from "./utils"
 
 /* Components */
-export { Label } from "./components/label"
-export { Switch } from "./components/theme-toggle"
-export { Textarea } from "./components/textarea"
-
 export { Sidebar } from "./components/sidebar"
 export { VersionChip } from "./components/version-chip"
 export { InputSection, InputSectionSlotPlaceholder } from "./components/input-section"
 export type { InputSectionProps } from "./components/input-section"
-export { SomeIconsCdnIcon } from "./components/some-icons-cdn-icon"
+export { InputWrapper } from "./components/input-wrapper"
+export type { InputWrapperProps } from "./components/input-wrapper"
+export { InputGroup } from "./components/input-group"
 export type {
-  SomeIconsCdnIconProps,
-  SomeIconsCdnIconStyle,
-} from "./components/some-icons-cdn-icon"
+  InputGroupColumnWidth,
+  InputGroupProps,
+} from "./components/input-group"
+export { Button } from "./components/button"
+export type { ButtonProps, ButtonRadius, ButtonVariant } from "./components/button"
+export { SegmentedControl } from "./components/segmented-control"
+export type {
+  SegmentedControlOption,
+  SegmentedControlProps,
+} from "./components/segmented-control"
+export { SomeIcon } from "./components/some-icon"
+export type { SomeIconProps, SomeIconStyle } from "./components/some-icon"
+export { ThemeButton } from "./components/theme-button"
+export type { ThemeButtonProps } from "./components/theme-button"

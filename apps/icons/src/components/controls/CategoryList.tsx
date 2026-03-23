@@ -1,7 +1,7 @@
 import { useFilterStore } from '@/stores/filterStore'
 import { useIcons, getCategories } from '@/hooks/useIcons'
 import { cn } from '@/lib/utils'
-import { SegmentedButton } from '@/components/ui/segmented-control'
+import { Button, SomeIcon } from 'design-system'
 import React, { useState, useEffect, useRef } from 'react'
 
 interface CategoryListProps {
@@ -118,7 +118,7 @@ export function CategoryList({ isOpen, onSelect, onClose, className }: CategoryL
         'max-h-[320px] overflow-y-auto',
         'rounded-[10px]',
         'border border-[var(--color-input-stroke)]',
-        'bg-[var(--color-input-bg)]',
+        'bg-[var(--color-fill-input-enabled)]',
         'p-1',
         'transition-[border-color]',
         'hover:border-[var(--color-input-stroke-hover)]',
@@ -151,17 +151,29 @@ export function CategoryList({ isOpen, onSelect, onClose, className }: CategoryL
             <div
               ref={category === cat ? selectedButtonRef : null}
             >
-              <SegmentedButton
-                isActive={category === cat}
+              <Button
+                type="button"
+                variant={category === cat ? 'primary' : 'transparent'}
+                tint={category === cat ? 'inverse' : 'default'}
+                size="md"
+                fullWidth
+                data-segment-selected={category === cat ? 'true' : 'false'}
+                className={cn(
+                  'ds-segmentedControl__segment !h-auto min-h-[44px] !flex-none !w-full !justify-start',
+                )}
+                leadingSlot={
+                  <SomeIcon
+                    iconName={getCategoryIcon(cat)}
+                    iconStyle="outline"
+                  />
+                }
                 onClick={() => handleSelect(cat)}
-                leadingIcon={getCategoryIcon(cat)}
-                textString={cat === 'all' ? 'All icons' : cat.charAt(0).toUpperCase() + cat.slice(1)}
-                className="!w-full !flex-none h-[44px] !justify-start"
-                iconStyle="outline"
-              />
+              >
+                {cat === 'all' ? 'All icons' : cat.charAt(0).toUpperCase() + cat.slice(1)}
+              </Button>
             </div>
             {index === 0 && (
-              <div className="h-px mx-1.5 rounded-full bg-[var(--color-divider-stroke)]" />
+              <div className="h-px mx-1.5 rounded-full bg-[var(--color-border-weak)]" />
             )}
           </React.Fragment>
         ))}

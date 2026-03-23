@@ -7,7 +7,7 @@
 
 import * as React from "react"
 import { cn } from "../../utils"
-import { SomeIconsCdnIcon } from "../some-icons-cdn-icon"
+import { SomeIcon, type SomeIconStyle } from "../some-icon"
 
 /** Figma default empty state for the content region (node 115:8535). */
 export function InputSectionSlotPlaceholder() {
@@ -27,7 +27,7 @@ export interface InputSectionProps {
   /** When set (including `null`), replaces the CDN icon; omit to use `iconName` + `iconStyle`. */
   leadSlot?: React.ReactNode
   iconName?: string
-  iconStyle?: "outline" | "fill"
+  iconStyle?: SomeIconStyle
   showContentSlot?: boolean
   contentSlot?: React.ReactNode
   cdnBaseUrl?: string
@@ -58,7 +58,7 @@ export function InputSection({
 
   const leadInner = useAutoCdnIcon ? (
     iconName ? (
-      <SomeIconsCdnIcon
+      <SomeIcon
         iconName={iconName}
         iconStyle={iconStyle}
         cdnBaseUrl={cdnBaseUrl}

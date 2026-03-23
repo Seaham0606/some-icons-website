@@ -4,3 +4,4 @@
 @source "../../../packages/design-system/src";
 
 @import "design-system/tokens/index.css";
+@import "design-system/components.css";
