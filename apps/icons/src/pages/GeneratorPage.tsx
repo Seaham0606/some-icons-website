@@ -5,7 +5,7 @@ import { CdnIcon } from '@/components/ui/cdn-icon'
 
 export default function GeneratorPage() {
   return (
-    <div className="min-h-screen bg-[var(--color-fill-background-elevation)]">
+    <div className="min-h-screen bg-[var(--color-background-elevation)]">
       <header className="border-b border-[var(--color-border-base)]">
         <div className="max-w-3xl mx-auto px-4 py-4 flex items-center justify-between">
           <Link

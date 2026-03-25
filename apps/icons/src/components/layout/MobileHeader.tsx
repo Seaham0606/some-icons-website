@@ -15,7 +15,7 @@ export function MobileHeader({ title, showLogo = true, className }: MobileHeader
   return (
     <header
       className={cn(
-        'md:hidden flex items-center justify-between px-4 py-3 border-b border-[var(--color-border-base)] bg-[var(--color-fill-background-elevation)]',
+        'md:hidden flex items-center justify-between px-4 py-3 border-b border-[var(--color-border-base)] bg-[var(--color-background-elevation)]',
         className
       )}
     >

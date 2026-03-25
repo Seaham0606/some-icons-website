@@ -14,12 +14,12 @@ const buttonVariants = cva(
         destructive:
           "bg-[var(--color-red-400)] text-white hover:bg-[var(--color-red-400)] focus-visible:ring-[var(--color-red-400)] focus-visible:ring-opacity-20 dark:focus-visible:ring-[var(--color-red-400)] dark:focus-visible:ring-opacity-40 dark:bg-[var(--color-red-400)]",
         outline:
-          "border border-[var(--color-border-base)] bg-[var(--color-fill-background-elevation)] shadow-xs hover:bg-[var(--color-main-accent)] hover:text-[var(--color-main-inverse)] dark:bg-[var(--color-fill-input-enabled)] dark:border-[var(--color-border-weak)] dark:hover:bg-[var(--color-fill-input-enabled)]",
+          "border border-[var(--color-border-base)] bg-[var(--color-background-elevation)] shadow-xs hover:bg-[var(--color-intent-accent)] hover:text-[var(--color-main-inverse)] dark:bg-[var(--color-background-input)] dark:border-[var(--color-border-weak)] dark:hover:bg-[var(--color-background-input)]",
         secondary:
-          "bg-[var(--color-fill-background-base)] text-[var(--color-main-primary)] hover:bg-[var(--color-fill-overlay-weak)]",
+          "bg-[var(--color-background-base)] text-[var(--color-main-primary)] hover:bg-[var(--color-overlay-weak)]",
         ghost:
-          "hover:bg-[var(--color-main-accent)] hover:text-[var(--color-main-inverse)] dark:hover:bg-[var(--color-main-accent)]",
-        link: "text-[var(--color-main-accent)] underline-offset-4 hover:underline",
+          "hover:bg-[var(--color-intent-accent)] hover:text-[var(--color-main-inverse)] dark:hover:bg-[var(--color-intent-accent)]",
+        link: "text-[var(--color-intent-accent)] underline-offset-4 hover:underline",
       },
       size: {
         default: "h-[44px] px-3",

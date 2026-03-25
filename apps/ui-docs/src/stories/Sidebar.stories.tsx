@@ -99,7 +99,7 @@ export const CustomHeaderSlots: Story = {
           width: 40,
           height: 40,
           borderRadius: 8,
-          background: "var(--color-main-accent)",
+          background: "var(--color-intent-accent)",
           opacity: 0.85,
         }}
         aria-label="App logo"
@@ -113,7 +113,7 @@ export const CustomHeaderSlots: Story = {
           height: 40,
           borderRadius: 8,
           border: "1px solid var(--color-border-weak)",
-          background: "var(--color-fill-background-elevation)",
+          background: "var(--color-background-elevation)",
           cursor: "pointer",
         }}
         aria-label="Toggle theme"

@@ -22,6 +22,18 @@ function IconFrame({
   )
 }
 
+const iconSizeOptions = [
+  "2xs",
+  "xs",
+  "sm",
+  "md",
+  "lg",
+  "xl",
+  "2xl",
+] as const
+
+const paddingOptions = ["0", "050", "1", "2"] as const
+
 const meta: Meta<typeof SomeIcon> = {
   title: "SomeIcon",
   component: SomeIcon,
@@ -41,6 +53,17 @@ const meta: Meta<typeof SomeIcon> = {
     },
     color: { table: { category: "Appearance" } },
     className: { table: { category: "Appearance" } },
+    iconSize: {
+      control: "select",
+      options: iconSizeOptions,
+      description: "Glyph size — theme `--size-icon-*`.",
+    },
+    padding: {
+      control: "select",
+      options: paddingOptions,
+      description:
+        "Inset from theme `--spacing-*` (excludes `025`). Outer box = `2 × padding + iconSize`.",
+    },
   },
 }
 
@@ -60,6 +83,8 @@ export const Default: Story = {
   args: {
     iconName: "formatting-pencil-alt",
     iconStyle: "outline",
+    iconSize: "md",
+    padding: "0",
   },
 }
 
@@ -72,6 +97,8 @@ export const Filled: Story = {
   args: {
     iconName: "formatting-pencil-alt",
     iconStyle: "fill",
+    iconSize: "md",
+    padding: "0",
   },
 }
 
@@ -84,10 +111,13 @@ export const AccentColor: Story = {
   args: {
     iconName: "arrow-up-out",
     iconStyle: "outline",
-    color: "var(--color-main-accent)",
+    color: "var(--color-intent-accent)",
+    iconSize: "md",
+    padding: "0",
   },
 }
 
+/** 40×40 frame: `icon-md` + `spacing-2` padding on each side. */
 export const LargerFrame: Story = {
   name: "Larger frame (40px)",
   render: (args) => (
@@ -98,5 +128,39 @@ export const LargerFrame: Story = {
   args: {
     iconName: "arrow-up-out",
     iconStyle: "outline",
+    iconSize: "md",
+    padding: "2",
+  },
+}
+
+/** Design-system `Input` leading/trailing slot: 40×40 outer, 24px glyph. */
+export const InputSlot: Story = {
+  name: "Input slot (md + padding 2)",
+  render: (args) => (
+    <div style={{ color: "var(--color-main-primary)" }}>
+      <SomeIcon {...args} />
+    </div>
+  ),
+  args: {
+    iconName: "interface-search",
+    iconStyle: "outline",
+    iconSize: "md",
+    padding: "2",
+  },
+}
+
+/** `InputSection` label-row lead: 12×12 glyph (`icon-2xs`), no inset. */
+export const InputSectionLead: Story = {
+  name: "InputSection lead (2xs)",
+  render: (args) => (
+    <div style={{ color: "var(--color-main-primary)" }}>
+      <SomeIcon {...args} />
+    </div>
+  ),
+  args: {
+    iconName: "formatting-pencil-alt",
+    iconStyle: "outline",
+    iconSize: "2xs",
+    padding: "0",
   },
 }

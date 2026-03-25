@@ -2,12 +2,11 @@
 
 /**
  * InputSection — Figma node 56:5302.
- * `iconName` must match an `icons[].id` entry in the Some Icons CDN `index.json`.
+ * Pass `leadSlot` with e.g. `<SomeIcon iconName="…" iconSize="2xs" />` (12×12 label icon).
  */
 
 import * as React from "react"
 import { cn } from "../../utils"
-import { SomeIcon, type SomeIconStyle } from "../some-icon"
 
 /** Figma default empty state for the content region (node 115:8535). */
 export function InputSectionSlotPlaceholder() {
@@ -24,16 +23,13 @@ export interface InputSectionProps {
   className?: string
   showLabel?: boolean
   label?: string
-  /** When set (including `null`), replaces the CDN icon; omit to use `iconName` + `iconStyle`. */
+  /** Label-row lead (typically `<SomeIcon iconSize="2xs" … />`). */
   leadSlot?: React.ReactNode
-  iconName?: string
-  iconStyle?: SomeIconStyle
   showContentSlot?: boolean
   contentSlot?: React.ReactNode
-  cdnBaseUrl?: string
   /**
-   * Sets `color` on the lead wrapper so CDN SVGs (currentColor) tint. Omit to inherit from context.
-   * Example: `"var(--color-main-accent)"`.
+   * Sets `color` on the lead wrapper so `SomeIcon` / SVG `currentColor` tints. Omit to inherit.
+   * Example: `"var(--color-intent-accent)"`.
    */
   leadColor?: React.CSSProperties["color"]
 }
@@ -43,32 +39,11 @@ export function InputSection({
   showLabel = true,
   label = "",
   leadSlot,
-  iconName,
-  iconStyle = "outline",
   showContentSlot = true,
   contentSlot,
-  cdnBaseUrl,
   leadColor,
 }: InputSectionProps) {
-  const useAutoCdnIcon = leadSlot === undefined
-
-  const showLead =
-    showLabel &&
-    (useAutoCdnIcon ? Boolean(iconName) : leadSlot != null)
-
-  const leadInner = useAutoCdnIcon ? (
-    iconName ? (
-      <SomeIcon
-        iconName={iconName}
-        iconStyle={iconStyle}
-        cdnBaseUrl={cdnBaseUrl}
-        className="ds-inputSection__leadIcon"
-        color={leadColor}
-      />
-    ) : null
-  ) : (
-    leadSlot
-  )
+  const showLead = showLabel && leadSlot != null
 
   return (
     <div className={cn("ds-inputSection", className)} data-component="input-section">
@@ -80,7 +55,7 @@ export function InputSection({
               data-part="lead"
               style={leadColor != null ? { color: leadColor } : undefined}
             >
-              {leadInner}
+              {leadSlot}
             </div>
           ) : null}
           <div className="ds-inputSection__title" data-part="title">

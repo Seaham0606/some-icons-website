@@ -5,12 +5,13 @@ import { PageContent } from '@/components/layout/PageContent'
 import { useUIStore } from '@/stores/uiStore'
 import {
   Button,
-  InputGroup,
+  Input,
+  InputField,
   InputSection,
   InputSectionSlotPlaceholder,
-  InputWrapper,
   SegmentedControl,
   Sidebar,
+  SomeIcon,
   ThemeButton,
 } from 'design-system'
 import { getHighestVersion, useChangelog } from '@/hooks/useChangelog'
@@ -110,19 +111,27 @@ export default function HomePage() {
           </div>
         }
       >
-        {/*
-          InputSection lead icons load from the Some Icons CDN:
-          packages/design-system/package.json → someIconsCdnBaseUrl, then index.json + files.outline|filled for iconName.
-        */}
         <InputSection
           showLabel={false}
           contentSlot={
             <>
-              <InputWrapper
+              <InputField
                 showLabel={false}
-                contentSlot={<InputSectionSlotPlaceholder />}
+                contentSlot={
+                  <Input
+                    placeholder="Search"
+                    leadingSlot={
+                      <SomeIcon
+                        iconName="interface-search"
+                        iconStyle="outline"
+                        iconSize="md"
+                        padding="2"
+                      />
+                    }
+                  />
+                }
               />
-              <InputWrapper
+              <InputField
                 label="Style"
                 contentSlot={
                   <SegmentedControl
@@ -132,7 +141,7 @@ export default function HomePage() {
                   />
                 }
               />
-              <InputWrapper
+              <InputField
                 label="Category"
                 contentSlot={<InputSectionSlotPlaceholder />}
               />
@@ -141,18 +150,45 @@ export default function HomePage() {
         />
         <InputSection
           label="Customize"
-          iconName="formatting-pencil-alt"
-          iconStyle="outline"
+          leadSlot={
+            <SomeIcon
+              iconName="formatting-pencil-alt"
+              iconStyle="outline"
+              iconSize="sm"
+            />
+          }
           leadColor="var(--color-main-secondary)"
           contentSlot={
-            <InputWrapper
+            <InputField
               label="Color"
+              showCol2
+              col2Width="size-12"
               contentSlot={
-                <InputGroup
-                  leadingWidth="fit"
-                  trailingWidth="fill"
-                  leadingSlot={<InputSectionSlotPlaceholder />}
-                  trailingSlot={<InputSectionSlotPlaceholder />}
+                <Input
+                  disabled
+                  defaultValue="Default"
+                  contentColor="var(--color-main-disabled)"
+                  trailingSlot={
+                    <SomeIcon
+                      iconName="arrow-undo"
+                      iconStyle="outline"
+                      iconSize="md"
+                      padding="2"
+                    />
+                  }
+                />
+              }
+              secondarySlot={
+                <Input
+                  leadingSlot={
+                    <SomeIcon
+                      iconName="formatting-eyedropper"
+                      iconStyle="outline"
+                      iconSize="md"
+                      padding="2"
+                    />
+                  }
+                  showTrailing={false}
                 />
               }
             />
@@ -160,29 +196,32 @@ export default function HomePage() {
         />
         <InputSection
           label="Export"
-          iconName="arrow-up-out"
-          iconStyle="outline"
+          leadSlot={
+            <SomeIcon
+              iconName="arrow-up-out"
+              iconStyle="outline"
+              iconSize="sm"
+            />
+          }
           leadColor="var(--color-main-secondary)"
           contentSlot={
             <>
-              <InputWrapper
+              <InputField
                 label="Size"
+                showCol2
+                col2Width="size-12"
                 contentSlot={
-                  <InputGroup
-                    leadingWidth="fit"
-                    trailingWidth="fill"
-                    leadingSlot={
-                      <SegmentedControl<16 | 20 | 24 | 32>
-                        options={EXPORT_SIZE_OPTIONS}
-                        value={exportSize}
-                        onChange={setExportSize}
-                      />
-                    }
-                    trailingSlot={<InputSectionSlotPlaceholder />}
+                  <SegmentedControl<16 | 20 | 24 | 32>
+                    options={EXPORT_SIZE_OPTIONS}
+                    value={exportSize}
+                    onChange={setExportSize}
                   />
                 }
+                secondarySlot={
+                  <Input showLeading={false} showTrailing={false} defaultValue="" />
+                }
               />
-              <InputWrapper
+              <InputField
                 label="Format"
                 contentSlot={
                   <SegmentedControl<'svg' | 'png'>

@@ -38,7 +38,7 @@
 
   color: var(--color-main-tertiary);
   border-radius: var(--radius-full);
-  background: var(--color-fill-overlay-weak);
+  background: var(--color-overlay-dark-hover);
 }
 
 /* Sidebar — matches icons app homepage-aside (flex column in shell, not position:fixed) */
@@ -172,6 +172,505 @@
   background: var(--color-black-alpha-0);
 }
 
+/* SomeIcon — outer = 2×padding + glyph; tokens via --ds-some-icon-pad / --ds-some-icon-glyph */
+.ds-someIcon {
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  padding: var(--ds-some-icon-pad, 0px);
+  width: calc(2 * var(--ds-some-icon-pad, 0px) + var(--ds-some-icon-glyph));
+  height: calc(2 * var(--ds-some-icon-pad, 0px) + var(--ds-some-icon-glyph));
+}
+
+.ds-someIcon__glyph {
+  box-sizing: border-box;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--ds-some-icon-glyph);
+  height: var(--ds-some-icon-glyph);
+}
+
+.ds-someIcon__glyph svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+/* Input — Figma Input (text field shell + 40×40 slots); outer frame = size-12 (48px). */
+.ds-input {
+  --ds-input-bg: var(--color-background-input);
+  box-sizing: border-box;
+  position: relative;
+  display: flex;
+  flex-direction: row;
+  align-items: stretch;
+  width: 100%;
+  min-width: 0;
+  min-height: var(--size-12);
+  height: var(--size-12);
+  gap: 0;
+  border-radius: var(--radius-lg);
+  /* Idle stroke matches SegmentedControl (same input chrome tokens). */
+  border: var(--border-width-base) solid var(--color-border-weak);
+  background: var(--ds-input-bg);
+  /* Figma frame padding is inside the stroke; subtract border so outer size matches. */
+  padding: calc(var(--spacing-padding-1) - var(--border-width-base));
+  transition:
+    border-color 300ms ease,
+    box-shadow 200ms ease,
+    background 200ms ease;
+}
+
+.ds-input[data-frame="borderless"] {
+  border: none;
+  padding: var(--spacing-padding-1);
+  box-shadow: none;
+}
+
+.ds-input[data-disabled="true"] {
+  pointer-events: none;
+}
+
+.ds-input[data-status="default"]:not([data-disabled="true"]):not([data-readonly="true"]):not(:focus-within):hover {
+  border-color: var(--color-border-strong);
+}
+
+/*
+ * Focus ring only when `data-focus-ring="true"` (Tab / keyboard focus). Pointer focus inside
+ * the shell (click to type) skips the ring and stays off while typing — see Input component.
+ */
+.ds-input[data-status="default"]:focus-within {
+  border-color: var(--color-border-strong);
+  outline: none;
+}
+
+.ds-input[data-status="default"]:focus-within[data-focus-ring="true"] {
+  box-shadow: var(--shadow-focus-accent);
+}
+
+.ds-input[data-status="success"]:not([data-disabled="true"]):not([data-readonly="true"]) {
+  border-color: var(--color-border-success);
+  background: color-mix(in srgb, var(--color-intent-success) 20%, var(--ds-input-bg));
+}
+
+.ds-input[data-status="success"]:focus-within {
+  outline: none;
+}
+
+.ds-input[data-status="success"]:focus-within[data-focus-ring="true"] {
+  box-shadow: var(--shadow-focus-success);
+}
+
+.ds-input[data-status="warning"]:not([data-disabled="true"]):not([data-readonly="true"]) {
+  border-color: var(--color-border-warning);
+  background: color-mix(in srgb, var(--color-intent-warning) 20%, var(--ds-input-bg));
+}
+
+.ds-input[data-status="warning"]:focus-within {
+  outline: none;
+}
+
+.ds-input[data-status="warning"]:focus-within[data-focus-ring="true"] {
+  box-shadow: var(--shadow-focus-warning);
+}
+
+.ds-input[data-status="error"]:not([data-disabled="true"]):not([data-readonly="true"]) {
+  border-color: var(--color-border-error);
+  background: color-mix(in srgb, var(--color-intent-error) 20%, var(--ds-input-bg));
+}
+
+.ds-input[data-status="error"]:focus-within {
+  outline: none;
+}
+
+.ds-input[data-status="error"]:focus-within[data-focus-ring="true"] {
+  box-shadow: var(--shadow-focus-error);
+}
+
+.ds-input__slot {
+  box-sizing: border-box;
+  flex: 0 0 var(--size-10);
+  width: var(--size-10);
+  min-width: var(--size-10);
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: center;
+  overflow: visible;
+  color: var(--ds-input-content-color, var(--color-main-tertiary));
+}
+
+/* Placeholder fills the slot; fixed-size icons (e.g. SomeIcon `iconSize` + `padding`) stay centered. */
+.ds-input__slot > [data-part="slot-placeholder"] {
+  flex: 1 1 auto;
+  min-height: 0;
+  min-width: 0;
+}
+
+.ds-input__slot > :not([data-part="slot-placeholder"]) {
+  align-self: center;
+  flex-shrink: 0;
+}
+
+.ds-input__slotPlaceholder {
+  box-sizing: border-box;
+  width: 100%;
+  border-radius: var(--radius-md);
+  border: var(--border-width-base) dashed var(--color-red-300);
+  background: var(--color-red-alpha-25);
+}
+
+.ds-input__field {
+  box-sizing: border-box;
+  flex: 1 1 0%;
+  min-width: 0;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  padding-left: var(--spacing-padding-2);
+  padding-right: var(--spacing-padding-2);
+}
+
+.ds-input__input {
+  box-sizing: border-box;
+  width: 100%;
+  min-width: 0;
+  margin: 0;
+  border: none;
+  background: transparent;
+  outline: none;
+  appearance: none;
+  font-family: var(--font-family-sans);
+  font-size: var(--font-size-input);
+  font-weight: 500;
+  font-style: normal;
+  line-height: var(--line-height-input);
+  color: var(--ds-input-content-color, var(--color-main-primary));
+}
+
+.ds-input[data-filled="false"] .ds-input__input {
+  color: var(--ds-input-content-color, var(--color-main-tertiary));
+}
+
+.ds-input[data-status="success"][data-filled="true"] .ds-input__input {
+  color: var(--ds-input-content-color, var(--color-intent-success));
+}
+
+.ds-input[data-status="warning"][data-filled="true"] .ds-input__input {
+  color: var(--ds-input-content-color, var(--color-intent-warning));
+}
+
+.ds-input[data-status="error"][data-filled="true"] .ds-input__input {
+  color: var(--ds-input-content-color, var(--color-intent-error));
+}
+
+.ds-input[data-disabled="true"] .ds-input__input {
+  color: var(--ds-input-content-color, var(--color-main-disabled));
+}
+
+.ds-input[data-readonly="true"] .ds-input__input {
+  color: var(--ds-input-content-color, var(--color-main-primary));
+}
+
+.ds-input__input::placeholder {
+  color: var(--ds-input-content-color, var(--color-main-quaternary));
+  font-weight: 500;
+}
+
+.ds-input__input::selection {
+  background: var(--color-intent-accent);
+  color: var(--color-main-inverse);
+}
+
+/* Input trailing actions: `SomeIcon` supplies `iconSize` / `padding` (box size). */
+.ds-input__trailingGlyph {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.ds-input__trailingRow {
+  display: flex;
+  height: 100%;
+  width: 100%;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-gap-2);
+}
+
+.ds-input__trailingAction {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--size-icon-sm);
+  height: var(--size-icon-sm);
+  flex-shrink: 0;
+  padding: 0;
+  margin: 0;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  color: inherit;
+  transition: opacity 200ms ease;
+}
+
+.ds-input__trailingAction:hover {
+  opacity: 0.7;
+}
+
+/* Optional: bolder empty state (e.g. color picker “Default”) */
+.ds-input--placeholderEmphasis[data-filled="false"] .ds-input__input {
+  font-weight: 600;
+  line-height: normal;
+}
+
+/*
+ * Native `<input>` / `<button>` chrome matching input tokens (select triggers, swatches, etc.).
+ * Not the `.ds-input` shell — use on raw form controls outside the DS Input component.
+ */
+.ds-nativeInput {
+  box-sizing: border-box;
+  min-height: 44px;
+  width: 100%;
+  min-width: 0;
+  border-radius: var(--radius-lg);
+  border: var(--border-width-base) solid var(--color-border-extra-weak);
+  background: var(--color-background-input);
+  padding: var(--spacing-padding-2) var(--spacing-padding-3);
+  margin: 0;
+  font-family: var(--font-family-sans);
+  font-size: var(--font-size-input);
+  line-height: var(--line-height-input);
+  font-weight: 500;
+  font-style: normal;
+  color: var(--color-main-primary);
+  outline: none;
+  appearance: none;
+  transition:
+    border-color 200ms ease,
+    box-shadow 200ms ease,
+    background-color 200ms ease;
+}
+
+.ds-nativeInput::placeholder {
+  color: var(--color-main-tertiary);
+  font-weight: 500;
+}
+
+.ds-nativeInput:hover:not(:disabled) {
+  border-color: var(--color-border-base);
+}
+
+.ds-nativeInput:focus {
+  border-color: var(--color-intent-accent);
+}
+
+.ds-nativeInput:focus-visible {
+  border-color: var(--color-intent-accent);
+}
+
+.ds-nativeInput:disabled {
+  pointer-events: none;
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.ds-nativeInput::selection {
+  background: var(--color-intent-accent);
+  color: var(--color-main-inverse);
+}
+
+.ds-nativeInput[aria-invalid="true"] {
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--color-red-400) 20%, transparent);
+}
+
+[data-theme="dark"] .ds-nativeInput[aria-invalid="true"] {
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--color-red-400) 40%, transparent);
+}
+
+.ds-nativeInput[data-validation-error="true"] {
+  box-shadow: 0 0 0 var(--border-width-thick) var(--color-intent-warning);
+}
+
+.ds-nativeInput::file-selector-button {
+  display: inline-flex;
+  align-items: center;
+  height: 28px;
+  margin: 0;
+  padding: 0;
+  border: none;
+  background: transparent;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--color-main-primary);
+}
+
+button.ds-nativeInput {
+  font: inherit;
+  text-align: unset;
+}
+
+/* CategorySelect-style trigger (button + chevron) */
+.ds-selectTriggerWrap {
+  position: relative;
+  width: 100%;
+}
+
+.ds-selectTrigger {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-gap-2);
+  width: 100%;
+  cursor: pointer;
+  text-align: left;
+  padding-right: 40px;
+}
+
+.ds-selectTriggerIcon {
+  width: var(--size-icon-sm);
+  height: var(--size-icon-sm);
+  flex-shrink: 0;
+  color: var(--color-main-primary);
+  transition: transform 500ms cubic-bezier(0.33, 1, 0.68, 1);
+}
+
+.ds-selectTriggerLabel {
+  transition: color 500ms cubic-bezier(0.33, 1, 0.68, 1);
+}
+
+.ds-selectTriggerChevron {
+  position: absolute;
+  right: var(--spacing-padding-3);
+  top: 50%;
+  transform: translateY(-50%);
+  width: var(--size-icon-sm);
+  height: var(--size-icon-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  color: var(--color-main-tertiary);
+}
+
+.ds-selectTriggerChevronIcon {
+  box-sizing: border-box;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.ds-selectTriggerChevronIcon svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+/* SizeSelector row */
+.ds-sizeSelectorRow {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-gap-2);
+  min-width: 0;
+}
+
+.ds-sizeSelectorRow > .ds-segmentedControl {
+  flex: 1 1 0%;
+  min-width: 0;
+}
+
+/* ColorPicker layout */
+.ds-colorPickerRow {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-gap-2);
+}
+
+.ds-colorPickerInputWrap {
+  position: relative;
+  flex: 1 1 0%;
+  min-width: 0;
+}
+
+.ds-colorSwatchHost {
+  position: relative;
+}
+
+.ds-colorSwatchButton {
+  width: 44px;
+  min-width: 44px;
+  flex-shrink: 0;
+  padding: 0;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.ds-colorSwatchButton:hover:not(:disabled) {
+  border-color: var(--color-border-weak);
+}
+
+.ds-colorPickerSwatchPlaceholder {
+  width: var(--size-icon-sm);
+  height: var(--size-icon-sm);
+  pointer-events: none;
+  color: var(--color-main-tertiary);
+}
+
+.ds-colorPickerSwatchIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.ds-colorPickerPopover {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  z-index: 50;
+  margin-top: var(--spacing-gap-2);
+  padding: var(--spacing-padding-4);
+  border-radius: var(--radius-lg);
+  border: var(--border-width-base) solid var(--color-border-extra-weak);
+  background: var(--color-background-input);
+  box-shadow: 0 8px 24px color-mix(in srgb, var(--color-black-alpha-950) 12%, transparent);
+}
+
+[data-theme="dark"] .ds-colorPickerPopover {
+  border-color: var(--color-border-weak);
+  box-shadow: 0 8px 24px color-mix(in srgb, var(--color-black) 40%, transparent);
+}
+
+.ds-nativeInput--numeric {
+  flex-shrink: 0;
+  text-align: center;
+  transition: width 300ms ease;
+  appearance: textfield;
+}
+
+.ds-nativeInput--numeric[data-width="collapsed"] {
+  width: 44px;
+}
+
+.ds-nativeInput--numeric[data-width="expanded"] {
+  width: 64px;
+}
+
+.ds-nativeInput--numeric::-webkit-outer-spin-button,
+.ds-nativeInput--numeric::-webkit-inner-spin-button {
+  appearance: none;
+  margin: 0;
+}
+
 /* InputSection — Figma 56:5302 */
 .ds-inputSection {
   box-sizing: border-box;
@@ -183,8 +682,9 @@
   padding: var(--spacing-padding-3);
   border-radius: var(--radius-2xl);
   border: var(--border-width-base) solid var(--color-border-weak);
-  background: var(--color-fill-background-elevation);
-  overflow: hidden;
+  background: var(--color-background-elevation);
+  /* visible: avoid clipping focus rings / shadows on nested inputs (see .ds-sidebar). */
+  overflow: visible;
 }
 
 .ds-inputSection__labelRow {
@@ -198,13 +698,9 @@
 
 .ds-inputSection__lead {
   flex-shrink: 0;
-  width: var(--size-icon-sm);
-  height: var(--size-icon-sm);
-}
-
-.ds-inputSection__leadIcon {
-  width: 100%;
-  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .ds-inputSection__title {
@@ -227,51 +723,8 @@
   gap: var(--spacing-gap-3);
 }
 
-/* InputGroup — neutral 2-column row; no padding, color, or gap (parent supplies spacing). */
-.ds-inputGroup {
-  box-sizing: border-box;
-  display: flex;
-  flex-direction: row;
-  gap: var(--spacing-gap-3);
-  align-items: flex-start;
-  width: 100%;
-  min-width: 0;
-}
-
-.ds-inputGroup__leading,
-.ds-inputGroup__trailing {
-  box-sizing: border-box;
-  min-width: 0;
-}
-
-.ds-inputGroup__leading[data-width="fit"],
-.ds-inputGroup__trailing[data-width="fit"] {
-  flex: 0 0 auto;
-}
-
-.ds-inputGroup__leading[data-width="fill"],
-.ds-inputGroup__trailing[data-width="fill"] {
-  flex: 1 1 0%;
-  min-width: 0;
-}
-
-/* SegmentedControl in a fit-width leading column: hug tabs instead of `width: 100%`. */
-.ds-inputGroup__leading[data-width="fit"] > .ds-segmentedControl {
-  width: auto;
-  max-width: 100%;
-}
-
-/* Slot placeholder in a fit-width column: fixed width so it doesn’t consume the full row. */
-.ds-inputGroup__leading[data-width="fit"] > .ds-inputSection__slotPlaceholder,
-.ds-inputGroup__trailing[data-width="fit"] > .ds-inputSection__slotPlaceholder {
-  width: var(--size-10);
-  min-width: var(--size-10);
-  max-width: 100%;
-  flex: none;
-}
-
-/* InputWrapper — Figma InputWrapper (80:5593): label row + contentSlot (81:5595) */
-.ds-inputWrapper {
+/* InputField — Figma InputWrapper (80:5593): label row + content; optional 2-col row (equal fill width, gap-3, height from content) */
+.ds-inputField {
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
@@ -281,7 +734,7 @@
   min-width: 0;
 }
 
-.ds-inputWrapper__labelRow {
+.ds-inputField__labelRow {
   display: flex;
   flex-direction: row;
   align-items: center;
@@ -293,20 +746,49 @@
   flex-shrink: 0;
 }
 
-.ds-inputWrapper__label {
+.ds-inputField__label {
   display: block;
   color: var(--color-main-tertiary);
   min-width: 0;
 }
 
-.ds-inputWrapper__content {
+.ds-inputField__content {
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
   width: 100%;
   min-width: 0;
-  overflow: hidden;
+  overflow: visible;
+}
+
+.ds-inputField__row {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: row;
+  gap: var(--spacing-gap-3);
+  align-items: flex-start;
+  width: 100%;
+  min-width: 0;
+}
+
+.ds-inputField__col {
+  box-sizing: border-box;
+  min-width: 0;
+  flex: 1 1 0%;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+}
+
+.ds-inputField__col > * {
+  min-width: 0;
+}
+
+.ds-inputField__col--secondary[data-col2-width="size-12"] {
+  flex: 0 0 var(--size-12);
+  width: var(--size-12);
+  max-width: var(--size-12);
 }
 
 /* Figma SlotPlaceholder (node 115:8535) — default empty content */
@@ -333,17 +815,41 @@
   /* Same as .ds-button: token = inset to outer edge; padding sits inside the border. */
   padding: calc(var(--spacing-padding-1) - var(--border-width-base));
   border-radius: var(--radius-lg);
-  border: var(--border-width-base) solid var(--color-input-stroke);
-  background: var(--color-fill-input-enabled);
+  border: var(--border-width-base) solid var(--color-border-weak);
+  background: var(--color-background-input);
   transition: border-color 300ms ease;
 }
 
 .ds-segmentedControl:hover {
-  border-color: var(--color-input-stroke-hover);
+  border-color: var(--color-border-base);
 }
 
 .ds-segmentedControl[data-has-error="true"] {
   box-shadow: 0 0 0 var(--border-width-thick) var(--color-red-500);
+}
+
+[data-theme="dark"] .ds-input[data-status="default"] {
+  border-color: var(--color-border-weak);
+}
+
+[data-theme="dark"] .ds-nativeInput {
+  border-color: var(--color-border-weak);
+}
+
+[data-theme="dark"] .ds-nativeInput:hover:not(:disabled) {
+  border-color: var(--color-border-base);
+}
+
+[data-theme="dark"] .ds-segmentedControl {
+  border-color: var(--color-border-weak);
+}
+
+[data-theme="dark"] .ds-segmentedControl:hover {
+  border-color: var(--color-border-base);
+}
+
+[data-theme="dark"] .ds-colorSwatchButton:hover:not(:disabled) {
+  border-color: var(--color-border-base);
 }
 
 .ds-segmentedControl__dividerWrap {
@@ -358,6 +864,11 @@
   min-height: var(--size-3);
   border-radius: var(--radius-full);
   background: var(--color-border-weak);
+}
+
+.ds-segmentedControl__segment {
+  flex: 1 1 0%;
+  min-width: 0;
 }
 
 /*
@@ -417,9 +928,28 @@
 
 .ds-button:focus-visible:not(:disabled):not([aria-disabled="true"]) {
   outline: none;
-  box-shadow:
-    0 0 0 var(--spacing-050) var(--color-fill-background-base),
-    0 0 0 var(--spacing-1) var(--color-main-accent);
+  box-shadow: var(--shadow-focus-accent);
+}
+
+/* Optional focus rings (same tokens as --shadow-focus-* in semantic.css) */
+.ds-focusRing--accent:focus-visible:not(:disabled):not([aria-disabled="true"]) {
+  outline: none;
+  box-shadow: var(--shadow-focus-accent);
+}
+
+.ds-focusRing--success:focus-visible:not(:disabled):not([aria-disabled="true"]) {
+  outline: none;
+  box-shadow: var(--shadow-focus-success);
+}
+
+.ds-focusRing--warning:focus-visible:not(:disabled):not([aria-disabled="true"]) {
+  outline: none;
+  box-shadow: var(--shadow-focus-warning);
+}
+
+.ds-focusRing--error:focus-visible:not(:disabled):not([aria-disabled="true"]) {
+  outline: none;
+  box-shadow: var(--shadow-focus-error);
 }
 
 .ds-button:active:not(:disabled):not([aria-disabled="true"]) {
@@ -453,14 +983,14 @@
 .ds-button[data-variant="tertiary"]:hover:not(:disabled):not([aria-disabled="true"])::before,
 .ds-button[data-variant="tertiary"]:focus-visible:not(:disabled):not([aria-disabled="true"])::before {
   opacity: 1;
-  background-color: var(--color-fill-overlay-light-hover);
+  background-color: var(--color-overlay-light-hover);
 }
 
 .ds-button[data-variant="primary"]:active:not(:disabled):not([aria-disabled="true"])::before,
 .ds-button[data-variant="secondary"]:active:not(:disabled):not([aria-disabled="true"])::before,
 .ds-button[data-variant="tertiary"]:active:not(:disabled):not([aria-disabled="true"])::before {
   opacity: 1;
-  background-color: var(--color-fill-overlay-light-pressed);
+  background-color: var(--color-overlay-light-pressed);
 }
 
 .ds-button[data-radius="none"] {
@@ -511,17 +1041,6 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: var(--size-6);
-  height: var(--size-6);
-}
-
-.ds-button[data-size="lg"] .ds-button__iconSlot,
-.ds-button[data-size="md"] .ds-button__iconSlot {
-  padding: var(--spacing-padding-050);
-}
-
-.ds-button[data-size="sm"] .ds-button__iconSlot {
-  padding: var(--spacing-padding-1);
 }
 
 .ds-button__icon {
@@ -529,27 +1048,6 @@
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-}
-
-/* SomeIcon (and similar) use a wrapper + SVG with % sizes — fill the icon box. */
-.ds-button__icon > * {
-  width: 100%;
-  height: 100%;
-}
-
-.ds-button[data-size="lg"] .ds-button__icon,
-.ds-button[data-size="md"] .ds-button__icon {
-  width: var(--size-icon-sm);
-  height: var(--size-icon-sm);
-}
-
-.ds-button[data-size="sm"] .ds-button__icon {
-  width: var(--size-icon-xs);
-  height: var(--size-icon-xs);
-}
-
-.ds-button[data-icon-only="true"] .ds-button__iconSlot {
-  padding: 0;
 }
 
 .ds-button[data-icon-only="true"] .ds-button__icon {
@@ -637,26 +1135,44 @@
 
 .ds-button[data-variant="transparent"]:hover:not(:disabled):not([aria-disabled="true"]),
 .ds-button[data-variant="transparent"]:focus-visible:not(:disabled):not([aria-disabled="true"]) {
-  background-color: var(--color-fill-overlay-dark-hover);
+  background-color: var(--color-overlay-dark-hover);
 }
 
 .ds-button[data-variant="transparent"]:active:not(:disabled):not([aria-disabled="true"]) {
-  background-color: var(--color-fill-overlay-dark-pressed);
+  background-color: var(--color-overlay-dark-pressed);
 }
 
-/* ThemeButton: vertical strip (moon → sun → moon), always scrolls up; icons clip at .ds-button (overflow hidden) */
+/* ThemeButton: vertical strip (moon → sun → moon); --ds-theme-button-row must match cell height + track gap. */
 .ds-theme-button {
-  --ds-theme-button-row: calc(var(--size-icon-sm) + var(--spacing-gap-3));
+  --ds-theme-button-row: calc(var(--size-6) + var(--spacing-gap-3));
 }
 
-/* flex-start: track top aligns with viewport top so each translateY step matches one row.
-   (center would vertically center the tall strip and desync moon/sun vs transform math.) */
+/*
+ * Icon-only: inner slot stays size-6 for layout (md padding → 40×40 border-box total).
+ * Do not clip the track here — .ds-button overflow:hidden + border-radius clips to the full button.
+ */
+.ds-button.ds-theme-button[data-icon-only="true"] .ds-button__iconSlot {
+  width: var(--size-6);
+  height: var(--size-6);
+}
+
+.ds-button.ds-theme-button[data-icon-only="true"] .ds-button__icon {
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+/*
+ * flex-start: track’s top aligns with viewport top; translateY(-row) advances one cell + gap.
+ * overflow: visible — clipping is only on .ds-button (40×40 rounded), not this 24×24 wrapper.
+ */
 .ds-theme-button__viewport {
   overflow: visible;
   display: flex;
   width: 100%;
   height: 100%;
-  padding-top: var(--spacing-padding-050);
+  min-height: 0;
+  box-sizing: border-box;
   align-items: flex-start;
   justify-content: center;
 }
@@ -677,7 +1193,7 @@
   align-items: center;
   justify-content: center;
   width: 100%;
-  height: var(--size-icon-sm);
+  height: var(--size-6);
   line-height: 0;
 }
 

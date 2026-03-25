@@ -3,28 +3,41 @@
   --color-main-primary: var(--color-black-alpha-950);
   --color-main-secondary: var(--color-black-alpha-600);
   --color-main-tertiary: var(--color-black-alpha-200);
+  --color-main-quaternary: var(--color-black-alpha-100);
   --color-main-disabled: var(--color-black-alpha-25);
   --color-main-inverse: var(--color-gray-10);
-  --color-main-accent: var(--color-blue-400);
 
-  /* fill / overlay */
-  --color-fill-overlay-weak: var(--color-black-alpha-15);
-  --color-fill-overlay-light-hover: var(--color-white-alpha-50);
-  --color-fill-overlay-light-pressed: var(--color-black-alpha-50);
-  --color-fill-overlay-dark-hover: var(--color-black-alpha-50);
-  --color-fill-overlay-dark-pressed: var(--color-black-alpha-50);
+  /* intent */
+  --color-intent-accent: var(--color-blue-400);
+  --color-intent-success: var(--color-green-400);
+  --color-intent-warning: var(--color-yellow-400);
+  --color-intent-error: var(--color-purple-400);
 
-  /* fill / background */
-  --color-fill-background-base: var(--color-gray-10);
-  --color-fill-background-elevation: var(--color-white);
+  /* overlay */
+  --color-overlay-weak: var(--color-black-alpha-15);
+  --color-overlay-light-hover: var(--color-white-alpha-50);
+  --color-overlay-light-pressed: var(--color-black-alpha-50);
+  --color-overlay-dark-hover: var(--color-black-alpha-50);
+  --color-overlay-dark-pressed: var(--color-black-alpha-50);
+  --color-overlay-accent: var(--color-blue-alpha-75);
+  --color-overlay-success: var(--color-green-alpha-75);
+  --color-overlay-warning: var(--color-yellow-alpha-75);
+  --color-overlay-error: var(--color-purple-alpha-75);
 
-  /* fill / input */
-  --color-fill-input-enabled: var(--color-black-alpha-10);
+  /* background */
+  --color-background-base: var(--color-gray-10);
+  --color-background-elevation: var(--color-white);
+  --color-background-input: var(--color-black-alpha-10);
 
   /* border */
+  --color-border-extra-strong: var(--color-black-alpha-600);
+  --color-border-strong: var(--color-black-alpha-100);
   --color-border-base: var(--color-black-alpha-50);
   --color-border-weak: var(--color-black-alpha-25);
   --color-border-extra-weak: var(--color-black-alpha-10);
+  --color-border-success: var(--color-green-alpha-400);
+  --color-border-warning: var(--color-yellow-alpha-400);
+  --color-border-error: var(--color-purple-alpha-400);
 
   /* border / inverse */
   --color-border-inverse-base: var(--color-white-alpha-50);
@@ -53,11 +66,23 @@
     var(--color-gray-25) 100%
   );
 
-  /* App-facing aliases (inputs, tertiary text) */
-  --color-text-tertiary: var(--color-main-tertiary);
-  --color-input-stroke: var(--color-border-extra-weak);
-  --color-input-stroke-hover: var(--color-border-weak);
-  --color-input-stroke-typing: var(--color-main-accent);
+  /* focus — default (accent) + intent variants; ring = palette 400, gap matches design-system buttons */
+  --color-focus-accent: var(--color-intent-accent);
+  --shadow-focus-accent:
+    0 0 0 var(--spacing-050) var(--color-background-base),
+    0 0 0 var(--spacing-1) var(--color-focus-accent);
+  --color-focus-success: var(--color-green-400);
+  --color-focus-warning: var(--color-yellow-400);
+  --color-focus-error: var(--color-purple-400);
+  --shadow-focus-success:
+    0 0 0 var(--spacing-050) var(--color-background-base),
+    0 0 0 var(--spacing-1) var(--color-focus-success);
+  --shadow-focus-warning:
+    0 0 0 var(--spacing-050) var(--color-background-base),
+    0 0 0 var(--spacing-1) var(--color-focus-warning);
+  --shadow-focus-error:
+    0 0 0 var(--spacing-050) var(--color-background-base),
+    0 0 0 var(--spacing-1) var(--color-focus-error);
 }
 
 [data-theme="dark"] {
@@ -65,28 +90,41 @@
   --color-main-primary: var(--color-white-alpha-999);
   --color-main-secondary: var(--color-white-alpha-700);
   --color-main-tertiary: var(--color-white-alpha-300);
+  --color-main-quaternary: var(--color-white-alpha-150);
   --color-main-disabled: var(--color-white-alpha-50);
   --color-main-inverse: var(--color-gray-925);
-  --color-main-accent: var(--color-blue-400);
 
-  /* fill / overlay */
-  --color-fill-overlay-weak: var(--color-white-alpha-15);
-  --color-fill-overlay-light-hover: var(--color-black-alpha-50);
-  --color-fill-overlay-light-pressed: var(--color-white-alpha-50);
-  --color-fill-overlay-dark-hover: var(--color-white-alpha-50);
-  --color-fill-overlay-dark-pressed: var(--color-white-alpha-50);
+  /* intent */
+  --color-intent-accent: var(--color-blue-400);
+  --color-intent-success: var(--color-green-400);
+  --color-intent-warning: var(--color-yellow-400);
+  --color-intent-error: var(--color-purple-400);
 
-  /* fill / background */
-  --color-fill-background-base: var(--color-gray-975);
-  --color-fill-background-elevation: var(--color-white-alpha-10);
+  /* overlay */
+  --color-overlay-weak: var(--color-white-alpha-15);
+  --color-overlay-light-hover: var(--color-black-alpha-50);
+  --color-overlay-light-pressed: var(--color-white-alpha-50);
+  --color-overlay-dark-hover: var(--color-white-alpha-50);
+  --color-overlay-dark-pressed: var(--color-white-alpha-50);
+  --color-overlay-accent: var(--color-blue-alpha-75);
+  --color-overlay-success: var(--color-green-alpha-75);
+  --color-overlay-warning: var(--color-yellow-alpha-75);
+  --color-overlay-error: var(--color-purple-alpha-75);
 
-  /* fill / input */
-  --color-fill-input-enabled: var(--color-white-alpha-10);
+  /* background */
+  --color-background-base: var(--color-gray-975);
+  --color-background-elevation: var(--color-white-alpha-10);
+  --color-background-input: var(--color-white-alpha-10);
 
   /* border */
+  --color-border-extra-strong: var(--color-white-alpha-600);
+  --color-border-strong: var(--color-white-alpha-150);
   --color-border-base: var(--color-white-alpha-50);
   --color-border-weak: var(--color-white-alpha-15);
   --color-border-extra-weak: var(--color-white-alpha-10);
+  --color-border-success: var(--color-green-alpha-400);
+  --color-border-warning: var(--color-yellow-alpha-400);
+  --color-border-error: var(--color-purple-alpha-400);
 
   /* border / inverse */
   --color-border-inverse-base: var(--color-black-alpha-50);
@@ -115,9 +153,21 @@
     var(--color-gray-950) 100%
   );
 
-  /* App-facing aliases (inputs, tertiary text) */
-  --color-text-tertiary: var(--color-main-tertiary);
-  --color-input-stroke: var(--color-border-extra-weak);
-  --color-input-stroke-hover: var(--color-border-weak);
-  --color-input-stroke-typing: var(--color-main-accent);
+  /* focus — default (accent) + intent variants; ring = palette 400, gap matches design-system buttons */
+  --color-focus-accent: var(--color-intent-accent);
+  --shadow-focus-accent:
+    0 0 0 var(--spacing-050) var(--color-background-base),
+    0 0 0 var(--spacing-1) var(--color-focus-accent);
+  --color-focus-success: var(--color-green-400);
+  --color-focus-warning: var(--color-yellow-400);
+  --color-focus-error: var(--color-purple-400);
+  --shadow-focus-success:
+    0 0 0 var(--spacing-050) var(--color-background-base),
+    0 0 0 var(--spacing-1) var(--color-focus-success);
+  --shadow-focus-warning:
+    0 0 0 var(--spacing-050) var(--color-background-base),
+    0 0 0 var(--spacing-1) var(--color-focus-warning);
+  --shadow-focus-error:
+    0 0 0 var(--spacing-050) var(--color-background-base),
+    0 0 0 var(--spacing-1) var(--color-focus-error);
 }

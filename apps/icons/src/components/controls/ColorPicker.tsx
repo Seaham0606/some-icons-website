@@ -1,5 +1,5 @@
-import { Input, inputBaseStyles } from '@/components/ui/input'
-import { CdnIcon } from '@/components/ui/cdn-icon'
+import { Input, nativeInputClassName } from '@/components/ui/input'
+import { SomeIcon } from 'design-system'
 import { useColorStore } from '@/stores/colorStore'
 import { isValidHexColor, normalizeHexColor } from '@/lib/svg-utils'
 import { useState, useEffect, useRef } from 'react'
@@ -62,9 +62,9 @@ export function ColorPicker() {
   }
 
   return (
-    <div className="flex gap-2 items-center">
+    <div className="ds-colorPickerRow">
       {/* Text input with reset icon inside */}
-      <div className="relative flex-1">
+      <div className="ds-colorPickerInputWrap">
         <Input
           type="text"
           placeholder="Default"
@@ -75,32 +75,30 @@ export function ColorPicker() {
             style: "outline",
             onClick: handleReset
           }] : undefined}
-          className={cn(
-            !selectedColor && 'text-[var(--foreground-tertiary)] font-semibold leading-normal'
-          )}
+          className={cn(!selectedColor && 'ds-input--placeholderEmphasis')}
         />
       </div>
 
       {/* Color picker box with popover */}
-      <div className="relative">
+      <div className="ds-colorSwatchHost">
         <button
           ref={buttonRef}
           type="button"
           onClick={() => setIsOpen(!isOpen)}
-          className={cn(
-            inputBaseStyles,
-            'w-[44px] shrink-0 cursor-pointer p-0 overflow-hidden',
-            'flex items-center justify-center',
-            'hover:border-[var(--color-input-stroke-hover)]'
-          )}
+          className={cn(nativeInputClassName, 'ds-colorSwatchButton')}
           style={{
-            backgroundColor: selectedColor ?? 'var(--color-input-bg)',
+            backgroundColor: selectedColor ?? 'var(--color-background-input)',
           }}
           aria-label="Open color picker"
         >
           {!selectedColor && (
-            <div className="w-5 h-5 text-[var(--item-tertiary)] pointer-events-none">
-              <CdnIcon iconId="formatting-eyedropper" className="h-5 w-5" />
+            <div className="ds-colorPickerSwatchPlaceholder">
+              <SomeIcon
+                iconName="formatting-eyedropper"
+                iconStyle="outline"
+                iconSize="sm"
+                className="ds-colorPickerSwatchIcon"
+              />
             </div>
           )}
         </button>
@@ -109,7 +107,7 @@ export function ColorPicker() {
         {isOpen && (
           <div
             ref={pickerRef}
-            className="absolute top-full right-0 mt-2 z-50 p-4 rounded-[10px] bg-[var(--color-input-bg)] border border-[var(--color-input-stroke)] shadow-lg color-picker-popover"
+            className="ds-colorPickerPopover color-picker-popover"
             onClick={(e) => e.stopPropagation()}
           >
             <HexColorPicker

@@ -183,7 +183,7 @@ export const ContentColor: Story = {
   args: {
     children: "Accent",
     variant: "tertiary",
-    contentColor: "var(--color-main-accent)",
+    contentColor: "var(--color-intent-accent)",
   },
 }
 

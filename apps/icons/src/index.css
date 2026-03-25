@@ -21,7 +21,7 @@ html {
 body {
   font-family: var(--font-family-sans);
   font-size: 14px;
-  background-color: var(--color-fill-background-base);
+  background-color: var(--color-background-base);
   color: var(--color-main-primary);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -128,7 +128,7 @@ body {
   outline: none;
   cursor: pointer;
 
-  background: var(--color-fill-background-base);
+  background: var(--color-background-base);
   border: var(--border-width-base) solid var(--color-border-weak);
 }
 
@@ -151,7 +151,7 @@ body {
   height: var(--size-4);
   width: var(--size-4);
   border-radius: var(--radius-full);
-  background: var(--color-fill-background-elevation);
+  background: var(--color-background-elevation);
 
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.15);
 
@@ -167,7 +167,7 @@ body {
 
 .ui-textarea {
   width: 100%;
-  border: var(--border-width-base) solid var(--color-input-stroke);
+  border: var(--border-width-base) solid var(--color-border-extra-weak);
   border-radius: var(--radius-md);
   background: transparent;
   color: inherit;
@@ -184,8 +184,12 @@ body {
   color: var(--color-main-secondary);
 }
 
+[data-theme="dark"] .ui-textarea:not(:focus-visible) {
+  border-color: var(--color-border-weak);
+}
+
 .ui-textarea:focus-visible {
-  border-color: var(--color-input-stroke-typing);
+  border-color: var(--color-intent-accent);
   box-shadow: 0 0 0 3px var(--color-border-base);
 }
 

@@ -71,7 +71,7 @@ export function SegmentedControl<T extends string | number>({
               radius="md"
               fullWidth={false}
               data-segment-selected={isSelected ? "true" : "false"}
-              className="ds-segmentedControl__segment min-w-0 flex-1"
+              className="ds-segmentedControl__segment"
               onClick={() => onChange(option.value)}
               leadingSlot={
                 showLeadingSlot ? (
@@ -79,6 +79,8 @@ export function SegmentedControl<T extends string | number>({
                     iconName={option.leadingIcon!}
                     iconStyle={segmentIconStyle}
                     cdnBaseUrl={cdnBaseUrl}
+                    iconSize="sm"
+                    padding="050"
                   />
                 ) : undefined
               }
@@ -88,6 +90,8 @@ export function SegmentedControl<T extends string | number>({
                     iconName={option.trailingIcon!}
                     iconStyle={segmentIconStyle}
                     cdnBaseUrl={cdnBaseUrl}
+                    iconSize="sm"
+                    padding="050"
                   />
                 ) : undefined
               }

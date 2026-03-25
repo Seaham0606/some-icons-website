@@ -3,7 +3,7 @@ import { SIZE_PRESETS } from '@/lib/constants'
 import { SegmentedControl } from '@/components/ui/segmented-control'
 import { useState } from 'react'
 import { cn } from '@/lib/utils'
-import { inputBaseStyles } from '@/components/ui/input'
+import { nativeInputClassName } from '@/components/ui/input'
 
 const SIZE_OPTIONS = SIZE_PRESETS.map((size) => ({
   value: size,
@@ -40,12 +40,11 @@ export function SizeSelector() {
   const isExpanded = isFocused || hasValue
 
   return (
-    <div className="flex gap-2 items-center min-w-0">
+    <div className="ds-sizeSelectorRow">
       <SegmentedControl
         options={SIZE_OPTIONS}
         value={size}
         onChange={handlePresetClick}
-        className="flex-1 min-w-0"
         hasError={hasError}
       />
 
@@ -57,14 +56,9 @@ export function SizeSelector() {
         onFocus={() => setIsFocused(true)}
         onBlur={() => setIsFocused(false)}
         min={1}
-        className={cn(
-          inputBaseStyles,
-          'shrink-0 text-center',
-          'transition-[width] duration-300',
-          isExpanded ? 'w-[64px]' : 'w-[44px]',
-          '[appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none',
-          hasError && 'ring-2 ring-[var(--color-warning)]'
-        )}
+        className={cn(nativeInputClassName, 'ds-nativeInput--numeric')}
+        data-width={isExpanded ? 'expanded' : 'collapsed'}
+        data-validation-error={hasError ? 'true' : undefined}
       />
     </div>
   )

@@ -16,8 +16,8 @@ export function VersionList({ entries, activeId }: VersionListProps) {
           className={cn(
             'block px-3 py-2 rounded-lg text-sm transition-colors',
             activeId === entry.anchorId
-              ? 'bg-[var(--color-main-accent)] text-[var(--color-main-primary)] font-medium'
-              : 'text-[var(--color-main-secondary)] hover:text-[var(--color-main-primary)] hover:bg-[var(--color-main-accent)]'
+              ? 'bg-[var(--color-intent-accent)] text-[var(--color-main-primary)] font-medium'
+              : 'text-[var(--color-main-secondary)] hover:text-[var(--color-main-primary)] hover:bg-[var(--color-intent-accent)]'
           )}
         >
           {entry.version}

@@ -135,8 +135,8 @@ export const IconCard = memo(function IconCard({ icon }: IconCardProps) {
           'border border-[var(--color-border-base)]',
           'transition-[background-color,border-color] duration-200 ease-in-out',
           isSelected
-            ? 'border-[var(--color-main-accent)]'
-            : 'hover:bg-[var(--color-fill-overlay-weak)] hover:border-[var(--color-main-accent)]'
+            ? 'border-[var(--color-intent-accent)]'
+            : 'hover:bg-[var(--color-overlay-weak)] hover:border-[var(--color-intent-accent)]'
         )}
         style={{
           backgroundColor: isSelected

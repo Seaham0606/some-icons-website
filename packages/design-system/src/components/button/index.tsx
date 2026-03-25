@@ -3,7 +3,7 @@
 import * as React from "react"
 import { cn } from "../../utils"
 import { SomeIcon } from "../some-icon"
-import type { SomeIconStyle } from "../some-icon"
+import type { SomeIconIconSize, SomeIconPadding, SomeIconStyle } from "../some-icon"
 
 export type ButtonRadius =
   | "none"
@@ -90,6 +90,11 @@ export function Button(props: ButtonProps) {
       ? { color: contentColor }
       : undefined
 
+  const someIconLayout: { iconSize: SomeIconIconSize; padding: SomeIconPadding } =
+    size === "sm"
+      ? { iconSize: "xs", padding: "1" }
+      : { iconSize: "sm", padding: "050" }
+
   const trimmedIconName = iconName?.trim() ?? ""
   const hasIconName = trimmedIconName.length > 0
   const cdnIcon = hasIconName ? (
@@ -97,6 +102,8 @@ export function Button(props: ButtonProps) {
       iconName={trimmedIconName}
       iconStyle={iconStyle}
       cdnBaseUrl={cdnBaseUrl}
+      iconSize={someIconLayout.iconSize}
+      padding={someIconLayout.padding}
     />
   ) : null
 

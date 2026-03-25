@@ -20,7 +20,7 @@ export function ChangelogEntry({ entry }: ChangelogEntryProps) {
       <div
         className="prose prose-sm max-w-none text-[var(--color-main-secondary)]
           prose-headings:text-[var(--color-main-primary)] prose-headings:font-semibold
-          prose-strong:text-[var(--color-main-primary)] prose-a:text-[var(--color-main-accent)]
+          prose-strong:text-[var(--color-main-primary)] prose-a:text-[var(--color-intent-accent)]
           prose-ul:list-disc prose-ul:pl-4
           prose-li:my-1"
         dangerouslySetInnerHTML={{ __html: entry.content }}

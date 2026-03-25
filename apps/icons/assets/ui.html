@@ -31,12 +31,8 @@
         
         /* Input colors */
         --color-input-bg: var(--color-white);
-        --color-input-stroke: var(--color-gray-50);
-        --color-input-stroke-hover: var(--color-gray-100);
-        --color-input-stroke-typing: var(--color-blue-400);
         --color-input-secondary-bg-hover: var(--color-gray-25);
         --color-text-primary: var(--color-gray-800);
-        --color-text-tertiary: var(--color-gray-300);
         --color-text-secondary-hover: var(--color-gray-600);
         
         /* Segmented button colors */
@@ -98,17 +94,17 @@
         min-width: 0;
         border-radius: 10px;
         background: var(--color-input-bg);
-        border: 1px solid var(--color-input-stroke);
+        border: 1px solid var(--color-gray-50);
         padding: 0 12px 0 12px;
         transition: border-color 0.2s, box-shadow 0.2s, background-color 0.2s;
       }
 
       .search-wrapper:hover {
-        border-color: var(--color-input-stroke-hover);
+        border-color: var(--color-gray-100);
       }
 
       .search-wrapper:focus-within {
-        border-color: var(--color-input-stroke-typing);
+        border-color: var(--color-blue-400);
       }
 
       .search-wrapper .search-icon {
@@ -123,7 +119,7 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        color: var(--color-text-tertiary);
+        color: var(--color-gray-300);
       }
 
       .search-wrapper input {
@@ -142,7 +138,7 @@
       }
 
       .search-wrapper input::placeholder {
-        color: var(--color-text-tertiary);
+        color: var(--color-gray-300);
         font-weight: 500;
       }
 
@@ -153,7 +149,7 @@
         height: 44px;
         border-radius: 10px;
         background: var(--color-input-bg);
-        border: 1px solid var(--color-input-stroke);
+        border: 1px solid var(--color-gray-50);
         padding: 4px;
         gap: 4px;
         align-items: center;
@@ -161,7 +157,7 @@
       }
 
       .segmented-control:hover {
-        border-color: var(--color-input-stroke-hover);
+        border-color: var(--color-gray-100);
       }
 
       .segment-button {
@@ -170,7 +166,7 @@
         padding: 0 8px;
         border: none;
         background: transparent;
-        color: var(--color-text-tertiary);
+        color: var(--color-gray-300);
         font-family: inherit;
         font-size: 15px;
         line-height: 100%;
@@ -237,7 +233,7 @@
         min-width: 0;
         border-radius: 10px;
         background: var(--color-input-bg);
-        border: 1px solid var(--color-input-stroke);
+        border: 1px solid var(--color-gray-50);
         padding: 0 40px 0 12px;
         text-align: left;
         cursor: pointer;
@@ -254,11 +250,11 @@
       }
 
       .category-select-button:hover {
-        border-color: var(--color-input-stroke-hover);
+        border-color: var(--color-gray-100);
       }
 
       .category-select-button:focus {
-        border-color: var(--color-input-stroke-typing);
+        border-color: var(--color-blue-400);
       }
 
       .category-select-icon {
@@ -288,7 +284,7 @@
         align-items: center;
         justify-content: center;
         pointer-events: none;
-        color: var(--color-text-tertiary);
+        color: var(--color-gray-300);
       }
 
       /* Category list dropdown - matching CategoryList component */
@@ -301,7 +297,7 @@
         max-height: 320px;
         overflow-y: auto;
         border-radius: 10px;
-        border: 1px solid var(--color-input-stroke);
+        border: 1px solid var(--color-gray-50);
         background: var(--color-input-bg);
         padding: 4px;
         z-index: 50;
@@ -320,7 +316,7 @@
       }
 
       .category-list:hover {
-        border-color: var(--color-input-stroke-hover);
+        border-color: var(--color-gray-100);
       }
 
       .category-list-items {
@@ -348,7 +344,7 @@
         font-size: 15px;
         line-height: 100%;
         font-weight: 500;
-        color: var(--color-text-tertiary);
+        color: var(--color-gray-300);
         display: flex;
         align-items: center;
         justify-content: flex-start;

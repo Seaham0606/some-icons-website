@@ -1,6 +1,7 @@
 "use client"
 
 import * as React from "react"
+import { cn } from "../../utils"
 import { getSomeIconsCdnBaseUrl } from "../../some-icons-cdn-base-url"
 
 /** Matches Some Icons CDN `index.json` shape (minimal). */
@@ -76,6 +77,36 @@ function normalizeSvgMarkup(svg: string): string {
 
 export type SomeIconStyle = "outline" | "fill"
 
+/** Maps to `--size-icon-*` in theme tokens. */
+export type SomeIconIconSize =
+  | "2xs"
+  | "xs"
+  | "sm"
+  | "md"
+  | "lg"
+  | "xl"
+  | "2xl"
+
+/** Maps to `--spacing-*` (excludes `025`). */
+export type SomeIconPadding = "0" | "050" | "1" | "2"
+
+const ICON_SIZE_VAR: Record<SomeIconIconSize, string> = {
+  "2xs": "var(--size-icon-2xs)",
+  xs: "var(--size-icon-xs)",
+  sm: "var(--size-icon-sm)",
+  md: "var(--size-icon-md)",
+  lg: "var(--size-icon-lg)",
+  xl: "var(--size-icon-xl)",
+  "2xl": "var(--size-icon-2xl)",
+}
+
+const PADDING_VAR: Record<SomeIconPadding, string> = {
+  "0": "var(--spacing-0)",
+  "050": "var(--spacing-050)",
+  "1": "var(--spacing-1)",
+  "2": "var(--spacing-2)",
+}
+
 export interface SomeIconProps {
   /**
    * Icon id from CDN `index.json` (same as SVG basename in asset paths).
@@ -86,6 +117,13 @@ export interface SomeIconProps {
   className?: string
   /** Sets `color` on the wrapper so `fill`/`stroke="currentColor"` in the SVG resolves correctly. */
   color?: React.CSSProperties["color"]
+  /** Glyph size from theme `--size-icon-*`. */
+  iconSize: SomeIconIconSize
+  /**
+   * Inset from theme `--spacing-*` (excluding `025`). Outer width/height =
+   * `2 × padding + iconSize`.
+   */
+  padding?: SomeIconPadding
 }
 
 /**
@@ -97,6 +135,8 @@ export function SomeIcon({
   cdnBaseUrl,
   className,
   color,
+  iconSize,
+  padding = "0",
 }: SomeIconProps) {
   const [markup, setMarkup] = React.useState<string | null>(null)
 
@@ -136,11 +176,23 @@ export function SomeIcon({
     return null
   }
 
+  const frameStyle: React.CSSProperties = {
+    ...(color != null ? { color } : {}),
+    ["--ds-some-icon-pad" as string]: PADDING_VAR[padding],
+    ["--ds-some-icon-glyph" as string]: ICON_SIZE_VAR[iconSize],
+  }
+
   return (
     <div
-      className={className}
-      style={color != null ? { color } : undefined}
-      dangerouslySetInnerHTML={{ __html: markup }}
-    />
+      className={cn("ds-someIcon", className)}
+      data-some-icon-size={iconSize}
+      data-some-icon-padding={padding}
+      style={frameStyle}
+    >
+      <div
+        className="ds-someIcon__glyph"
+        dangerouslySetInnerHTML={{ __html: markup }}
+      />
+    </div>
   )
 }

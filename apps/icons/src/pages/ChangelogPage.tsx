@@ -11,7 +11,7 @@ function ChangelogMobileHeader() {
   const toggleSidebar = useUIStore((state) => state.toggleSidebar)
 
   return (
-    <header className="md:hidden flex items-center justify-between px-4 py-3 border-b border-[var(--color-border-base)] bg-[var(--color-fill-background-elevation)]">
+    <header className="md:hidden flex items-center justify-between px-4 py-3 border-b border-[var(--color-border-base)] bg-[var(--color-background-elevation)]">
       <div className="flex items-center gap-3">
         <Link
           to="/"

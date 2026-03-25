@@ -111,6 +111,7 @@ export function ThemeButton({
             iconName="weather-moon"
             iconStyle="fill"
             cdnBaseUrl={cdnBaseUrl}
+            iconSize="md"
           />
         </div>
         <div className="ds-theme-button__cell">
@@ -118,6 +119,7 @@ export function ThemeButton({
             iconName="weather-sun"
             iconStyle="outline"
             cdnBaseUrl={cdnBaseUrl}
+            iconSize="md"
           />
         </div>
         <div className="ds-theme-button__cell">
@@ -125,6 +127,7 @@ export function ThemeButton({
             iconName="weather-moon"
             iconStyle="fill"
             cdnBaseUrl={cdnBaseUrl}
+            iconSize="md"
           />
         </div>
       </div>

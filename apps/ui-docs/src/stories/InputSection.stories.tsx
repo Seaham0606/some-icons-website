@@ -2,16 +2,17 @@ import type { Meta, StoryObj } from "@storybook/react"
 import {
   InputSection,
   InputSectionSlotPlaceholder,
+  SomeIcon,
 } from "design-system"
 
 function DemoLeadIcon() {
   return (
     <svg
-      width="100%"
-      height="100%"
+      width={12}
+      height={12}
       viewBox="0 0 24 24"
       aria-hidden
-      className="ds-inputSection__leadIcon"
+      style={{ flexShrink: 0, color: "var(--color-main-primary)" }}
     >
       <circle cx="12" cy="12" r="6" fill="currentColor" />
     </svg>
@@ -45,13 +46,6 @@ const meta: Meta<typeof InputSection> = {
       },
     },
     label: { table: { category: "Content" } },
-    iconName: { table: { category: "CDN icon" } },
-    iconStyle: {
-      control: "select",
-      options: ["outline", "fill"],
-      table: { category: "CDN icon" },
-    },
-    cdnBaseUrl: { table: { category: "CDN icon" } },
     leadColor: { table: { category: "Appearance" } },
     showLabel: { table: { category: "Layout" } },
     showContentSlot: { table: { category: "Layout" } },
@@ -62,30 +56,46 @@ export default meta
 
 type Story = StoryObj<typeof InputSection>
 
-/** Uses the default CDN (`design-system` package `someIconsCdnBaseUrl`). Requires network. */
-export const WithCdnIcon: Story = {
-  name: "With CDN icon",
+/** `SomeIcon` `iconSize="2xs"` matches the section label-row lead. Requires network. */
+export const WithLeadIcon: Story = {
+  name: "With SomeIcon lead (2xs)",
   args: {
     label: "Section title",
-    iconName: "formatting-pencil-alt",
-    iconStyle: "outline",
+    leadSlot: (
+      <SomeIcon
+        iconName="formatting-pencil-alt"
+        iconStyle="outline"
+        iconSize="2xs"
+      />
+    ),
   },
 }
 
-export const CdnIconFilled: Story = {
-  name: "CDN icon (filled)",
+export const LeadIconFilled: Story = {
+  name: "SomeIcon lead (filled)",
   args: {
     label: "Filled style",
-    iconName: "formatting-pencil-alt",
-    iconStyle: "fill",
+    leadSlot: (
+      <SomeIcon
+        iconName="formatting-pencil-alt"
+        iconStyle="fill"
+        iconSize="2xs"
+      />
+    ),
   },
 }
 
 export const WithLeadColor: Story = {
   args: {
     label: "Accent lead",
-    iconName: "formatting-pencil-alt",
-    leadColor: "var(--color-main-accent)",
+    leadSlot: (
+      <SomeIcon
+        iconName="formatting-pencil-alt"
+        iconStyle="outline"
+        iconSize="2xs"
+      />
+    ),
+    leadColor: "var(--color-intent-accent)",
   },
 }
 
@@ -100,7 +110,13 @@ export const WithCustomLeadSlot: Story = {
 export const WithCustomContent: Story = {
   args: {
     label: "Notes",
-    iconName: "formatting-pencil-alt",
+    leadSlot: (
+      <SomeIcon
+        iconName="formatting-pencil-alt"
+        iconStyle="outline"
+        iconSize="2xs"
+      />
+    ),
     contentSlot: (
       <textarea
         rows={4}
@@ -124,14 +140,19 @@ export const LabelOnly: Story = {
   args: {
     label: "No icon",
     showLabel: true,
-    iconName: undefined,
   },
 }
 
 export const WithoutContentSlot: Story = {
   args: {
     label: "Header row only",
-    iconName: "formatting-pencil-alt",
+    leadSlot: (
+      <SomeIcon
+        iconName="formatting-pencil-alt"
+        iconStyle="outline"
+        iconSize="2xs"
+      />
+    ),
     showContentSlot: false,
   },
 }

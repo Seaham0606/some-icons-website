@@ -4,6 +4,9 @@
   --spacing-80: 320px;
   --font-size-input-section-label: 15px;
   --line-height-input-section-label: 16px;
+  /* Input field (Figma Input — value / placeholder) */
+  --font-size-input: 16px;
+  --line-height-input: 24px;
 }
 
 :root {
@@ -21,6 +24,7 @@
     --spacing-padding-8: 32px;
     --spacing-padding-10: 40px;
     --spacing-padding-12: 48px;
+    --spacing-padding-14: 56px;
     --spacing-padding-16: 64px;
     --spacing-padding-20: 80px;
     --spacing-padding-24: 96px;
@@ -38,6 +42,7 @@
     --spacing-gap-8: 32px;
     --spacing-gap-10: 40px;
     --spacing-gap-12: 48px;
+    --spacing-gap-14: 56px;
     --spacing-gap-16: 64px;
     --spacing-gap-20: 80px;
   
@@ -54,6 +59,7 @@
     --spacing-8: 32px;
     --spacing-10: 40px;
     --spacing-12: 48px;
+    --spacing-14: 56px;
     --spacing-16: 64px;
     --spacing-20: 80px;
   
@@ -70,6 +76,7 @@
     --size-8: 32px;
     --size-10: 40px;
     --size-12: 48px;
+    --size-14: 56px;
     --size-16: 64px;
     --size-20: 80px;
     --size-24: 96px;
@@ -118,6 +125,11 @@
   --color-red-50: rgb(255, 233, 233);
   --color-red-25: rgb(255, 244, 244);
 
+  /* Red alpha variants */
+  --color-red-alpha-25: rgba(255, 143, 143, 0.1);
+  --color-red-alpha-50: rgba(255, 143, 143, 0.2);
+  --color-red-alpha-75: rgba(255, 143, 143, 0.3);
+
   /* Orange */
   --color-orange-900: rgb(71, 29, 13);
   --color-orange-800: rgb(92, 44, 26);
@@ -144,6 +156,11 @@
   --color-yellow-50: rgb(255, 246, 224);
   --color-yellow-25: rgb(255, 250, 240);
 
+  /* Yellow alpha variants */
+  --color-yellow-alpha-25: rgba(255, 209, 102, 0.1);
+  --color-yellow-alpha-50: rgba(255, 209, 102, 0.2);
+  --color-yellow-alpha-75: rgba(255, 209, 102, 0.3);
+
   /* Green */
   --color-green-900: rgb(38, 59, 18);
   --color-green-800: rgb(52, 78, 28);
@@ -156,6 +173,11 @@
   --color-green-100: rgb(221, 245, 199);
   --color-green-50: rgb(238, 250, 227);
   --color-green-25: rgb(246, 252, 241);
+
+  /* Green alpha variants */
+  --color-green-alpha-25: rgba(187, 234, 142, 0.1);
+  --color-green-alpha-50: rgba(187, 234, 142, 0.2);
+  --color-green-alpha-75: rgba(187, 234, 142, 0.3);
 
   /* Pine */
   --color-pine-900: rgb(21, 59, 48);
@@ -200,11 +222,6 @@
   --color-blue-alpha-25: rgba(128, 194, 255, 0.1);
   --color-blue-alpha-50: rgba(128, 194, 255, 0.2);
   --color-blue-alpha-75: rgba(128, 194, 255, 0.3);
-
-  /* Red alpha variants */
-  --color-red-alpha-25: rgba(255, 143, 143, 0.1);
-  --color-red-alpha-50: rgba(255, 143, 143, 0.2);
-  --color-red-alpha-75: rgba(255, 143, 143, 0.3);
 
   /* Purple */
   --color-purple-900: rgb(49, 18, 92);

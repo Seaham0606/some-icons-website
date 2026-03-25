@@ -117,11 +117,11 @@ export function CategoryList({ isOpen, onSelect, onClose, className }: CategoryL
         'min-w-[272px] w-auto',
         'max-h-[320px] overflow-y-auto',
         'rounded-[10px]',
-        'border border-[var(--color-input-stroke)]',
-        'bg-[var(--color-fill-input-enabled)]',
+        'border border-[var(--color-border-extra-weak)] dark:border-[var(--color-border-weak)]',
+        'bg-[var(--color-background-input)]',
         'p-1',
         'transition-[border-color]',
-        'hover:border-[var(--color-input-stroke-hover)]',
+        'hover:border-[var(--color-border-weak)] dark:hover:border-[var(--color-border-base)]',
         className
       )}
       style={{
@@ -165,6 +165,8 @@ export function CategoryList({ isOpen, onSelect, onClose, className }: CategoryL
                   <SomeIcon
                     iconName={getCategoryIcon(cat)}
                     iconStyle="outline"
+                    iconSize="sm"
+                    padding="050"
                   />
                 }
                 onClick={() => handleSelect(cat)}
