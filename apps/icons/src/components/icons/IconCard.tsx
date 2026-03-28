@@ -8,6 +8,8 @@ import { applyColorToSvg, ensureViewBox } from '@/lib/svg-utils'
 import { IconCard as IconCardUI } from 'design-system'
 import type { Icon } from '@/types/icon'
 import { useState, useEffect, useRef, memo } from 'react'
+import { useQueryClient } from '@tanstack/react-query'
+import { fetchSvg } from '@/lib/api'
 
 interface IconCardProps {
   icon: Icon
@@ -19,7 +21,20 @@ export const IconCard = memo(function IconCard({ icon }: IconCardProps) {
   const isSelected = useSelectionStore((state) => state.selectedIds.has(icon.id))
   const toggle = useSelectionStore((state) => state.toggle)
   const { copy } = useClipboard()
+  const queryClient = useQueryClient()
   const { data: svg } = useSvgFetch(icon.files[style])
+
+  useEffect(() => {
+    if (!svg) return
+    const altPath = style === 'outline' ? icon.files.filled : icon.files.outline
+    if (!altPath) return
+    void queryClient.prefetchQuery({
+      queryKey: ['svg', altPath],
+      queryFn: () => fetchSvg(altPath),
+      staleTime: Infinity,
+      gcTime: 1000 * 60 * 60,
+    })
+  }, [svg, style, icon.files.filled, icon.files.outline, queryClient])
 
   const [showTooltip, setShowTooltip] = useState(false)
   const [tooltipPosition, setTooltipPosition] = useState({ x: 0, y: 0 })

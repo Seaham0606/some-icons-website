@@ -126,6 +126,8 @@
   gap: var(--spacing-gap-3);
   overflow-x: hidden;
   overflow-y: auto;
+  /* Reduce width snap when scrollbars appear/disappear during sidebar height animations. */
+  scrollbar-gutter: stable;
   padding: 0;
 }
 
@@ -448,8 +450,11 @@
   line-height: normal;
 }
 
-/* Dropdown — Figma Dropdown 490:5420 (trigger + optional expanded panel). */
-.ds-dropdown {
+/*
+ * Legacy dropdown (single `<button>` shell) — Figma 490:5420.
+ * Prefer `.ds-dropdown` + `.ds-input` trigger for Input-aligned chrome.
+ */
+.ds-dropdownLegacy {
   /* Open + close: symmetric ease so height/chevron/panel don’t snap. */
   --ds-dropdown-ease: ease-in-out;
   --ds-dropdown-duration: 360ms;
@@ -479,26 +484,26 @@
     background 200ms ease;
 }
 
-.ds-dropdown[data-expanded="true"] {
+.ds-dropdownLegacy[data-expanded="true"] {
   height: auto;
   min-height: var(--size-12);
 }
 
-.ds-dropdown[data-full-width="true"] {
+.ds-dropdownLegacy[data-full-width="true"] {
   width: 100%;
 }
 
-.ds-dropdown:focus {
+.ds-dropdownLegacy:focus {
   outline: none;
 }
 
-.ds-dropdown[data-disabled="true"] {
+.ds-dropdownLegacy[data-disabled="true"] {
   pointer-events: none;
   cursor: not-allowed;
   border-color: var(--color-border-extra-weak);
 }
 
-.ds-dropdown__headerRow {
+.ds-dropdownLegacy__headerRow {
   box-sizing: border-box;
   display: flex;
   flex-direction: row;
@@ -513,7 +518,7 @@
   );
 }
 
-.ds-dropdown__slot {
+.ds-dropdownLegacy__slot {
   box-sizing: border-box;
   flex: 0 0 var(--size-10);
   width: var(--size-10);
@@ -523,21 +528,203 @@
   align-items: stretch;
   justify-content: center;
   overflow: visible;
-  color: var(--ds-dropdown-content-color, var(--color-main-tertiary));
+  color: var(--ds-dropdownLegacy-content-color, var(--color-main-tertiary));
 }
 
-.ds-dropdown__slot > [data-part="slot-placeholder"] {
+.ds-dropdownLegacy__slot > [data-part="slot-placeholder"] {
   flex: 1 1 auto;
   min-height: 0;
   min-width: 0;
 }
 
-.ds-dropdown__slot > :not([data-part="slot-placeholder"]):not(.ds-dropdown__trailingRotate) {
+.ds-dropdownLegacy__slot
+  > :not([data-part="slot-placeholder"]):not(.ds-dropdownLegacy__trailingRotate) {
   align-self: center;
   flex-shrink: 0;
 }
 
 /* Trailing slot: wrap for 180° chevron spin when expanded (see `[data-expanded="true"]`). */
+.ds-dropdownLegacy__trailingRotate {
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 1 1 auto;
+  min-height: 0;
+  min-width: 0;
+  width: 100%;
+  transform-origin: center center;
+  transition: transform var(--ds-dropdown-duration) var(--ds-dropdown-ease);
+}
+
+.ds-dropdownLegacy[data-expanded="true"] .ds-dropdownLegacy__trailingRotate {
+  transform: rotate(180deg);
+}
+
+.ds-dropdownLegacy__trailingRotate > [data-part="slot-placeholder"] {
+  flex: 1 1 auto;
+  min-height: 0;
+  min-width: 0;
+}
+
+.ds-dropdownLegacy__trailingRotate > :not([data-part="slot-placeholder"]) {
+  align-self: center;
+  flex-shrink: 0;
+}
+
+.ds-dropdownLegacy__labelWrap {
+  box-sizing: border-box;
+  flex: 1 1 0%;
+  min-width: 0;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  padding-left: var(--spacing-padding-2);
+  padding-right: var(--spacing-padding-2);
+}
+
+.ds-dropdownLegacy__label {
+  font-family: var(--font-family-sans);
+  font-size: var(--font-size-input);
+  font-weight: 500;
+  font-style: normal;
+  line-height: var(--line-height-input);
+  color: var(--ds-dropdownLegacy-content-color, var(--color-main-primary));
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  width: 100%;
+  text-align: left;
+}
+
+.ds-dropdownLegacy[data-empty="true"] .ds-dropdownLegacy__label {
+  color: var(--ds-dropdownLegacy-content-color, var(--color-main-tertiary));
+}
+
+.ds-dropdownLegacy[data-status="error"]:not([data-empty="true"]) .ds-dropdownLegacy__label {
+  color: var(--ds-dropdownLegacy-content-color, var(--color-intent-error));
+}
+
+.ds-dropdownLegacy[data-disabled="true"] .ds-dropdownLegacy__label {
+  color: var(--ds-dropdownLegacy-content-color, var(--color-main-disabled));
+}
+
+.ds-dropdownLegacy[data-disabled="true"] .ds-dropdownLegacy__slot {
+  color: var(--ds-dropdownLegacy-content-color, var(--color-main-disabled));
+}
+
+/*
+ * Default chrome: strong border follows `:hover` only so it clears on mouse leave.
+ * Pointer focus does not lock the strong border (unlike `:focus-within` on a text field).
+ * Keyboard: `[data-focus-ring="true"]` + `:focus-visible` matches Input’s Tab ring behavior.
+ */
+.ds-dropdownLegacy[data-status="default"]:not([data-disabled="true"]):hover {
+  border-color: var(--color-border-strong);
+}
+
+.ds-dropdownLegacy[data-status="default"]:not([data-disabled="true"]):not([data-empty="true"]):hover
+  .ds-dropdownLegacy__label {
+  color: var(--ds-dropdownLegacy-content-color, var(--color-main-primary));
+}
+
+.ds-dropdownLegacy[data-status="default"]:focus-visible[data-focus-ring="true"] {
+  border-color: var(--color-border-strong);
+  box-shadow: var(--shadow-focus-accent);
+}
+
+.ds-dropdownLegacy[data-status="error"]:not([data-disabled="true"]) {
+  border-color: var(--color-border-error);
+  background: color-mix(in srgb, var(--color-intent-error) 20%, var(--color-background-input));
+  background-image: none;
+}
+
+.ds-dropdownLegacy[data-status="error"]:focus-visible[data-focus-ring="true"] {
+  box-shadow: var(--shadow-focus-error);
+}
+
+/*
+ * Panel: grid 0fr → 1fr height tween + fade/slide on inner (“Smart animate” feel).
+ * Panel stays mounted when `panelSlot != null` so open/close both animate.
+ */
+.ds-dropdownLegacy__panel {
+  box-sizing: border-box;
+  display: grid;
+  grid-template-rows: 0fr;
+  width: 100%;
+  min-height: 0;
+  margin-top: 0;
+  flex-shrink: 0;
+  pointer-events: none;
+  transition:
+    grid-template-rows var(--ds-dropdown-duration) var(--ds-dropdown-ease),
+    margin-top var(--ds-dropdown-duration) var(--ds-dropdown-ease);
+}
+
+.ds-dropdownLegacy[data-expanded="true"] .ds-dropdownLegacy__panel {
+  grid-template-rows: 1fr;
+  margin-top: var(--spacing-gap-2);
+  pointer-events: auto;
+}
+
+.ds-dropdownLegacy__panelMotion {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  overflow: hidden;
+  opacity: 0;
+  transform: translateY(calc(-1 * var(--spacing-gap-2)));
+  transition:
+    opacity var(--ds-dropdown-duration) var(--ds-dropdown-ease),
+    transform var(--ds-dropdown-duration) var(--ds-dropdown-ease);
+}
+
+.ds-dropdownLegacy[data-expanded="true"] .ds-dropdownLegacy__panelMotion {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.ds-dropdownLegacy__panelPlaceholder {
+  box-sizing: border-box;
+  flex: 1 1 auto;
+  min-height: var(--size-10);
+  width: 100%;
+  border-radius: var(--radius-md);
+  border: var(--border-width-base) dashed var(--color-red-300);
+  background: var(--color-red-alpha-25);
+}
+
+/* Dropdown — `.ds-input` trigger + panel (same motion tokens as legacy). */
+.ds-dropdown {
+  --ds-dropdown-ease: ease-in-out;
+  --ds-dropdown-duration: 360ms;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  width: 240px;
+  max-width: 100%;
+  min-width: 0;
+}
+
+.ds-dropdown[data-full-width="true"] {
+  width: 100%;
+}
+
+button.ds-dropdown__trigger.ds-input {
+  flex: 0 0 auto;
+  width: 100%;
+  margin: 0;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.ds-dropdown__value {
+  display: block;
+  width: 100%;
+}
+
 .ds-dropdown__trailingRotate {
   box-sizing: border-box;
   display: flex;
@@ -566,80 +753,6 @@
   flex-shrink: 0;
 }
 
-.ds-dropdown__labelWrap {
-  box-sizing: border-box;
-  flex: 1 1 0%;
-  min-width: 0;
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  padding-left: var(--spacing-padding-2);
-  padding-right: var(--spacing-padding-2);
-}
-
-.ds-dropdown__label {
-  font-family: var(--font-family-sans);
-  font-size: var(--font-size-input);
-  font-weight: 500;
-  font-style: normal;
-  line-height: var(--line-height-input);
-  color: var(--ds-dropdown-content-color, var(--color-main-primary));
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  width: 100%;
-  text-align: left;
-}
-
-.ds-dropdown[data-empty="true"] .ds-dropdown__label {
-  color: var(--ds-dropdown-content-color, var(--color-main-tertiary));
-}
-
-.ds-dropdown[data-status="error"]:not([data-empty="true"]) .ds-dropdown__label {
-  color: var(--ds-dropdown-content-color, var(--color-intent-error));
-}
-
-.ds-dropdown[data-disabled="true"] .ds-dropdown__label {
-  color: var(--ds-dropdown-content-color, var(--color-main-disabled));
-}
-
-.ds-dropdown[data-disabled="true"] .ds-dropdown__slot {
-  color: var(--ds-dropdown-content-color, var(--color-main-disabled));
-}
-
-/*
- * Default chrome: strong border follows `:hover` only so it clears on mouse leave.
- * Pointer focus does not lock the strong border (unlike `:focus-within` on a text field).
- * Keyboard: `[data-focus-ring="true"]` + `:focus-visible` matches Input’s Tab ring behavior.
- */
-.ds-dropdown[data-status="default"]:not([data-disabled="true"]):hover {
-  border-color: var(--color-border-strong);
-}
-
-.ds-dropdown[data-status="default"]:not([data-disabled="true"]):not([data-empty="true"]):hover
-  .ds-dropdown__label {
-  color: var(--ds-dropdown-content-color, var(--color-main-primary));
-}
-
-.ds-dropdown[data-status="default"]:focus-visible[data-focus-ring="true"] {
-  border-color: var(--color-border-strong);
-  box-shadow: var(--shadow-focus-accent);
-}
-
-.ds-dropdown[data-status="error"]:not([data-disabled="true"]) {
-  border-color: var(--color-border-error);
-  background: color-mix(in srgb, var(--color-intent-error) 20%, var(--color-background-input));
-  background-image: none;
-}
-
-.ds-dropdown[data-status="error"]:focus-visible[data-focus-ring="true"] {
-  box-shadow: var(--shadow-focus-error);
-}
-
-/*
- * Panel: grid 0fr → 1fr height tween + fade/slide on inner (“Smart animate” feel).
- * Panel stays mounted when `panelSlot != null` so open/close both animate.
- */
 .ds-dropdown__panel {
   box-sizing: border-box;
   display: grid;
@@ -679,17 +792,22 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .ds-dropdownLegacy__trailingRotate,
+  .ds-dropdownLegacy__panel,
+  .ds-dropdownLegacy__panelMotion,
   .ds-dropdown__trailingRotate,
   .ds-dropdown__panel,
   .ds-dropdown__panelMotion {
     transition: none;
   }
 
+  .ds-dropdownLegacy:not([data-expanded="true"]) .ds-dropdownLegacy__panelMotion,
   .ds-dropdown:not([data-expanded="true"]) .ds-dropdown__panelMotion {
     opacity: 0;
     transform: none;
   }
 
+  .ds-dropdownLegacy[data-expanded="true"] .ds-dropdownLegacy__panelMotion,
   .ds-dropdown[data-expanded="true"] .ds-dropdown__panelMotion {
     opacity: 1;
     transform: none;

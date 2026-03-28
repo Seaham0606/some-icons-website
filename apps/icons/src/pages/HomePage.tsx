@@ -25,7 +25,7 @@ import { useIconExport } from '@/hooks/useIconExport'
 import { getHighestVersion, useChangelog } from '@/hooks/useChangelog'
 import type { IconStyle } from '@/types/icon'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import type { CSSProperties } from 'react'
+import type { CSSProperties, TransitionEvent } from 'react'
 
 /** Matches `--ds-dropdown-duration` in design-system `components.css` + small buffer. */
 const CATEGORY_DROPDOWN_TRANSITION_MS = 400
@@ -81,6 +81,11 @@ export default function HomePage() {
   const { data: entries } = useChangelog()
   const version = getHighestVersion(entries)
   const [categoryDropdownOpen, setCategoryDropdownOpen] = useState(false)
+  /** Captures Customize/Export expanded state when opening the category dropdown; restored when it closes. */
+  const sectionsBeforeCategoryDropdownRef = useRef<{
+    customize: boolean
+    export: boolean
+  } | null>(null)
   /** Keeps `homepage-sidebar--category-dropdown-open` through panel close so flex/ grid transitions can finish. */
   const [categorySidebarLayoutOpen, setCategorySidebarLayoutOpen] = useState(false)
   const [customizeSectionExpanded, setCustomizeSectionExpanded] = useState(true)
@@ -149,6 +154,14 @@ export default function HomePage() {
 
   const layoutHoldFallbackRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
+  const restoreSectionsFromCategoryDropdownSnapshot = useCallback(() => {
+    const snap = sectionsBeforeCategoryDropdownRef.current
+    if (!snap) return
+    setCustomizeSectionExpanded(snap.customize)
+    setExportSectionExpanded(snap.export)
+    sectionsBeforeCategoryDropdownRef.current = null
+  }, [])
+
   useEffect(() => {
     if (categoryDropdownOpen) {
       setCategorySidebarLayoutOpen(true)
@@ -164,7 +177,7 @@ export default function HomePage() {
   }, [])
 
   const handleCategoryDropdownTransitionEnd = useCallback(
-    (event: React.TransitionEvent<HTMLButtonElement>) => {
+    (event: TransitionEvent<HTMLDivElement>) => {
       if (categoryDropdownOpenRef.current) return
       const el = event.target
       if (!(el instanceof HTMLElement)) return
@@ -175,9 +188,11 @@ export default function HomePage() {
       ) {
         return
       }
+      /* Trigger close: panel collapse finished → drop category layout, then open Customize/Export. */
       releaseCategorySidebarLayout()
+      restoreSectionsFromCategoryDropdownSnapshot()
     },
-    [releaseCategorySidebarLayout]
+    [releaseCategorySidebarLayout, restoreSectionsFromCategoryDropdownSnapshot]
   )
 
   useEffect(() => {
@@ -193,7 +208,8 @@ export default function HomePage() {
     }
     layoutHoldFallbackRef.current = setTimeout(() => {
       layoutHoldFallbackRef.current = null
-      setCategorySidebarLayoutOpen(false)
+      releaseCategorySidebarLayout()
+      restoreSectionsFromCategoryDropdownSnapshot()
     }, reduced ? 0 : CATEGORY_DROPDOWN_TRANSITION_MS)
 
     return () => {
@@ -202,13 +218,18 @@ export default function HomePage() {
         layoutHoldFallbackRef.current = null
       }
     }
-  }, [categoryDropdownOpen, categorySidebarLayoutOpen])
+  }, [
+    categoryDropdownOpen,
+    categorySidebarLayoutOpen,
+    releaseCategorySidebarLayout,
+    restoreSectionsFromCategoryDropdownSnapshot,
+  ])
 
   return (
     <div className="homepage-shell">
       <Sidebar
         className={
-          categorySidebarLayoutOpen
+          categoryDropdownOpen || categorySidebarLayoutOpen
             ? 'homepage-sidebar--category-dropdown-open'
             : undefined
         }
@@ -312,14 +333,17 @@ export default function HomePage() {
                     fullWidth
                     expanded={categoryDropdownOpen}
                     onClick={() => {
-                      setCategoryDropdownOpen((open) => {
-                        const next = !open
-                        if (next) {
-                          setCustomizeSectionExpanded(false)
-                          setExportSectionExpanded(false)
-                        }
-                        return next
-                      })
+                      if (categoryDropdownOpen) {
+                        setCategoryDropdownOpen(false)
+                        return
+                      }
+                      sectionsBeforeCategoryDropdownRef.current = {
+                        customize: customizeSectionExpanded,
+                        export: exportSectionExpanded,
+                      }
+                      setCustomizeSectionExpanded(false)
+                      setExportSectionExpanded(false)
+                      setCategoryDropdownOpen(true)
                     }}
                     onTransitionEnd={handleCategoryDropdownTransitionEnd}
                     panelSlot={
@@ -329,8 +353,8 @@ export default function HomePage() {
                         aria-label="Categories"
                       >
                         {/*
-                          Future categories: render options with role="option"; on select call
-                          setCategoryDropdownOpen(false) (and update label state).
+                          Future categories: on select: setCategoryDropdownOpen(false); restore
+                          runs after panel transition (or layout timeout). Also update label.
                         */}
                       </div>
                     }
@@ -366,7 +390,14 @@ export default function HomePage() {
           expanded={customizeSectionExpanded}
           onExpandedChange={(expanded) => {
             setCustomizeSectionExpanded(expanded)
-            if (expanded) setCategoryDropdownOpen(false)
+            if (expanded && categoryDropdownOpen) {
+              setCategoryDropdownOpen(false)
+              const snap = sectionsBeforeCategoryDropdownRef.current
+              if (snap) {
+                setExportSectionExpanded(snap.export)
+                sectionsBeforeCategoryDropdownRef.current = null
+              }
+            }
           }}
           leadingSlot={
             <SomeIcon
@@ -485,7 +516,14 @@ export default function HomePage() {
           expanded={exportSectionExpanded}
           onExpandedChange={(expanded) => {
             setExportSectionExpanded(expanded)
-            if (expanded) setCategoryDropdownOpen(false)
+            if (expanded && categoryDropdownOpen) {
+              setCategoryDropdownOpen(false)
+              const snap = sectionsBeforeCategoryDropdownRef.current
+              if (snap) {
+                setCustomizeSectionExpanded(snap.customize)
+                sectionsBeforeCategoryDropdownRef.current = null
+              }
+            }
           }}
           leadingSlot={
             <SomeIcon

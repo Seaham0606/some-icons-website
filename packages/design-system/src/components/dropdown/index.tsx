@@ -1,8 +1,8 @@
 "use client"
 
 /**
- * Dropdown trigger — Figma node 490:5420.
- * Pass `leadingSlot` / `trailingSlot` with e.g. `<SomeIcon iconName="…" iconSize="md" padding="2" />`.
+ * Dropdown — trigger uses the same `.ds-input` shell as {@link Input};
+ * wrap with {@link InputField} for a label row like other fields.
  */
 
 import * as React from "react"
@@ -10,7 +10,7 @@ import { cn } from "../../utils"
 
 export type DropdownStatus = "default" | "error"
 
-/** Placeholder inside the leading 40×40 slot (same chrome as `InputSlotPlaceholder`). */
+/** Placeholder inside the leading 40×40 slot (same as {@link InputSlotPlaceholder}). */
 export function DropdownLeadingSlotPlaceholder() {
   return (
     <div
@@ -33,8 +33,13 @@ export function DropdownPanelSlotPlaceholder() {
 }
 
 export interface DropdownProps
-  extends Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, "className" | "children" | "type"> {
+  extends Omit<
+    React.ButtonHTMLAttributes<HTMLButtonElement>,
+    "className" | "children" | "type" | "onTransitionEnd"
+  > {
   className?: string
+  /** Fires on the root (panel `grid-template-rows` / `margin-top` transitions bubble here). */
+  onTransitionEnd?: React.TransitionEventHandler<HTMLDivElement>
   /** Label / value text in the header row */
   children?: React.ReactNode
   /** When true, placeholder styling and no leading column (Figma `selected=false`). */
@@ -49,13 +54,13 @@ export interface DropdownProps
   leadingSlot?: React.ReactNode
   trailingSlot?: React.ReactNode
   /**
-   * Panel below the header when `expanded`. Omit or leave undefined to show
+   * Panel below the trigger when `expanded`. Omit or leave undefined to show
    * `DropdownPanelSlotPlaceholder`. Pass `null` to expand without a panel (e.g. chevron-only).
    */
   panelSlot?: React.ReactNode | null
-  /** Sets `color` for label + slots (`currentColor` for icons). */
+  /** Sets value/slot color via `--ds-input-content-color` (`currentColor` for icons). */
   contentColor?: React.CSSProperties["color"]
-  /** Span container width instead of Figma default 240px. */
+  /** Full width instead of default 240px. */
   fullWidth?: boolean
 }
 
@@ -78,6 +83,8 @@ export const Dropdown = React.forwardRef<HTMLButtonElement, DropdownProps>(
       "aria-invalid": ariaInvalid,
       onFocus,
       onBlur,
+      onTransitionEnd,
+      onPointerDownCapture,
       ...rest
     },
     ref
@@ -85,21 +92,24 @@ export const Dropdown = React.forwardRef<HTMLButtonElement, DropdownProps>(
     const status: DropdownStatus =
       ariaInvalid === true || ariaInvalid === "true" ? "error" : statusProp
 
-    const showLead =
-      !empty && (showLeading ?? leadingSlot != null)
+    const showLead = !empty && (showLeading ?? leadingSlot != null)
     const showTrail = showTrailing !== false
 
     const shellStyle: React.CSSProperties | undefined =
       contentColor !== undefined && contentColor !== null
-        ? ({ ["--ds-dropdown-content-color"]: contentColor } as React.CSSProperties)
+        ? ({ ["--ds-input-content-color"]: contentColor } as React.CSSProperties)
         : undefined
 
     const lastPointerDownRef = React.useRef(0)
     const [keyboardFocusRing, setKeyboardFocusRing] = React.useState(false)
 
-    const handlePointerDownCapture = React.useCallback(() => {
-      lastPointerDownRef.current = performance.now()
-    }, [])
+    const handlePointerDownCapture = React.useCallback(
+      (e: React.PointerEvent<HTMLButtonElement>) => {
+        lastPointerDownRef.current = performance.now()
+        onPointerDownCapture?.(e)
+      },
+      [onPointerDownCapture]
+    )
 
     const handleFocus = React.useCallback(
       (e: React.FocusEvent<HTMLButtonElement>) => {
@@ -132,46 +142,50 @@ export const Dropdown = React.forwardRef<HTMLButtonElement, DropdownProps>(
     )
 
     return (
-      <button
-        ref={ref}
-        type="button"
+      <div
         className={cn("ds-dropdown", className)}
-        style={shellStyle}
         data-component="dropdown"
-        data-status={status}
-        data-disabled={disabled ? "true" : undefined}
-        data-empty={empty ? "true" : undefined}
         data-expanded={expanded ? "true" : undefined}
-        data-has-leading={showLead ? "true" : undefined}
-        data-has-trailing={showTrail ? "true" : undefined}
-        data-focus-ring={keyboardFocusRing ? "true" : undefined}
         data-full-width={fullWidth ? "true" : undefined}
-        disabled={disabled}
-        aria-expanded={expanded}
-        aria-haspopup="listbox"
-        aria-invalid={ariaInvalid}
-        onPointerDownCapture={handlePointerDownCapture}
-        onFocus={handleFocus}
-        onBlur={handleBlur}
-        {...rest}
+        onTransitionEnd={onTransitionEnd}
       >
-        <span className="ds-dropdown__headerRow" data-part="header-row">
+        <button
+          ref={ref}
+          type="button"
+          className="ds-input ds-dropdown__trigger"
+          style={shellStyle}
+          data-part="trigger"
+          data-status={status}
+          data-filled={empty ? "false" : "true"}
+          data-disabled={disabled ? "true" : undefined}
+          data-has-leading={showLead ? "true" : undefined}
+          data-has-trailing={showTrail ? "true" : undefined}
+          data-focus-ring={keyboardFocusRing ? "true" : undefined}
+          disabled={disabled}
+          aria-expanded={expanded}
+          aria-haspopup="listbox"
+          aria-invalid={ariaInvalid}
+          onPointerDownCapture={handlePointerDownCapture}
+          onFocus={handleFocus}
+          onBlur={handleBlur}
+          {...rest}
+        >
           {showLead ? (
-            <span className="ds-dropdown__slot" data-part="leading">
+            <div className="ds-input__slot" data-part="leading">
               {leadingSlot ?? <DropdownLeadingSlotPlaceholder />}
-            </span>
+            </div>
           ) : null}
-          <span className="ds-dropdown__labelWrap" data-part="label">
-            <span className="ds-dropdown__label">{children}</span>
-          </span>
+          <div className="ds-input__field" data-part="field">
+            <span className="ds-input__input ds-dropdown__value">{children}</span>
+          </div>
           {showTrail ? (
-            <span className="ds-dropdown__slot" data-part="trailing">
+            <div className="ds-input__slot" data-part="trailing">
               <span className="ds-dropdown__trailingRotate">
                 {trailingSlot ?? <DropdownLeadingSlotPlaceholder />}
               </span>
-            </span>
+            </div>
           ) : null}
-        </span>
+        </button>
         {panelSlot !== null ? (
           <span
             className="ds-dropdown__panel"
@@ -187,7 +201,14 @@ export const Dropdown = React.forwardRef<HTMLButtonElement, DropdownProps>(
             </span>
           </span>
         ) : null}
-      </button>
+      </div>
     )
   }
 )
+
+export {
+  LegacyDropdown,
+  LegacyDropdownLeadingSlotPlaceholder,
+  LegacyDropdownPanelSlotPlaceholder,
+} from "./legacy"
+export type { LegacyDropdownProps, LegacyDropdownStatus } from "./legacy"

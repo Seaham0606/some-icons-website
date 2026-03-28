@@ -229,7 +229,31 @@ body {
 /*
  * Category dropdown open: filters block grows in the scrollable sidebar; Customize + Export
  * collapse; dropdown panel fills remaining height (list scrolls inside .homepage-category-dropdown-panel).
+ *
+ * Motion blend: flex chain uses a longer soft ease-out so space redistribution overlaps the panel
+ * grid (shorter). Avoids the harsh “two-act” 360ms+360ms lockstep, without stacking margin + fade
+ * on the panel (those fight layout). Inner panelMotion stays static; panel uses flex 1 1 0.
  */
+@media (prefers-reduced-motion: no-preference) {
+  .ds-sidebar__contentSlot > :first-child.ds-inputSection,
+  .ds-sidebar__contentSlot > :first-child .ds-inputSection__content,
+  .homepage-category-field,
+  .homepage-category-field .ds-inputField__content,
+  .homepage-category-dropdown {
+    transition: flex-grow 500ms cubic-bezier(0.2, 0.88, 0.28, 1);
+  }
+
+  .homepage-sidebar--category-dropdown-open .homepage-category-dropdown .ds-dropdown__panel {
+    transition: grid-template-rows 400ms cubic-bezier(0.2, 0.88, 0.28, 1);
+  }
+
+  .homepage-sidebar--category-dropdown-open .homepage-category-dropdown .ds-dropdown__panelMotion {
+    transition: none;
+    opacity: 1;
+    transform: none;
+  }
+}
+
 .homepage-sidebar--category-dropdown-open .ds-sidebar__contentSlot > :first-child.ds-inputSection {
   flex: 1 1 auto;
   min-height: 0;
@@ -276,7 +300,7 @@ body {
 .homepage-sidebar--category-dropdown-open
   .homepage-category-dropdown[data-expanded="true"]
   .ds-dropdown__panel {
-  flex: 1 1 auto;
+  flex: 1 1 0;
   min-height: 0;
   flex-shrink: 1;
 }
@@ -284,7 +308,7 @@ body {
 .homepage-sidebar--category-dropdown-open
   .homepage-category-dropdown[data-expanded="true"]
   .ds-dropdown__panelMotion {
-  flex: 1 1 auto;
+  flex: 1 1 0;
   min-height: 0;
 }
 

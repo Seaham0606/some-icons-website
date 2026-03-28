@@ -21,8 +21,16 @@ export {
   Dropdown,
   DropdownLeadingSlotPlaceholder,
   DropdownPanelSlotPlaceholder,
+  LegacyDropdown,
+  LegacyDropdownLeadingSlotPlaceholder,
+  LegacyDropdownPanelSlotPlaceholder,
 } from "./components/dropdown"
-export type { DropdownProps, DropdownStatus } from "./components/dropdown"
+export type {
+  DropdownProps,
+  DropdownStatus,
+  LegacyDropdownProps,
+  LegacyDropdownStatus,
+} from "./components/dropdown"
 export { SegmentedControl } from "./components/segmented-control"
 export type {
   SegmentedControlOption,

@@ -1,4 +1,4 @@
-import{j as e}from"./jsx-runtime-u17CrQMm.js";import{f as n}from"./index-m2GsfvbU.js";import"./iframe-aZuiXQCe.js";import"./preload-helper-PPVm8Dsz.js";const l=`
+import{j as e}from"./jsx-runtime-u17CrQMm.js";import{g as n}from"./index-DPhOrz7g.js";import"./iframe-DLYWTf-H.js";import"./preload-helper-PPVm8Dsz.js";const l=`
   .sb-sidebar-story {
     height: min(100dvh, 640px);
     display: flex;
@@ -60,4 +60,4 @@ import{j as e}from"./jsx-runtime-u17CrQMm.js";import{f as n}from"./index-m2Gsfvb
       </div>,
     children: null
   }
-}`,...s.parameters?.docs?.source}}};const p=["Default","WithoutVersion","CustomHeaderSlots","CustomFooter"];export{s as CustomFooter,r as CustomHeaderSlots,a as Default,o as WithoutVersion,p as __namedExportsOrder,u as default};
+}`,...s.parameters?.docs?.source}}};const g=["Default","WithoutVersion","CustomHeaderSlots","CustomFooter"];export{s as CustomFooter,r as CustomHeaderSlots,a as Default,o as WithoutVersion,g as __namedExportsOrder,u as default};
