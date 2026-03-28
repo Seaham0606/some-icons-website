@@ -1,5 +1,5 @@
 import { useFilterStore } from '@/stores/filterStore'
-import { SegmentedControl } from '@/components/ui/segmented-control'
+import { SegmentedControl } from 'design-system'
 import type { IconStyle } from '@/types/icon'
 
 const OPTIONS = [
@@ -12,10 +12,6 @@ export function StyleToggle() {
   const setStyle = useFilterStore((state) => state.setStyle)
 
   return (
-    <SegmentedControl<IconStyle>
-      options={OPTIONS}
-      value={style}
-      onChange={setStyle}
-    />
+    <SegmentedControl<IconStyle> options={OPTIONS} value={style} onChange={setStyle} />
   )
 }

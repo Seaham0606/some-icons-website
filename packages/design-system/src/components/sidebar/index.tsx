@@ -3,7 +3,7 @@
 import * as React from "react"
 import { cn } from "../../utils"
 import { Button } from "../button"
-import { VersionChip } from "../version-chip"
+import { VersionChip, type VersionChipVariant } from "../version-chip"
 
 export interface SidebarProps {
   className?: string
@@ -20,6 +20,9 @@ export interface SidebarProps {
    * If omitted, no chip is rendered.
    */
   version?: string
+
+  /** Passed to `VersionChip` (e.g. `beta` shows “Beta” while `version` still supplies the release line). */
+  versionChipVariant?: VersionChipVariant
 
   /**
    * Logo placeholder shown in `asideHeader`.
@@ -104,6 +107,7 @@ export function Sidebar({
   children,
   pageName,
   version,
+  versionChipVariant = "default",
   logo,
   themeButton,
   copyright,
@@ -119,7 +123,9 @@ export function Sidebar({
               {pageName}
             </div>
           ) : null}
-          {version ? <VersionChip version={version} /> : null}
+          {version ? (
+            <VersionChip version={version} variant={versionChipVariant} />
+          ) : null}
         </div>
       </div>
 

@@ -1,5 +1,5 @@
 import { useExportStore } from '@/stores/exportStore'
-import { SegmentedControl } from '@/components/ui/segmented-control'
+import { SegmentedControl } from 'design-system'
 import type { ExportFormat } from '@/lib/constants'
 
 const OPTIONS = [

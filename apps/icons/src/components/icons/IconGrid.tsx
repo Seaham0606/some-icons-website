@@ -2,6 +2,7 @@ import { useMemo, useState, useEffect } from 'react'
 import { IconCard } from './IconCard'
 import { useIcons } from '@/hooks/useIcons'
 import { useFilterStore } from '@/stores/filterStore'
+import { IconGrid as IconGridUI } from 'design-system'
 import type { Icon } from '@/types/icon'
 
 function normalizeQuery(s: string): string {
@@ -36,9 +37,8 @@ export function IconGrid() {
   const searchQuery = useFilterStore((state) => state.searchQuery)
   const category = useFilterStore((state) => state.category)
   const style = useFilterStore((state) => state.style)
-  const [bottomPadding, setBottomPadding] = useState<number>(32 * 4) // Default to pb-32 (128px)
+  const [bottomPadding, setBottomPadding] = useState<number>(32 * 4)
 
-  // Calculate padding based on footer height + 24px
   useEffect(() => {
     const calculatePadding = () => {
       const footer = document.getElementById('main-footer')
@@ -48,30 +48,25 @@ export function IconGrid() {
       }
     }
 
-    // Calculate on mount with a small delay to ensure footer is rendered
     const timeoutId = setTimeout(() => {
       calculatePadding()
     }, 0)
 
-    // Recalculate on resize
     const resizeObserver = new ResizeObserver(() => {
       requestAnimationFrame(calculatePadding)
     })
-    
-    // Try to observe footer, retry if not available
+
     const observeFooter = () => {
       const footer = document.getElementById('main-footer')
       if (footer) {
         resizeObserver.observe(footer)
       } else {
-        // Retry after a short delay if footer not found
         setTimeout(observeFooter, 100)
       }
     }
-    
+
     observeFooter()
 
-    // Also listen to window resize as fallback
     window.addEventListener('resize', calculatePadding)
 
     return () => {
@@ -107,47 +102,16 @@ export function IconGrid() {
     return result
   }, [icons, searchQuery, category, style])
 
-  if (isLoading) {
-    return (
-      <div 
-        className="flex items-center justify-center h-64 text-[var(--color-main-secondary)]"
-        style={{ paddingBottom: `${bottomPadding}px` }}
-      >
-        Loading icons...
-      </div>
-    )
-  }
-
-  if (error) {
-    return (
-      <div 
-        className="flex items-center justify-center h-64 text-[var(--color-red-400)]"
-        style={{ paddingBottom: `${bottomPadding}px` }}
-      >
-        Failed to load icons. Please try again.
-      </div>
-    )
-  }
-
-  if (filteredIcons.length === 0) {
-    return (
-      <div 
-        className="flex items-center justify-center h-64 text-[var(--color-main-secondary)]"
-        style={{ paddingBottom: `${bottomPadding}px` }}
-      >
-        No icons found matching your criteria.
-      </div>
-    )
-  }
-
   return (
-    <div 
-      className="grid grid-cols-[repeat(auto-fill,minmax(88px,1fr))] sm:grid-cols-[repeat(auto-fill,minmax(104px,1fr))] gap-2 sm:gap-3 p-4 sm:p-6 content-start"
-      style={{ paddingBottom: `${bottomPadding}px` }}
+    <IconGridUI
+      isLoading={isLoading}
+      hasError={!!error}
+      isEmpty={!isLoading && !error && filteredIcons.length === 0}
+      paddingBottomPx={bottomPadding}
     >
       {filteredIcons.map((icon) => (
         <IconCard key={icon.id} icon={icon} />
       ))}
-    </div>
+    </IconGridUI>
   )
 }

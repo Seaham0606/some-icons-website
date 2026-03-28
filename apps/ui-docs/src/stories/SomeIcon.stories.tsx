@@ -149,9 +149,9 @@ export const InputSlot: Story = {
   },
 }
 
-/** `InputSection` label-row lead: 12×12 glyph (`icon-2xs`), no inset. */
-export const InputSectionLead: Story = {
-  name: "InputSection lead (2xs)",
+/** `InputSection` label-row leading/trailing: 12×12 glyph (`icon-2xs`), no inset. */
+export const InputSectionLeading: Story = {
+  name: "InputSection leading (2xs)",
   render: (args) => (
     <div style={{ color: "var(--color-main-primary)" }}>
       <SomeIcon {...args} />

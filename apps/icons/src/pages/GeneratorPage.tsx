@@ -1,7 +1,20 @@
 import { Link } from 'react-router-dom'
-import { ThemeToggle } from '@/components/layout/ThemeToggle'
 import { GeneratorForm } from '@/components/generator/GeneratorForm'
-import { CdnIcon } from '@/components/ui/cdn-icon'
+import { ThemeButton, SomeIcon } from 'design-system'
+import { useUIStore } from '@/stores/uiStore'
+
+function GeneratorThemeButton() {
+  const setTheme = useUIStore((s) => s.setTheme)
+  const mode = useUIStore((s) => s.getEffectiveTheme())
+  return (
+    <ThemeButton
+      mode={mode}
+      onToggle={() =>
+        setTheme(useUIStore.getState().getEffectiveTheme() === 'dark' ? 'light' : 'dark')
+      }
+    />
+  )
+}
 
 export default function GeneratorPage() {
   return (
@@ -12,10 +25,15 @@ export default function GeneratorPage() {
             to="/"
             className="flex items-center gap-2 text-sm text-[var(--color-main-secondary)] hover:text-[var(--color-main-primary)] transition-colors"
           >
-            <CdnIcon iconId="arrow-left-triangle" className="h-4 w-4" />
+            <SomeIcon
+              iconName="arrow-left-triangle"
+              iconStyle="outline"
+              iconSize="xs"
+              padding="0"
+            />
             Back to icons
           </Link>
-          <ThemeToggle />
+          <GeneratorThemeButton />
         </div>
       </header>
 

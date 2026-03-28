@@ -31,8 +31,8 @@ body {
 }
 
 /*
- * Theme toggle: root snapshot crossfade (document.startViewTransition in uiStore).
- * No motion when user prefers reduced motion (transition skipped in JS too).
+ * Root view-transition styles (unused): `uiStore` no longer calls `startViewTransition`
+ * because full-page snapshots lag on the large icon grid. Kept for optional re-enable.
  */
 @media (prefers-reduced-motion: no-preference) {
   ::view-transition-old(root),
@@ -226,6 +226,75 @@ body {
   overflow: hidden;
 }
 
+/*
+ * Category dropdown open: filters block grows in the scrollable sidebar; Customize + Export
+ * collapse; dropdown panel fills remaining height (list scrolls inside .homepage-category-dropdown-panel).
+ */
+.homepage-sidebar--category-dropdown-open .ds-sidebar__contentSlot > :first-child.ds-inputSection {
+  flex: 1 1 auto;
+  min-height: 0;
+  min-width: 0;
+}
+
+.homepage-sidebar--category-dropdown-open
+  .ds-sidebar__contentSlot
+  > :first-child
+  .ds-inputSection__content {
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
+.homepage-sidebar--category-dropdown-open
+  .ds-sidebar__contentSlot
+  > :first-child
+  .ds-inputSection__content
+  > .ds-inputField:not(.homepage-category-field) {
+  flex-shrink: 0;
+}
+
+.homepage-sidebar--category-dropdown-open .homepage-category-field {
+  flex: 1 1 auto;
+  min-height: 0;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.homepage-sidebar--category-dropdown-open .homepage-category-field .ds-inputField__content {
+  flex: 1 1 auto;
+  min-height: 0;
+  min-width: 0;
+}
+
+.homepage-sidebar--category-dropdown-open .homepage-category-dropdown {
+  flex: 1 1 auto;
+  min-height: 0;
+  min-width: 0;
+  align-self: stretch;
+}
+
+.homepage-sidebar--category-dropdown-open
+  .homepage-category-dropdown[data-expanded="true"]
+  .ds-dropdown__panel {
+  flex: 1 1 auto;
+  min-height: 0;
+  flex-shrink: 1;
+}
+
+.homepage-sidebar--category-dropdown-open
+  .homepage-category-dropdown[data-expanded="true"]
+  .ds-dropdown__panelMotion {
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
+.homepage-category-dropdown-panel {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: auto;
+  width: 100%;
+}
+
 .homepage-main {
   flex: 1 1 auto;
   min-width: 0;
@@ -234,16 +303,94 @@ body {
   flex-direction: column;
 }
 
-/* Main column body: neutral wrapper; fills space beside aside; clips overflow. */
+/* Export Size row: custom width input — centered text; secondary column grows to 80px when focused or filled so the segmented control fills the rest */
+.homepage-size-export-field .ds-inputField__col--secondary[data-col2-width="size-12"] {
+  transition:
+    flex-basis 200ms ease,
+    width 200ms ease,
+    max-width 200ms ease;
+}
+
+.homepage-size-export-field
+  .ds-inputField__col--secondary[data-col2-width="size-12"]:focus-within,
+.homepage-size-export-field.homepage-size-export-field--expanded
+  .ds-inputField__col--secondary[data-col2-width="size-12"] {
+  flex: 0 0 var(--size-20);
+  width: var(--size-20);
+  max-width: var(--size-20);
+}
+
+.homepage-size-custom-input .ds-input__input {
+  text-align: center;
+}
+
+/* Main column body: fills space beside aside; scrolls when icon grid is taller than viewport. */
 .homepage-pageContent {
   flex: 1 1 auto;
   min-height: 0;
   min-width: 0;
-  overflow: hidden;
+  overflow-x: hidden;
+  overflow-y: auto;
   box-sizing: border-box;
   margin: 0;
   padding: var(--spacing-padding-6);
   border: none;
   background: transparent;
+}
+
+/* Trailing control inside Customize → Color input */
+.ds-iconColor-reset {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0;
+  padding: 0;
+  border: none;
+  background: none;
+  color: inherit;
+  cursor: default;
+  line-height: 0;
+}
+
+.ds-iconColor-reset:disabled {
+  opacity: 0.38;
+  color: var(--color-main-disabled);
+}
+
+.ds-iconColor-reset:focus-visible {
+  outline: none;
+  box-shadow: var(--shadow-focus-accent);
+  border-radius: var(--radius-sm);
+}
+
+/* Customize → Color: secondary column preview input (swatch + eyedropper slot) */
+.homepage-customize-colorPreview {
+  width: 100%;
+  min-width: 0;
+}
+
+/* Swatch drives Input shell fill via DS token (not slot / inner field only). */
+.homepage-customize-colorPreview .ds-input {
+  --ds-input-bg: var(
+    --homepage-customize-swatch,
+    var(--color-background-input)
+  );
+  transition: background 0.2s ease;
+}
+
+/*
+ * Same border as other inputs on hover. Read-only fields skip DS hover (!read-only); this
+ * keeps `weak → strong` like the adjacent hex field. Idle/focus still come from `components.css`.
+ */
+.homepage-customize-colorPreview
+  .ds-input[data-status="default"]:not([data-disabled="true"]):not(:focus-within):hover {
+  border-color: var(--color-border-strong);
+}
+
+.homepage-customize-colorPreview__hideLeading {
+  display: flex;
+  align-self: center;
+  opacity: 0;
+  pointer-events: none;
 }
 

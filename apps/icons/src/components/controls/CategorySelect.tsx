@@ -1,7 +1,5 @@
 import { useFilterStore } from '@/stores/filterStore'
-import { CdnIcon } from '@/components/ui/cdn-icon'
-import { SomeIcon } from 'design-system'
-import { nativeInputClassName } from '@/components/ui/input'
+import { SomeIcon, nativeInputClassName } from 'design-system'
 import { CategoryList, getCategoryIcon } from './CategoryList'
 import { cn } from '@/lib/utils'
 import { useState, useRef, useEffect } from 'react'
@@ -43,9 +41,10 @@ export function CategorySelect() {
         onClick={() => setIsOpen(!isOpen)}
         className={cn(nativeInputClassName, 'ds-selectTrigger')}
       >
-        <CdnIcon
-          iconId={getCategoryIcon(category)}
-          style="outline"
+        <SomeIcon
+          iconName={getCategoryIcon(category)}
+          iconStyle="outline"
+          iconSize="sm"
           className="ds-selectTriggerIcon"
         />
         <span className="ds-selectTriggerLabel">{getCategoryLabel(category)}</span>

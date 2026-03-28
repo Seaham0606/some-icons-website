@@ -1,9 +1,8 @@
 import { useExportStore } from '@/stores/exportStore'
 import { SIZE_PRESETS } from '@/lib/constants'
-import { SegmentedControl } from '@/components/ui/segmented-control'
+import { SegmentedControl, nativeInputClassName } from 'design-system'
 import { useState } from 'react'
 import { cn } from '@/lib/utils'
-import { nativeInputClassName } from '@/components/ui/input'
 
 const SIZE_OPTIONS = SIZE_PRESETS.map((size) => ({
   value: size,

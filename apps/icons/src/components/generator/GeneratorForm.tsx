@@ -1,9 +1,12 @@
 import { useState } from 'react'
-import { Input } from '@/components/ui/input'
-import { Textarea } from '@/components/ui/textarea'
-import { Button } from '@/components/ui/button'
-import { Label } from '@/components/ui/label'
-import { SegmentedControl } from '@/components/ui/segmented-control'
+import {
+  Button,
+  Input,
+  InputField,
+  nativeInputClassName,
+  SegmentedControl,
+} from 'design-system'
+import { cn } from '@/lib/utils'
 import { toast } from 'sonner'
 
 type ReleaseType = 'major' | 'minor' | 'patch'
@@ -82,6 +85,8 @@ function generateMarkdown(data: FormData): string {
   return lines.join('\n')
 }
 
+const textareaClass = cn(nativeInputClassName, 'min-h-[var(--size-16)] resize-y')
+
 export function GeneratorForm() {
   const [formData, setFormData] = useState<FormData>({
     version: '',
@@ -111,18 +116,21 @@ export function GeneratorForm() {
 
     const markdown = generateMarkdown(formData)
 
-    navigator.clipboard.writeText(markdown).then(() => {
-      toast.success('Markdown copied to clipboard!')
-    }).catch(() => {
-      const blob = new Blob([markdown], { type: 'text/markdown' })
-      const url = URL.createObjectURL(blob)
-      const a = document.createElement('a')
-      a.href = url
-      a.download = `${formData.version}.md`
-      a.click()
-      URL.revokeObjectURL(url)
-      toast.success('Markdown file downloaded!')
-    })
+    navigator.clipboard
+      .writeText(markdown)
+      .then(() => {
+        toast.success('Markdown copied to clipboard!')
+      })
+      .catch(() => {
+        const blob = new Blob([markdown], { type: 'text/markdown' })
+        const url = URL.createObjectURL(blob)
+        const a = document.createElement('a')
+        a.href = url
+        a.download = `${formData.version}.md`
+        a.click()
+        URL.revokeObjectURL(url)
+        toast.success('Markdown file downloaded!')
+      })
   }
 
   const handleClear = () => {
@@ -144,130 +152,174 @@ export function GeneratorForm() {
   return (
     <div className="space-y-6">
       <div className="grid gap-4 md:grid-cols-2">
-        <div className="space-y-2">
-          <Label htmlFor="version">Version</Label>
-          <Input
-            id="version"
-            placeholder="v1.0.0"
-            value={formData.version}
-            onChange={handleChange('version')}
-          />
-        </div>
+        <InputField
+          labelTag="label"
+          labelHtmlFor="version"
+          label="Version"
+          contentSlot={
+            <Input
+              id="version"
+              placeholder="v1.0.0"
+              value={formData.version}
+              onChange={handleChange('version')}
+            />
+          }
+        />
 
-        <div className="space-y-2">
-          <Label>Release Type</Label>
-          <SegmentedControl<ReleaseType>
-            options={RELEASE_TYPE_OPTIONS}
-            value={formData.releaseType}
-            onChange={(value) => setFormData((prev) => ({ ...prev, releaseType: value }))}
-          />
-        </div>
+        <InputField
+          label="Release Type"
+          contentSlot={
+            <SegmentedControl<ReleaseType>
+              options={RELEASE_TYPE_OPTIONS}
+              value={formData.releaseType}
+              onChange={(value) => setFormData((prev) => ({ ...prev, releaseType: value }))}
+            />
+          }
+        />
 
-        <div className="space-y-2">
-          <Label htmlFor="date">Date</Label>
-          <Input
-            id="date"
-            type="date"
-            value={formData.date}
-            onChange={handleChange('date')}
-          />
-        </div>
+        <InputField
+          labelTag="label"
+          labelHtmlFor="date"
+          label="Date"
+          contentSlot={
+            <Input id="date" type="date" value={formData.date} onChange={handleChange('date')} />
+          }
+        />
 
-        <div className="space-y-2">
-          <Label htmlFor="title">Title</Label>
-          <Input
-            id="title"
-            placeholder="Release title"
-            value={formData.title}
-            onChange={handleChange('title')}
-          />
-        </div>
-      </div>
-
-      <div className="space-y-2">
-        <Label htmlFor="summary">Summary</Label>
-        <Textarea
-          id="summary"
-          placeholder="Brief description of the release..."
-          value={formData.summary}
-          onChange={handleChange('summary')}
-          rows={2}
+        <InputField
+          labelTag="label"
+          labelHtmlFor="title"
+          label="Title"
+          contentSlot={
+            <Input
+              id="title"
+              placeholder="Release title"
+              value={formData.title}
+              onChange={handleChange('title')}
+            />
+          }
         />
       </div>
+
+      <InputField
+        labelTag="label"
+        labelHtmlFor="summary"
+        label="Summary"
+        contentSlot={
+          <textarea
+            id="summary"
+            className={textareaClass}
+            placeholder="Brief description of the release..."
+            value={formData.summary}
+            onChange={handleChange('summary')}
+            rows={2}
+          />
+        }
+      />
 
       <div className="grid gap-4 md:grid-cols-2">
-        <div className="space-y-2">
-          <Label htmlFor="added">Added (one item per line)</Label>
-          <Textarea
-            id="added"
-            placeholder="New feature 1&#10;New feature 2"
-            value={formData.added}
-            onChange={handleChange('added')}
-            rows={4}
-          />
-        </div>
+        <InputField
+          labelTag="label"
+          labelHtmlFor="added"
+          label="Added (one item per line)"
+          contentSlot={
+            <textarea
+              id="added"
+              className={textareaClass}
+              placeholder={'New feature 1\nNew feature 2'}
+              value={formData.added}
+              onChange={handleChange('added')}
+              rows={4}
+            />
+          }
+        />
 
-        <div className="space-y-2">
-          <Label htmlFor="changed">Changed (one item per line)</Label>
-          <Textarea
-            id="changed"
-            placeholder="Updated component&#10;Improved performance"
-            value={formData.changed}
-            onChange={handleChange('changed')}
-            rows={4}
-          />
-        </div>
+        <InputField
+          labelTag="label"
+          labelHtmlFor="changed"
+          label="Changed (one item per line)"
+          contentSlot={
+            <textarea
+              id="changed"
+              className={textareaClass}
+              placeholder={'Updated component\nImproved performance'}
+              value={formData.changed}
+              onChange={handleChange('changed')}
+              rows={4}
+            />
+          }
+        />
 
-        <div className="space-y-2">
-          <Label htmlFor="fixed">Fixed (one item per line)</Label>
-          <Textarea
-            id="fixed"
-            placeholder="Bug fix 1&#10;Bug fix 2"
-            value={formData.fixed}
-            onChange={handleChange('fixed')}
-            rows={4}
-          />
-        </div>
+        <InputField
+          labelTag="label"
+          labelHtmlFor="fixed"
+          label="Fixed (one item per line)"
+          contentSlot={
+            <textarea
+              id="fixed"
+              className={textareaClass}
+              placeholder={'Bug fix 1\nBug fix 2'}
+              value={formData.fixed}
+              onChange={handleChange('fixed')}
+              rows={4}
+            />
+          }
+        />
 
-        <div className="space-y-2">
-          <Label htmlFor="removed">Removed (one item per line)</Label>
-          <Textarea
-            id="removed"
-            placeholder="Deprecated feature"
-            value={formData.removed}
-            onChange={handleChange('removed')}
-            rows={4}
-          />
-        </div>
-      </div>
-
-      <div className="space-y-2">
-        <Label htmlFor="deprecated">Deprecated (one item per line)</Label>
-        <Textarea
-          id="deprecated"
-          placeholder="Feature to be removed"
-          value={formData.deprecated}
-          onChange={handleChange('deprecated')}
-          rows={2}
+        <InputField
+          labelTag="label"
+          labelHtmlFor="removed"
+          label="Removed (one item per line)"
+          contentSlot={
+            <textarea
+              id="removed"
+              className={textareaClass}
+              placeholder="Deprecated feature"
+              value={formData.removed}
+              onChange={handleChange('removed')}
+              rows={4}
+            />
+          }
         />
       </div>
 
-      <div className="space-y-2">
-        <Label htmlFor="notes">Additional Notes</Label>
-        <Textarea
-          id="notes"
-          placeholder="Any additional information..."
-          value={formData.notes}
-          onChange={handleChange('notes')}
-          rows={3}
-        />
-      </div>
+      <InputField
+        labelTag="label"
+        labelHtmlFor="deprecated"
+        label="Deprecated (one item per line)"
+        contentSlot={
+          <textarea
+            id="deprecated"
+            className={textareaClass}
+            placeholder="Feature to be removed"
+            value={formData.deprecated}
+            onChange={handleChange('deprecated')}
+            rows={2}
+          />
+        }
+      />
+
+      <InputField
+        labelTag="label"
+        labelHtmlFor="notes"
+        label="Additional Notes"
+        contentSlot={
+          <textarea
+            id="notes"
+            className={textareaClass}
+            placeholder="Any additional information..."
+            value={formData.notes}
+            onChange={handleChange('notes')}
+            rows={3}
+          />
+        }
+      />
 
       <div className="flex gap-3">
-        <Button onClick={handleGenerate} className="flex-1">
+        <Button className="flex-1" onClick={handleGenerate}>
           Generate Markdown
         </Button>
-        <Button variant="outline" onClick={handleClear}>
+        <Button variant="secondary" onClick={handleClear}>
           Clear
         </Button>
       </div>

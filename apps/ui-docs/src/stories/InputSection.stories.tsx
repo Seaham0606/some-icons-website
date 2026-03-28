@@ -5,7 +5,7 @@ import {
   SomeIcon,
 } from "design-system"
 
-function DemoLeadIcon() {
+function DemoLeadingIcon() {
   return (
     <svg
       width={12}
@@ -31,7 +31,14 @@ const meta: Meta<typeof InputSection> = {
     ),
   ],
   argTypes: {
-    leadSlot: {
+    leadingSlot: {
+      control: false,
+      table: {
+        category: "Content",
+        type: { summary: "ReactNode" },
+      },
+    },
+    trailingSlot: {
       control: false,
       table: {
         category: "Content",
@@ -46,9 +53,14 @@ const meta: Meta<typeof InputSection> = {
       },
     },
     label: { table: { category: "Content" } },
-    leadColor: { table: { category: "Appearance" } },
+    leadingColor: { table: { category: "Appearance" } },
+    trailingColor: { table: { category: "Appearance" } },
     showLabel: { table: { category: "Layout" } },
-    showContentSlot: { table: { category: "Layout" } },
+    hasContentSlot: { table: { category: "Layout" } },
+    collapsible: { table: { category: "Layout" } },
+    expanded: { table: { category: "Layout" } },
+    defaultExpanded: { table: { category: "Layout" } },
+    onExpandedChange: { control: false, table: { category: "Layout" } },
   },
 }
 
@@ -56,12 +68,12 @@ export default meta
 
 type Story = StoryObj<typeof InputSection>
 
-/** `SomeIcon` `iconSize="2xs"` matches the section label-row lead. Requires network. */
-export const WithLeadIcon: Story = {
-  name: "With SomeIcon lead (2xs)",
+/** `SomeIcon` `iconSize="2xs"` matches the section label-row slots. Requires network. */
+export const WithLeadingIcon: Story = {
+  name: "With SomeIcon leading (2xs)",
   args: {
     label: "Section title",
-    leadSlot: (
+    leadingSlot: (
       <SomeIcon
         iconName="formatting-pencil-alt"
         iconStyle="outline"
@@ -71,11 +83,11 @@ export const WithLeadIcon: Story = {
   },
 }
 
-export const LeadIconFilled: Story = {
-  name: "SomeIcon lead (filled)",
+export const LeadingIconFilled: Story = {
+  name: "SomeIcon leading (filled)",
   args: {
     label: "Filled style",
-    leadSlot: (
+    leadingSlot: (
       <SomeIcon
         iconName="formatting-pencil-alt"
         iconStyle="fill"
@@ -85,32 +97,53 @@ export const LeadIconFilled: Story = {
   },
 }
 
-export const WithLeadColor: Story = {
+export const WithLeadingAndTrailing: Story = {
+  name: "Leading + trailing (2xs)",
   args: {
-    label: "Accent lead",
-    leadSlot: (
+    label: "Section title",
+    leadingSlot: (
       <SomeIcon
         iconName="formatting-pencil-alt"
         iconStyle="outline"
         iconSize="2xs"
       />
     ),
-    leadColor: "var(--color-intent-accent)",
+    trailingSlot: (
+      <SomeIcon
+        iconName="interface-search"
+        iconStyle="outline"
+        iconSize="2xs"
+      />
+    ),
   },
 }
 
-export const WithCustomLeadSlot: Story = {
-  name: "With custom lead slot",
+export const WithLeadingColor: Story = {
   args: {
-    label: "Custom lead",
-    leadSlot: <DemoLeadIcon />,
+    label: "Accent leading",
+    leadingSlot: (
+      <SomeIcon
+        iconName="formatting-pencil-alt"
+        iconStyle="outline"
+        iconSize="2xs"
+      />
+    ),
+    leadingColor: "var(--color-intent-accent)",
+  },
+}
+
+export const WithCustomLeadingSlot: Story = {
+  name: "With custom leading slot",
+  args: {
+    label: "Custom leading",
+    leadingSlot: <DemoLeadingIcon />,
   },
 }
 
 export const WithCustomContent: Story = {
   args: {
     label: "Notes",
-    leadSlot: (
+    leadingSlot: (
       <SomeIcon
         iconName="formatting-pencil-alt"
         iconStyle="outline"
@@ -146,21 +179,42 @@ export const LabelOnly: Story = {
 export const WithoutContentSlot: Story = {
   args: {
     label: "Header row only",
-    leadSlot: (
+    leadingSlot: (
       <SomeIcon
         iconName="formatting-pencil-alt"
         iconStyle="outline"
         iconSize="2xs"
       />
     ),
-    showContentSlot: false,
+    hasContentSlot: false,
   },
 }
 
 export const WithoutLabel: Story = {
   args: {
     showLabel: false,
-    showContentSlot: true,
+    hasContentSlot: true,
     contentSlot: <InputSectionSlotPlaceholder />,
+  },
+}
+
+/** Expand/collapse trailing control fades in while the pointer is inside the section (pointer enter/leave on shell). Requires network. */
+export const Collapsible: Story = {
+  args: {
+    label: "Collapsible section",
+    collapsible: true,
+    defaultExpanded: true,
+    leadingSlot: (
+      <SomeIcon
+        iconName="formatting-pencil-alt"
+        iconStyle="outline"
+        iconSize="2xs"
+      />
+    ),
+    contentSlot: (
+      <p style={{ margin: 0, color: "var(--color-main-secondary)" }}>
+        Body content is hidden when collapsed.
+      </p>
+    ),
   },
 }

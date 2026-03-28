@@ -46,7 +46,7 @@ export function IconPreview({ path, className }: IconPreviewProps) {
     <div
       className={cn('transition-colors', className)}
       style={{
-        backgroundColor: selectedColor ?? 'var(--item-grid)',
+        backgroundColor: selectedColor ?? 'var(--color-main-secondary)',
         WebkitMaskImage: maskUrl,
         WebkitMaskSize: 'contain',
         WebkitMaskRepeat: 'no-repeat',

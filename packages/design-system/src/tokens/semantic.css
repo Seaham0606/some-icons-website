@@ -9,9 +9,13 @@
 
   /* intent */
   --color-intent-accent: var(--color-blue-400);
-  --color-intent-success: var(--color-green-400);
+  --color-intent-accent-strong: var(--color-blue-600);
+  --color-intent-success: var(--color-green-400); 
+  --color-intent-success-strong: var(--color-green-600);
   --color-intent-warning: var(--color-yellow-400);
+  --color-intent-warning-strong: var(--color-yellow-600);
   --color-intent-error: var(--color-purple-400);
+  --color-intent-error-strong: var(--color-purple-600);
 
   /* overlay */
   --color-overlay-weak: var(--color-black-alpha-15);
@@ -34,7 +38,7 @@
   --color-border-strong: var(--color-black-alpha-100);
   --color-border-base: var(--color-black-alpha-50);
   --color-border-weak: var(--color-black-alpha-25);
-  --color-border-extra-weak: var(--color-black-alpha-10);
+  --color-border-extra-weak: var(--color-black-alpha-15);
   --color-border-success: var(--color-green-alpha-400);
   --color-border-warning: var(--color-yellow-alpha-400);
   --color-border-error: var(--color-purple-alpha-400);
@@ -83,6 +87,9 @@
   --shadow-focus-error:
     0 0 0 var(--spacing-050) var(--color-background-base),
     0 0 0 var(--spacing-1) var(--color-focus-error);
+
+  /* Icon card — “Copied” chip surface (theme-aware) */
+  --color-iconCard-feedback-bg: var(--color-black-alpha-100);
 }
 
 [data-theme="dark"] {
@@ -96,9 +103,13 @@
 
   /* intent */
   --color-intent-accent: var(--color-blue-400);
+  --color-intent-accent-strong: var(--color-blue-300);
   --color-intent-success: var(--color-green-400);
+  --color-intent-success-strong: var(--color-green-300);
   --color-intent-warning: var(--color-yellow-400);
+  --color-intent-warning-strong: var(--color-yellow-300);
   --color-intent-error: var(--color-purple-400);
+  --color-intent-error-strong: var(--color-purple-300);
 
   /* overlay */
   --color-overlay-weak: var(--color-white-alpha-15);
@@ -121,7 +132,7 @@
   --color-border-strong: var(--color-white-alpha-150);
   --color-border-base: var(--color-white-alpha-50);
   --color-border-weak: var(--color-white-alpha-15);
-  --color-border-extra-weak: var(--color-white-alpha-10);
+  --color-border-extra-weak: var(--color-white-alpha-15);
   --color-border-success: var(--color-green-alpha-400);
   --color-border-warning: var(--color-yellow-alpha-400);
   --color-border-error: var(--color-purple-alpha-400);
@@ -170,4 +181,6 @@
   --shadow-focus-error:
     0 0 0 var(--spacing-050) var(--color-background-base),
     0 0 0 var(--spacing-1) var(--color-focus-error);
+
+  --color-iconCard-feedback-bg: var(--color-white-alpha-100);
 }

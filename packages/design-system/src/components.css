@@ -41,6 +41,11 @@
   background: var(--color-overlay-dark-hover);
 }
 
+.ds-versionChip[data-variant="beta"] {
+  color: var(--color-intent-accent-strong);
+  background: var(--color-overlay-accent);
+}
+
 /* Sidebar — matches icons app homepage-aside (flex column in shell, not position:fixed) */
 .ds-sidebar {
   flex: 0 0 auto;
@@ -113,6 +118,7 @@
 .ds-sidebar__contentSlot {
   flex: 1 1 auto;
   min-height: 0;
+  min-width: 0;
   width: 320px;
   box-sizing: border-box;
   display: flex;
@@ -127,7 +133,7 @@
   flex: 0 0 auto;
   display: flex;
   align-items: center;
-  padding-top: var(--spacing-padding-0);
+  padding-top: var(--spacing-padding-5);
   padding-left: var(--spacing-padding-2);
   padding-right: var(--spacing-padding-2);
   padding-bottom: var(--spacing-padding-1);
@@ -279,8 +285,8 @@
 }
 
 .ds-input[data-status="error"]:not([data-disabled="true"]):not([data-readonly="true"]) {
-  border-color: var(--color-border-error);
-  background: color-mix(in srgb, var(--color-intent-error) 20%, var(--ds-input-bg));
+  border-color: var(--color-intent-warning);
+  background: color-mix(in srgb, var(--color-intent-warning) 20%, var(--ds-input-bg));
 }
 
 .ds-input[data-status="error"]:focus-within {
@@ -288,7 +294,7 @@
 }
 
 .ds-input[data-status="error"]:focus-within[data-focus-ring="true"] {
-  box-shadow: var(--shadow-focus-error);
+  box-shadow: var(--shadow-focus-warning);
 }
 
 .ds-input__slot {
@@ -314,6 +320,15 @@
 .ds-input__slot > :not([data-part="slot-placeholder"]) {
   align-self: center;
   flex-shrink: 0;
+}
+
+.ds-input[data-status="error"] .ds-input__slot {
+  color: var(--ds-input-content-color, var(--color-intent-warning-strong));
+}
+
+.ds-input[data-status="error"] .ds-input__trailingRow,
+.ds-input[data-status="error"] .ds-input__trailingGlyph {
+  color: var(--ds-input-content-color, var(--color-intent-warning-strong));
 }
 
 .ds-input__slotPlaceholder {
@@ -356,16 +371,20 @@
   color: var(--ds-input-content-color, var(--color-main-tertiary));
 }
 
+.ds-input[data-status="error"] .ds-input__input {
+  color: var(--ds-input-content-color, var(--color-intent-warning-strong));
+}
+
+.ds-input[data-status="error"] .ds-input__input::placeholder {
+  color: var(--ds-input-content-color, var(--color-intent-warning-strong));
+}
+
 .ds-input[data-status="success"][data-filled="true"] .ds-input__input {
   color: var(--ds-input-content-color, var(--color-intent-success));
 }
 
 .ds-input[data-status="warning"][data-filled="true"] .ds-input__input {
   color: var(--ds-input-content-color, var(--color-intent-warning));
-}
-
-.ds-input[data-status="error"][data-filled="true"] .ds-input__input {
-  color: var(--ds-input-content-color, var(--color-intent-error));
 }
 
 .ds-input[data-disabled="true"] .ds-input__input {
@@ -427,6 +446,282 @@
 .ds-input--placeholderEmphasis[data-filled="false"] .ds-input__input {
   font-weight: 600;
   line-height: normal;
+}
+
+/* Dropdown — Figma Dropdown 490:5420 (trigger + optional expanded panel). */
+.ds-dropdown {
+  /* Open + close: symmetric ease so height/chevron/panel don’t snap. */
+  --ds-dropdown-ease: ease-in-out;
+  --ds-dropdown-duration: 360ms;
+  box-sizing: border-box;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  width: 240px;
+  max-width: 100%;
+  min-width: 0;
+  /* Same outer frame as `.ds-input`: 48px including border + padding. */
+  min-height: var(--size-12);
+  height: var(--size-12);
+  margin: 0;
+  appearance: none;
+  cursor: pointer;
+  border-radius: var(--radius-lg);
+  border: var(--border-width-base) solid var(--color-border-weak);
+  /* Match `.ds-input` idle fill (no hover gradients). */
+  background: var(--color-background-input);
+  /* Figma frame padding inside the stroke; subtract border (matches Input). */
+  padding: calc(var(--spacing-padding-1) - var(--border-width-base));
+  transition:
+    border-color 300ms ease,
+    box-shadow 200ms ease,
+    background 200ms ease;
+}
+
+.ds-dropdown[data-expanded="true"] {
+  height: auto;
+  min-height: var(--size-12);
+}
+
+.ds-dropdown[data-full-width="true"] {
+  width: 100%;
+}
+
+.ds-dropdown:focus {
+  outline: none;
+}
+
+.ds-dropdown[data-disabled="true"] {
+  pointer-events: none;
+  cursor: not-allowed;
+  border-color: var(--color-border-extra-weak);
+}
+
+.ds-dropdown__headerRow {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  flex: 0 0 auto;
+  /* Inner row = 40px when shell is 48px (1px border + 3px padding each side). */
+  height: calc(
+    var(--size-12) - 2 * (var(--spacing-padding-1) - var(--border-width-base)) -
+      2 * var(--border-width-base)
+  );
+}
+
+.ds-dropdown__slot {
+  box-sizing: border-box;
+  flex: 0 0 var(--size-10);
+  width: var(--size-10);
+  min-width: var(--size-10);
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: center;
+  overflow: visible;
+  color: var(--ds-dropdown-content-color, var(--color-main-tertiary));
+}
+
+.ds-dropdown__slot > [data-part="slot-placeholder"] {
+  flex: 1 1 auto;
+  min-height: 0;
+  min-width: 0;
+}
+
+.ds-dropdown__slot > :not([data-part="slot-placeholder"]):not(.ds-dropdown__trailingRotate) {
+  align-self: center;
+  flex-shrink: 0;
+}
+
+/* Trailing slot: wrap for 180° chevron spin when expanded (see `[data-expanded="true"]`). */
+.ds-dropdown__trailingRotate {
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 1 1 auto;
+  min-height: 0;
+  min-width: 0;
+  width: 100%;
+  transform-origin: center center;
+  transition: transform var(--ds-dropdown-duration) var(--ds-dropdown-ease);
+}
+
+.ds-dropdown[data-expanded="true"] .ds-dropdown__trailingRotate {
+  transform: rotate(180deg);
+}
+
+.ds-dropdown__trailingRotate > [data-part="slot-placeholder"] {
+  flex: 1 1 auto;
+  min-height: 0;
+  min-width: 0;
+}
+
+.ds-dropdown__trailingRotate > :not([data-part="slot-placeholder"]) {
+  align-self: center;
+  flex-shrink: 0;
+}
+
+.ds-dropdown__labelWrap {
+  box-sizing: border-box;
+  flex: 1 1 0%;
+  min-width: 0;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  padding-left: var(--spacing-padding-2);
+  padding-right: var(--spacing-padding-2);
+}
+
+.ds-dropdown__label {
+  font-family: var(--font-family-sans);
+  font-size: var(--font-size-input);
+  font-weight: 500;
+  font-style: normal;
+  line-height: var(--line-height-input);
+  color: var(--ds-dropdown-content-color, var(--color-main-primary));
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  width: 100%;
+  text-align: left;
+}
+
+.ds-dropdown[data-empty="true"] .ds-dropdown__label {
+  color: var(--ds-dropdown-content-color, var(--color-main-tertiary));
+}
+
+.ds-dropdown[data-status="error"]:not([data-empty="true"]) .ds-dropdown__label {
+  color: var(--ds-dropdown-content-color, var(--color-intent-error));
+}
+
+.ds-dropdown[data-disabled="true"] .ds-dropdown__label {
+  color: var(--ds-dropdown-content-color, var(--color-main-disabled));
+}
+
+.ds-dropdown[data-disabled="true"] .ds-dropdown__slot {
+  color: var(--ds-dropdown-content-color, var(--color-main-disabled));
+}
+
+/*
+ * Default chrome: strong border follows `:hover` only so it clears on mouse leave.
+ * Pointer focus does not lock the strong border (unlike `:focus-within` on a text field).
+ * Keyboard: `[data-focus-ring="true"]` + `:focus-visible` matches Input’s Tab ring behavior.
+ */
+.ds-dropdown[data-status="default"]:not([data-disabled="true"]):hover {
+  border-color: var(--color-border-strong);
+}
+
+.ds-dropdown[data-status="default"]:not([data-disabled="true"]):not([data-empty="true"]):hover
+  .ds-dropdown__label {
+  color: var(--ds-dropdown-content-color, var(--color-main-primary));
+}
+
+.ds-dropdown[data-status="default"]:focus-visible[data-focus-ring="true"] {
+  border-color: var(--color-border-strong);
+  box-shadow: var(--shadow-focus-accent);
+}
+
+.ds-dropdown[data-status="error"]:not([data-disabled="true"]) {
+  border-color: var(--color-border-error);
+  background: color-mix(in srgb, var(--color-intent-error) 20%, var(--color-background-input));
+  background-image: none;
+}
+
+.ds-dropdown[data-status="error"]:focus-visible[data-focus-ring="true"] {
+  box-shadow: var(--shadow-focus-error);
+}
+
+/*
+ * Panel: grid 0fr → 1fr height tween + fade/slide on inner (“Smart animate” feel).
+ * Panel stays mounted when `panelSlot != null` so open/close both animate.
+ */
+.ds-dropdown__panel {
+  box-sizing: border-box;
+  display: grid;
+  grid-template-rows: 0fr;
+  width: 100%;
+  min-height: 0;
+  margin-top: 0;
+  flex-shrink: 0;
+  pointer-events: none;
+  transition:
+    grid-template-rows var(--ds-dropdown-duration) var(--ds-dropdown-ease),
+    margin-top var(--ds-dropdown-duration) var(--ds-dropdown-ease);
+}
+
+.ds-dropdown[data-expanded="true"] .ds-dropdown__panel {
+  grid-template-rows: 1fr;
+  margin-top: var(--spacing-gap-2);
+  pointer-events: auto;
+}
+
+.ds-dropdown__panelMotion {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  overflow: hidden;
+  opacity: 0;
+  transform: translateY(calc(-1 * var(--spacing-gap-2)));
+  transition:
+    opacity var(--ds-dropdown-duration) var(--ds-dropdown-ease),
+    transform var(--ds-dropdown-duration) var(--ds-dropdown-ease);
+}
+
+.ds-dropdown[data-expanded="true"] .ds-dropdown__panelMotion {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ds-dropdown__trailingRotate,
+  .ds-dropdown__panel,
+  .ds-dropdown__panelMotion {
+    transition: none;
+  }
+
+  .ds-dropdown:not([data-expanded="true"]) .ds-dropdown__panelMotion {
+    opacity: 0;
+    transform: none;
+  }
+
+  .ds-dropdown[data-expanded="true"] .ds-dropdown__panelMotion {
+    opacity: 1;
+    transform: none;
+  }
+
+  .ds-inputSection__collapsiblePanel,
+  .ds-inputSection__panelMotion,
+  .ds-inputSection--collapsible .ds-inputSection__trailing--pointerReveal {
+    transition: none;
+  }
+
+  .ds-inputSection--collapsible:not([data-expanded="true"])
+    .ds-inputSection__panelMotion {
+    opacity: 0;
+    transform: none;
+  }
+
+  .ds-inputSection--collapsible[data-expanded="true"]
+    .ds-inputSection__panelMotion {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.ds-dropdown__panelPlaceholder {
+  box-sizing: border-box;
+  flex: 1 1 auto;
+  min-height: var(--size-10);
+  width: 100%;
+  border-radius: var(--radius-md);
+  border: var(--border-width-base) dashed var(--color-red-300);
+  background: var(--color-red-alpha-25);
 }
 
 /*
@@ -529,7 +824,7 @@ button.ds-nativeInput {
   width: 100%;
   cursor: pointer;
   text-align: left;
-  padding-right: 40px;
+  padding-right: var(--spacing-padding-10);
 }
 
 .ds-selectTriggerIcon {
@@ -675,6 +970,7 @@ button.ds-nativeInput {
 .ds-inputSection {
   box-sizing: border-box;
   width: 100%;
+  min-width: 0;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
@@ -684,7 +980,66 @@ button.ds-nativeInput {
   border: var(--border-width-base) solid var(--color-border-weak);
   background: var(--color-background-elevation);
   /* visible: avoid clipping focus rings / shadows on nested inputs (see .ds-sidebar). */
+  overflow: hidden;
+}
+
+/* Match `.ds-dropdown` motion tokens so open/close feels consistent. */
+.ds-inputSection--collapsible {
+  gap: 0;
+  --ds-dropdown-ease: ease-in-out;
+  --ds-dropdown-duration: 360ms;
+}
+
+/*
+ * Collapsible body: same grid 0fr → 1fr + inner fade/slide as `.ds-dropdown__panel` /
+ * `.ds-dropdown__panelMotion` (spacing uses section gap token).
+ */
+.ds-inputSection__collapsiblePanel {
+  box-sizing: border-box;
+  display: grid;
+  grid-template-rows: 0fr;
+  width: 100%;
+  min-width: 0;
+  min-height: 0;
+  margin-top: 0;
+  flex-shrink: 0;
+  pointer-events: none;
+  transition:
+    grid-template-rows var(--ds-dropdown-duration) var(--ds-dropdown-ease),
+    margin-top var(--ds-dropdown-duration) var(--ds-dropdown-ease);
+}
+
+.ds-inputSection--collapsible[data-expanded="true"] .ds-inputSection__collapsiblePanel {
+  grid-template-rows: 1fr;
+  /* Same spacing tween as `.ds-dropdown[data-expanded="true"] .ds-dropdown__panel`. */
+  margin-top: var(--spacing-gap-2);
+  pointer-events: auto;
+}
+
+.ds-inputSection__panelMotion {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+  opacity: 0;
+  transform: translateY(calc(-1 * var(--spacing-gap-2)));
+  transition:
+    opacity var(--ds-dropdown-duration) var(--ds-dropdown-ease),
+    transform var(--ds-dropdown-duration) var(--ds-dropdown-ease);
+}
+
+.ds-inputSection--collapsible[data-expanded="true"] .ds-inputSection__panelMotion {
+  opacity: 1;
+  transform: translateY(0);
+  /* Collapsed state keeps `overflow: hidden` above for height animation; when open, allow focus rings. */
   overflow: visible;
+}
+
+.ds-inputSection__panelMotion > .ds-inputSection__content {
+  min-height: 0;
 }
 
 .ds-inputSection__labelRow {
@@ -696,11 +1051,45 @@ button.ds-nativeInput {
   width: 100%;
 }
 
-.ds-inputSection__lead {
+button.ds-inputSection__labelRow.ds-inputSection__labelRow--toggle {
+  box-sizing: border-box;
+  font: inherit;
+  text-align: inherit;
+  appearance: none;
+  margin: 0;
+  padding: 0;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  color: inherit;
+}
+
+.ds-inputSection__labelRow--toggle:focus-visible {
+  outline: 2px solid var(--color-intent-accent, var(--color-main-primary));
+  outline-offset: 2px;
+  border-radius: var(--radius-md);
+}
+
+.ds-inputSection__leading,
+.ds-inputSection__trailing {
   flex-shrink: 0;
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+/* Collapsible: trailing control fades in while pointer is inside the section (enter/leave on shell), or when the toggle has keyboard focus-visible. */
+.ds-inputSection--collapsible .ds-inputSection__trailing--pointerReveal {
+  opacity: 0;
+  transition: opacity var(--ds-dropdown-duration) var(--ds-dropdown-ease);
+}
+
+.ds-inputSection--collapsible[data-trailing-revealed="true"]
+  .ds-inputSection__trailing--pointerReveal,
+.ds-inputSection--collapsible
+  .ds-inputSection__labelRow--toggle:focus-visible
+  .ds-inputSection__trailing--pointerReveal {
+  opacity: 1;
 }
 
 .ds-inputSection__title {
@@ -825,7 +1214,24 @@ button.ds-nativeInput {
 }
 
 .ds-segmentedControl[data-has-error="true"] {
-  box-shadow: 0 0 0 var(--border-width-thick) var(--color-red-500);
+  border-color: var(--color-intent-warning);
+  background: color-mix(in srgb, var(--color-intent-warning) 20%, var(--color-background-input));
+}
+
+.ds-segmentedControl[data-has-error="true"]:hover {
+  border-color: var(--color-intent-warning);
+}
+
+.ds-segmentedControl[data-has-error="true"] .ds-segmentedControl__segment.ds-button {
+  color: var(--color-intent-warning-strong);
+}
+
+/*
+ * Error frame uses warning chroma; keep unselected segments legible (default 0.2 opacity is too faint).
+ */
+.ds-segmentedControl[data-has-error="true"]
+  .ds-segmentedControl__segment.ds-button[data-variant="transparent"][data-segment-selected="false"] {
+  opacity: 0.55;
 }
 
 [data-theme="dark"] .ds-input[data-status="default"] {
@@ -846,6 +1252,15 @@ button.ds-nativeInput {
 
 [data-theme="dark"] .ds-segmentedControl:hover {
   border-color: var(--color-border-base);
+}
+
+[data-theme="dark"] .ds-segmentedControl[data-has-error="true"] {
+  border-color: var(--color-intent-warning);
+  background: color-mix(in srgb, var(--color-intent-warning) 20%, var(--color-background-input));
+}
+
+[data-theme="dark"] .ds-segmentedControl[data-has-error="true"]:hover {
+  border-color: var(--color-intent-warning);
 }
 
 [data-theme="dark"] .ds-colorSwatchButton:hover:not(:disabled) {
@@ -1209,6 +1624,178 @@ button.ds-nativeInput {
   display: block;
 }
 
+/* --- Icon card (library grid) --- */
+
+.ds-iconCard__shell {
+  position: relative;
+  box-sizing: border-box;
+  width: 100%;
+  aspect-ratio: 1 / 1;
+}
+
+.ds-iconCard {
+  position: absolute;
+  inset: 0;
+  box-sizing: border-box;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  cursor: pointer;
+  border: var(--border-width-base) solid var(--color-border-extra-weak);
+  border-radius: var(--radius-lg);
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  transition:
+    background-color 0.2s ease,
+    border-color 0.2s ease;
+}
+
+.ds-iconCard__shell:hover:not([data-selected="true"]) .ds-iconCard {
+  background: var(--color-background-elevation);
+  border-color: var(--color-border-base);
+}
+
+.ds-iconCard__shell[data-selected="true"] .ds-iconCard {
+  border-color: var(--color-intent-accent);
+  background: var(--color-blue-alpha-25);
+}
+
+.ds-iconCard__shell[data-selected="true"]:hover .ds-iconCard {
+  background: var(--color-overlay-accent);
+}
+
+.ds-iconCard:focus-visible {
+  outline: none;
+  box-shadow: var(--shadow-focus-accent);
+}
+
+.ds-iconCard__previewWrap {
+  display: grid;
+  place-items: center;
+  width: 100%;
+  height: 100%;
+  padding: var(--spacing-padding-4);
+  box-sizing: border-box;
+  pointer-events: none;
+}
+
+.ds-iconCard__preview {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 60%;
+  height: 60%;
+}
+
+.ds-iconCard__preview > * {
+  flex: 1 1 auto;
+  min-width: 0;
+  min-height: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.ds-iconCard__select {
+  position: absolute;
+  top: var(--spacing-1);
+  right: var(--spacing-1);
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--size-5);
+  height: var(--size-5);
+  margin: 0;
+  padding: 0;
+  border: none;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--color-main-disabled);
+  cursor: pointer;
+  opacity: 0;
+  transition:
+    opacity 0.2s ease,
+    color 0.2s ease;
+}
+
+.ds-iconCard__shell:hover .ds-iconCard__select,
+.ds-iconCard__shell[data-selected="true"] .ds-iconCard__select {
+  opacity: 1;
+}
+
+.ds-iconCard__select:hover {
+  opacity: 0.8;
+}
+
+.ds-iconCard__shell[data-selected="true"] .ds-iconCard__select {
+  color: var(--color-intent-accent);
+}
+
+.ds-iconCard__select:focus-visible {
+  outline: none;
+  box-shadow: var(--shadow-focus-accent);
+}
+
+.ds-iconCard__copyFeedback {
+  position: fixed;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.25rem 1rem 0.25rem 0.5rem;
+  border-radius: var(--radius-full);
+  pointer-events: none;
+  color: var(--color-main-primary);
+  font-family: Figtree, system-ui, sans-serif;
+  font-size: 1rem;
+  font-weight: 600;
+  line-height: 1;
+  white-space: nowrap;
+  background: var(--color-iconCard-feedback-bg);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+/* --- Icon grid (library) --- */
+
+.ds-iconGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(88px, 1fr));
+  gap: var(--spacing-gap-2);
+  align-content: start;
+  box-sizing: border-box;
+}
+
+@media (min-width: 640px) {
+  .ds-iconGrid {
+    grid-template-columns: repeat(auto-fill, minmax(104px, 1fr));
+    gap: var(--spacing-gap-3);
+  }
+}
+
+.ds-iconGrid__message {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  /* Legacy Tailwind `h-64` (16 × 16px) */
+  min-height: 256px;
+  padding: var(--spacing-padding-4);
+  color: var(--color-main-secondary);
+  font-family: var(--font-family-sans);
+  font-size: var(--font-size-input);
+  font-weight: 500;
+  line-height: var(--line-height-input);
+  text-align: center;
+}
+
+.ds-iconGrid__message--error {
+  color: var(--color-red-400);
+}
+
 @media (prefers-reduced-motion: reduce) {
   .ds-button {
     transition-duration: 0.01ms;
@@ -1225,6 +1812,11 @@ button.ds-nativeInput {
   }
 
   .ds-theme-button__track {
+    transition-duration: 0.01ms;
+  }
+
+  .ds-iconCard,
+  .ds-iconCard__select {
     transition-duration: 0.01ms;
   }
 }

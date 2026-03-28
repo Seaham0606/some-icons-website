@@ -1,4 +1,4 @@
-import { Input } from '@/components/ui/input'
+import { Input, SomeIcon } from 'design-system'
 import { useFilterStore } from '@/stores/filterStore'
 
 export function SearchInput() {
@@ -11,10 +11,15 @@ export function SearchInput() {
       placeholder="Search icons..."
       value={searchQuery}
       onChange={(e) => setSearchQuery(e.target.value)}
-      leadingIcon={{
-        iconId: "interface-search",
-        style: "outline"
-      }}
+      showLeading
+      leadingSlot={
+        <SomeIcon
+          iconName="interface-search"
+          iconStyle="outline"
+          iconSize="md"
+          padding="2"
+        />
+      }
     />
   )
 }

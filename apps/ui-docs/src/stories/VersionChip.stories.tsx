@@ -14,3 +14,7 @@ type Story = StoryObj<typeof VersionChip>;
 export const Default: Story = {
   args: { version: "1.2.3" },
 };
+
+export const Beta: Story = {
+  args: { version: "1.2.3", variant: "beta" },
+};

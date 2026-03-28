@@ -1,5 +1,4 @@
-import { Input, nativeInputClassName } from '@/components/ui/input'
-import { SomeIcon } from 'design-system'
+import { Input, nativeInputClassName, SomeIcon } from 'design-system'
 import { useColorStore } from '@/stores/colorStore'
 import { isValidHexColor, normalizeHexColor } from '@/lib/svg-utils'
 import { useState, useEffect, useRef } from 'react'
@@ -61,6 +60,25 @@ export function ColorPicker() {
     setInputValue('')
   }
 
+  const trailingSlot =
+    selectedColor ? (
+      <div className="ds-input__trailingRow">
+        <button
+          type="button"
+          onClick={handleReset}
+          className="ds-input__trailingAction"
+          tabIndex={-1}
+        >
+          <SomeIcon
+            iconName="arrow-undo-large"
+            iconStyle="outline"
+            iconSize="sm"
+            className="ds-input__trailingGlyph"
+          />
+        </button>
+      </div>
+    ) : undefined
+
   return (
     <div className="ds-colorPickerRow">
       {/* Text input with reset icon inside */}
@@ -70,11 +88,8 @@ export function ColorPicker() {
           placeholder="Default"
           value={inputValue}
           onChange={(e) => handleInputChange(e.target.value)}
-          trailingIcons={selectedColor ? [{
-            iconId: "arrow-undo-large",
-            style: "outline",
-            onClick: handleReset
-          }] : undefined}
+          showTrailing={Boolean(trailingSlot)}
+          trailingSlot={trailingSlot}
           className={cn(!selectedColor && 'ds-input--placeholderEmphasis')}
         />
       </div>

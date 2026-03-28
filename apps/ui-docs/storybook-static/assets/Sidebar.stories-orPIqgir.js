@@ -1,4 +1,4 @@
-import{j as e}from"./jsx-runtime-u17CrQMm.js";import{S as n}from"./index-DYD40Rep.js";import"./iframe-CBfxnU_t.js";import"./preload-helper-PPVm8Dsz.js";const l=`
+import{j as e}from"./jsx-runtime-u17CrQMm.js";import{f as n}from"./index-m2GsfvbU.js";import"./iframe-aZuiXQCe.js";import"./preload-helper-PPVm8Dsz.js";const l=`
   .sb-sidebar-story {
     height: min(100dvh, 640px);
     display: flex;

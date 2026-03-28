@@ -26,25 +26,13 @@ function applyEffectiveTheme(theme: Theme) {
   document.documentElement.setAttribute('data-theme', effective)
 }
 
-function themeTransitionDisabled(): boolean {
-  if (typeof window === 'undefined') return true
-  return window.matchMedia('(prefers-reduced-motion: reduce)').matches
-}
-
-/** Crossfade full-page paint when `data-theme` changes (View Transitions API). */
-function runWithThemeTransition(update: () => void) {
-  if (typeof document === 'undefined' || themeTransitionDisabled()) {
-    update()
-    return
-  }
-  const doc = document as Document & {
-    startViewTransition?: (callback: () => void) => unknown
-  }
-  if (typeof doc.startViewTransition === 'function') {
-    doc.startViewTransition(update)
-  } else {
-    update()
-  }
+/**
+ * Theme updates apply synchronously (no `document.startViewTransition`).
+ * A root-level view transition snapshots the whole DOM; on the icon grid that forces the
+ * browser to capture raster for hundreds of tiles and feels laggy. Prefer instant theme flip.
+ */
+function runThemeUpdate(update: () => void) {
+  update()
 }
 
 export const useUIStore = create<UIState>()(
@@ -52,7 +40,7 @@ export const useUIStore = create<UIState>()(
     (set, get) => ({
       theme: 'system',
       setTheme: (theme) => {
-        runWithThemeTransition(() => {
+        runThemeUpdate(() => {
           set({ theme })
           applyEffectiveTheme(theme)
         })
@@ -105,7 +93,7 @@ export function initTheme() {
   window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
     const currentTheme = useUIStore.getState().theme
     if (currentTheme === 'system') {
-      runWithThemeTransition(() => applyEffectiveTheme('system'))
+      runThemeUpdate(() => applyEffectiveTheme('system'))
     }
   })
 }
