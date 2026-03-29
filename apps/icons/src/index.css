@@ -226,92 +226,6 @@ body {
   overflow: hidden;
 }
 
-/*
- * Category dropdown open: filters block grows in the scrollable sidebar; Customize + Export
- * collapse; dropdown panel fills remaining height (list scrolls inside .homepage-category-dropdown-panel).
- *
- * Motion blend: flex chain uses a longer soft ease-out so space redistribution overlaps the panel
- * grid (shorter). Avoids the harsh “two-act” 360ms+360ms lockstep, without stacking margin + fade
- * on the panel (those fight layout). Inner panelMotion stays static; panel uses flex 1 1 0.
- */
-@media (prefers-reduced-motion: no-preference) {
-  .ds-sidebar__contentSlot > :first-child.ds-inputSection,
-  .ds-sidebar__contentSlot > :first-child .ds-inputSection__content,
-  .homepage-category-field,
-  .homepage-category-field .ds-inputField__content,
-  .homepage-category-dropdown {
-    transition: flex-grow 500ms cubic-bezier(0.2, 0.88, 0.28, 1);
-  }
-
-  .homepage-sidebar--category-dropdown-open .homepage-category-dropdown .ds-dropdown__panel {
-    transition: grid-template-rows 400ms cubic-bezier(0.2, 0.88, 0.28, 1);
-  }
-
-  .homepage-sidebar--category-dropdown-open .homepage-category-dropdown .ds-dropdown__panelMotion {
-    transition: none;
-    opacity: 1;
-    transform: none;
-  }
-}
-
-.homepage-sidebar--category-dropdown-open .ds-sidebar__contentSlot > :first-child.ds-inputSection {
-  flex: 1 1 auto;
-  min-height: 0;
-  min-width: 0;
-}
-
-.homepage-sidebar--category-dropdown-open
-  .ds-sidebar__contentSlot
-  > :first-child
-  .ds-inputSection__content {
-  flex: 1 1 auto;
-  min-height: 0;
-}
-
-.homepage-sidebar--category-dropdown-open
-  .ds-sidebar__contentSlot
-  > :first-child
-  .ds-inputSection__content
-  > .ds-inputField:not(.homepage-category-field) {
-  flex-shrink: 0;
-}
-
-.homepage-sidebar--category-dropdown-open .homepage-category-field {
-  flex: 1 1 auto;
-  min-height: 0;
-  min-width: 0;
-  display: flex;
-  flex-direction: column;
-}
-
-.homepage-sidebar--category-dropdown-open .homepage-category-field .ds-inputField__content {
-  flex: 1 1 auto;
-  min-height: 0;
-  min-width: 0;
-}
-
-.homepage-sidebar--category-dropdown-open .homepage-category-dropdown {
-  flex: 1 1 auto;
-  min-height: 0;
-  min-width: 0;
-  align-self: stretch;
-}
-
-.homepage-sidebar--category-dropdown-open
-  .homepage-category-dropdown[data-expanded="true"]
-  .ds-dropdown__panel {
-  flex: 1 1 0;
-  min-height: 0;
-  flex-shrink: 1;
-}
-
-.homepage-sidebar--category-dropdown-open
-  .homepage-category-dropdown[data-expanded="true"]
-  .ds-dropdown__panelMotion {
-  flex: 1 1 0;
-  min-height: 0;
-}
-
 .homepage-category-dropdown-panel {
   flex: 1 1 auto;
   min-height: 0;
@@ -325,6 +239,86 @@ body {
   min-height: 0;
   display: flex;
   flex-direction: column;
+}
+
+/*
+ * Export panel: format + size share one column so flex gap on the section does not double
+ * when the size row collapses. Motion matches `.ds-inputSection__collapsiblePanel` /
+ * `__panelMotion` (design-system components.css).
+ */
+.homepage-export-metaFields {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  width: 100%;
+  min-width: 0;
+  gap: 0;
+  --ds-dropdown-ease: ease-in-out;
+  --ds-dropdown-duration: 360ms;
+}
+
+.homepage-export-sizeReveal {
+  box-sizing: border-box;
+  display: grid;
+  grid-template-rows: 0fr;
+  width: 100%;
+  min-width: 0;
+  min-height: 0;
+  margin-top: 0;
+  flex-shrink: 0;
+  pointer-events: none;
+  transition:
+    grid-template-rows var(--ds-dropdown-duration) var(--ds-dropdown-ease),
+    margin-top var(--ds-dropdown-duration) var(--ds-dropdown-ease);
+}
+
+.homepage-export-sizeReveal[data-expanded="true"] {
+  grid-template-rows: 1fr;
+  margin-top: var(--spacing-gap-3);
+  pointer-events: auto;
+}
+
+.homepage-export-sizeReveal__motion {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+  opacity: 0;
+  transform: translateY(calc(-1 * var(--spacing-gap-2)));
+  transition:
+    opacity var(--ds-dropdown-duration) var(--ds-dropdown-ease),
+    transform var(--ds-dropdown-duration) var(--ds-dropdown-ease);
+}
+
+.homepage-export-sizeReveal[data-expanded="true"] .homepage-export-sizeReveal__motion {
+  opacity: 1;
+  transform: translateY(0);
+  overflow: visible;
+}
+
+.homepage-export-sizeReveal__motion > .homepage-size-export-field {
+  min-height: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .homepage-export-sizeReveal,
+  .homepage-export-sizeReveal__motion {
+    transition: none;
+  }
+
+  .homepage-export-sizeReveal:not([data-expanded="true"]) .homepage-export-sizeReveal__motion {
+    opacity: 0;
+    transform: none;
+  }
+
+  .homepage-export-sizeReveal[data-expanded="true"] .homepage-export-sizeReveal__motion {
+    opacity: 1;
+    transform: none;
+  }
 }
 
 /* Export Size row: custom width input — centered text; secondary column grows to 80px when focused or filled so the segmented control fills the rest */
@@ -346,6 +340,92 @@ body {
 
 .homepage-size-custom-input .ds-input__input {
   text-align: center;
+}
+
+/* Main column: scroll area + absolutely positioned overlay. */
+.homepage-pageContentWrap {
+  position: relative;
+  flex: 1 1 auto;
+  min-height: 0;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.gradient-overlay {
+  position: absolute;
+  bottom: 0;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.gradient-overlay--visible {
+  opacity: 1;
+}
+
+.gradient-overlay--fullWidth {
+  left: 0;
+  right: 0;
+  width: 100%;
+}
+
+.gradient-overlay--fullHeight {
+  top: 0;
+  bottom: 0;
+  height: 100%;
+}
+
+.gradient-overlay__layers {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.gradient-overlay__progressiveMount {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.gradient-overlay__progressiveBlur {
+  height: 100%;
+  width: 100%;
+}
+
+.gradient-overlay__progressiveBlur,
+.gradient-overlay__progressiveBlur * {
+  pointer-events: none !important;
+}
+
+.gradient-overlay__backdropBlur {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  pointer-events: none;
+}
+
+.gradient-overlay__gradient {
+  position: absolute;
+  inset: 0;
+  z-index: 11;
+  pointer-events: none;
+}
+
+.gradient-overlay__content {
+  position: relative;
+  z-index: 12;
+  margin-top: auto;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  width: 100%;
+  padding: var(--spacing-padding-6);
+  pointer-events: auto;
 }
 
 /* Main column body: fills space beside aside; scrolls when icon grid is taller than viewport. */

@@ -7,7 +7,5 @@ interface PageContentProps {
 }
 
 export function PageContent({ children, className }: PageContentProps) {
-  return (
-    <div className={cn('homepage-pageContent', className)}>{children}</div>
-  )
+  return <div className={cn('homepage-pageContent', className)}>{children}</div>
 }

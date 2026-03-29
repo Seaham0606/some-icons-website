@@ -3,8 +3,8 @@ export { cn } from "./utils"
 
 /* Components */
 export { Sidebar } from "./components/sidebar"
-export { VersionChip } from "./components/version-chip"
-export type { VersionChipProps, VersionChipVariant } from "./components/version-chip"
+export { Chip } from "./components/chip"
+export type { ChipProps, ChipVariant } from "./components/chip"
 export { InputSection, InputSectionSlotPlaceholder } from "./components/input-section"
 export type { InputSectionProps } from "./components/input-section"
 export { InputField } from "./components/input-field"
@@ -20,16 +20,16 @@ export type { ButtonProps, ButtonRadius, ButtonVariant } from "./components/butt
 export {
   Dropdown,
   DropdownLeadingSlotPlaceholder,
+  DropdownMenu,
+  DropdownMenuDivider,
   DropdownPanelSlotPlaceholder,
-  LegacyDropdown,
-  LegacyDropdownLeadingSlotPlaceholder,
-  LegacyDropdownPanelSlotPlaceholder,
+  dropdownMenuOptionClassName,
 } from "./components/dropdown"
 export type {
+  DropdownMenuDividerProps,
+  DropdownMenuProps,
   DropdownProps,
   DropdownStatus,
-  LegacyDropdownProps,
-  LegacyDropdownStatus,
 } from "./components/dropdown"
 export { SegmentedControl } from "./components/segmented-control"
 export type {

@@ -3,8 +3,6 @@ import {
   Dropdown,
   DropdownLeadingSlotPlaceholder,
   DropdownPanelSlotPlaceholder,
-  LegacyDropdown,
-  LegacyDropdownPanelSlotPlaceholder,
   SomeIcon,
 } from "design-system"
 
@@ -117,20 +115,5 @@ export const FullWidth: Story = {
     children: "Dropdown",
     leadingSlot: slotIcon,
     trailingSlot: trailingChevron,
-  },
-}
-
-type LegacyStory = StoryObj<typeof LegacyDropdown>
-
-export const LegacyV1: LegacyStory = {
-  name: "Legacy (single-button shell)",
-  render: (args) => <LegacyDropdown {...args} />,
-  args: {
-    empty: false,
-    expanded: true,
-    children: "Legacy dropdown",
-    leadingSlot: slotIcon,
-    trailingSlot: trailingChevron,
-    panelSlot: <LegacyDropdownPanelSlotPlaceholder />,
   },
 }

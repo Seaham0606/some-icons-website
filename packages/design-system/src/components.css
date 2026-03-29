@@ -46,6 +46,58 @@
   background: var(--color-overlay-accent);
 }
 
+/* Chip — pill labels (IconCard hover filename uses `variant="inverse"` + `backdropBlur`) */
+.ds-chip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  min-width: 0;
+  max-width: min(240px, 100%);
+  padding: var(--spacing-padding-1) var(--spacing-padding-2);
+  border-radius: var(--radius-full);
+  color: var(--color-main-secondary);
+  background: var(--color-background-weak);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ds-chip[data-variant="neutral"] {
+  color: var(--color-main-secondary);
+  background: var(--color-background-weak);
+}
+
+.ds-chip[data-variant="accent"] {
+  color: var(--color-intent-accent-strong);
+  background: var(--color-overlay-accent);
+}
+
+.ds-chip[data-variant="success"] {
+  color: var(--color-intent-success-strong);
+  background: var(--color-overlay-success);
+}
+
+.ds-chip[data-variant="warning"] {
+  color: var(--color-intent-warning-strong);
+  background: var(--color-overlay-warning);
+}
+
+.ds-chip[data-variant="error"] {
+  color: var(--color-intent-error-strong);
+  background: var(--color-overlay-error);
+}
+
+.ds-chip[data-variant="inverse"] {
+  color: var(--color-main-inverse);
+  background: var(--color-background-inverse);
+}
+
+.ds-chip[data-backdrop-blur="true"] {
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}
+
 /* Sidebar — matches icons app homepage-aside (flex column in shell, not position:fixed) */
 .ds-sidebar {
   flex: 0 0 auto;
@@ -450,251 +502,7 @@
   line-height: normal;
 }
 
-/*
- * Legacy dropdown (single `<button>` shell) — Figma 490:5420.
- * Prefer `.ds-dropdown` + `.ds-input` trigger for Input-aligned chrome.
- */
-.ds-dropdownLegacy {
-  /* Open + close: symmetric ease so height/chevron/panel don’t snap. */
-  --ds-dropdown-ease: ease-in-out;
-  --ds-dropdown-duration: 360ms;
-  box-sizing: border-box;
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  align-items: stretch;
-  width: 240px;
-  max-width: 100%;
-  min-width: 0;
-  /* Same outer frame as `.ds-input`: 48px including border + padding. */
-  min-height: var(--size-12);
-  height: var(--size-12);
-  margin: 0;
-  appearance: none;
-  cursor: pointer;
-  border-radius: var(--radius-lg);
-  border: var(--border-width-base) solid var(--color-border-weak);
-  /* Match `.ds-input` idle fill (no hover gradients). */
-  background: var(--color-background-input);
-  /* Figma frame padding inside the stroke; subtract border (matches Input). */
-  padding: calc(var(--spacing-padding-1) - var(--border-width-base));
-  transition:
-    border-color 300ms ease,
-    box-shadow 200ms ease,
-    background 200ms ease;
-}
-
-.ds-dropdownLegacy[data-expanded="true"] {
-  height: auto;
-  min-height: var(--size-12);
-}
-
-.ds-dropdownLegacy[data-full-width="true"] {
-  width: 100%;
-}
-
-.ds-dropdownLegacy:focus {
-  outline: none;
-}
-
-.ds-dropdownLegacy[data-disabled="true"] {
-  pointer-events: none;
-  cursor: not-allowed;
-  border-color: var(--color-border-extra-weak);
-}
-
-.ds-dropdownLegacy__headerRow {
-  box-sizing: border-box;
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: space-between;
-  width: 100%;
-  flex: 0 0 auto;
-  /* Inner row = 40px when shell is 48px (1px border + 3px padding each side). */
-  height: calc(
-    var(--size-12) - 2 * (var(--spacing-padding-1) - var(--border-width-base)) -
-      2 * var(--border-width-base)
-  );
-}
-
-.ds-dropdownLegacy__slot {
-  box-sizing: border-box;
-  flex: 0 0 var(--size-10);
-  width: var(--size-10);
-  min-width: var(--size-10);
-  display: flex;
-  flex-direction: column;
-  align-items: stretch;
-  justify-content: center;
-  overflow: visible;
-  color: var(--ds-dropdownLegacy-content-color, var(--color-main-tertiary));
-}
-
-.ds-dropdownLegacy__slot > [data-part="slot-placeholder"] {
-  flex: 1 1 auto;
-  min-height: 0;
-  min-width: 0;
-}
-
-.ds-dropdownLegacy__slot
-  > :not([data-part="slot-placeholder"]):not(.ds-dropdownLegacy__trailingRotate) {
-  align-self: center;
-  flex-shrink: 0;
-}
-
-/* Trailing slot: wrap for 180° chevron spin when expanded (see `[data-expanded="true"]`). */
-.ds-dropdownLegacy__trailingRotate {
-  box-sizing: border-box;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex: 1 1 auto;
-  min-height: 0;
-  min-width: 0;
-  width: 100%;
-  transform-origin: center center;
-  transition: transform var(--ds-dropdown-duration) var(--ds-dropdown-ease);
-}
-
-.ds-dropdownLegacy[data-expanded="true"] .ds-dropdownLegacy__trailingRotate {
-  transform: rotate(180deg);
-}
-
-.ds-dropdownLegacy__trailingRotate > [data-part="slot-placeholder"] {
-  flex: 1 1 auto;
-  min-height: 0;
-  min-width: 0;
-}
-
-.ds-dropdownLegacy__trailingRotate > :not([data-part="slot-placeholder"]) {
-  align-self: center;
-  flex-shrink: 0;
-}
-
-.ds-dropdownLegacy__labelWrap {
-  box-sizing: border-box;
-  flex: 1 1 0%;
-  min-width: 0;
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  padding-left: var(--spacing-padding-2);
-  padding-right: var(--spacing-padding-2);
-}
-
-.ds-dropdownLegacy__label {
-  font-family: var(--font-family-sans);
-  font-size: var(--font-size-input);
-  font-weight: 500;
-  font-style: normal;
-  line-height: var(--line-height-input);
-  color: var(--ds-dropdownLegacy-content-color, var(--color-main-primary));
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  width: 100%;
-  text-align: left;
-}
-
-.ds-dropdownLegacy[data-empty="true"] .ds-dropdownLegacy__label {
-  color: var(--ds-dropdownLegacy-content-color, var(--color-main-tertiary));
-}
-
-.ds-dropdownLegacy[data-status="error"]:not([data-empty="true"]) .ds-dropdownLegacy__label {
-  color: var(--ds-dropdownLegacy-content-color, var(--color-intent-error));
-}
-
-.ds-dropdownLegacy[data-disabled="true"] .ds-dropdownLegacy__label {
-  color: var(--ds-dropdownLegacy-content-color, var(--color-main-disabled));
-}
-
-.ds-dropdownLegacy[data-disabled="true"] .ds-dropdownLegacy__slot {
-  color: var(--ds-dropdownLegacy-content-color, var(--color-main-disabled));
-}
-
-/*
- * Default chrome: strong border follows `:hover` only so it clears on mouse leave.
- * Pointer focus does not lock the strong border (unlike `:focus-within` on a text field).
- * Keyboard: `[data-focus-ring="true"]` + `:focus-visible` matches Input’s Tab ring behavior.
- */
-.ds-dropdownLegacy[data-status="default"]:not([data-disabled="true"]):hover {
-  border-color: var(--color-border-strong);
-}
-
-.ds-dropdownLegacy[data-status="default"]:not([data-disabled="true"]):not([data-empty="true"]):hover
-  .ds-dropdownLegacy__label {
-  color: var(--ds-dropdownLegacy-content-color, var(--color-main-primary));
-}
-
-.ds-dropdownLegacy[data-status="default"]:focus-visible[data-focus-ring="true"] {
-  border-color: var(--color-border-strong);
-  box-shadow: var(--shadow-focus-accent);
-}
-
-.ds-dropdownLegacy[data-status="error"]:not([data-disabled="true"]) {
-  border-color: var(--color-border-error);
-  background: color-mix(in srgb, var(--color-intent-error) 20%, var(--color-background-input));
-  background-image: none;
-}
-
-.ds-dropdownLegacy[data-status="error"]:focus-visible[data-focus-ring="true"] {
-  box-shadow: var(--shadow-focus-error);
-}
-
-/*
- * Panel: grid 0fr → 1fr height tween + fade/slide on inner (“Smart animate” feel).
- * Panel stays mounted when `panelSlot != null` so open/close both animate.
- */
-.ds-dropdownLegacy__panel {
-  box-sizing: border-box;
-  display: grid;
-  grid-template-rows: 0fr;
-  width: 100%;
-  min-height: 0;
-  margin-top: 0;
-  flex-shrink: 0;
-  pointer-events: none;
-  transition:
-    grid-template-rows var(--ds-dropdown-duration) var(--ds-dropdown-ease),
-    margin-top var(--ds-dropdown-duration) var(--ds-dropdown-ease);
-}
-
-.ds-dropdownLegacy[data-expanded="true"] .ds-dropdownLegacy__panel {
-  grid-template-rows: 1fr;
-  margin-top: var(--spacing-gap-2);
-  pointer-events: auto;
-}
-
-.ds-dropdownLegacy__panelMotion {
-  box-sizing: border-box;
-  display: flex;
-  flex-direction: column;
-  min-height: 0;
-  overflow: hidden;
-  opacity: 0;
-  transform: translateY(calc(-1 * var(--spacing-gap-2)));
-  transition:
-    opacity var(--ds-dropdown-duration) var(--ds-dropdown-ease),
-    transform var(--ds-dropdown-duration) var(--ds-dropdown-ease);
-}
-
-.ds-dropdownLegacy[data-expanded="true"] .ds-dropdownLegacy__panelMotion {
-  opacity: 1;
-  transform: translateY(0);
-}
-
-.ds-dropdownLegacy__panelPlaceholder {
-  box-sizing: border-box;
-  flex: 1 1 auto;
-  min-height: var(--size-10);
-  width: 100%;
-  border-radius: var(--radius-md);
-  border: var(--border-width-base) dashed var(--color-red-300);
-  background: var(--color-red-alpha-25);
-}
-
-/* Dropdown — `.ds-input` trigger + panel (same motion tokens as legacy). */
+/* Dropdown — `.ds-input` trigger + `.ds-dropdown__menu` region. */
 .ds-dropdown {
   --ds-dropdown-ease: ease-in-out;
   --ds-dropdown-duration: 360ms;
@@ -753,7 +561,7 @@ button.ds-dropdown__trigger.ds-input {
   flex-shrink: 0;
 }
 
-.ds-dropdown__panel {
+.ds-dropdown__menu {
   box-sizing: border-box;
   display: grid;
   grid-template-rows: 0fr;
@@ -767,13 +575,13 @@ button.ds-dropdown__trigger.ds-input {
     margin-top var(--ds-dropdown-duration) var(--ds-dropdown-ease);
 }
 
-.ds-dropdown[data-expanded="true"] .ds-dropdown__panel {
+.ds-dropdown[data-expanded="true"] .ds-dropdown__menu {
   grid-template-rows: 1fr;
   margin-top: var(--spacing-gap-2);
   pointer-events: auto;
 }
 
-.ds-dropdown__panelMotion {
+.ds-dropdown__menuMotion {
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
@@ -786,29 +594,55 @@ button.ds-dropdown__trigger.ds-input {
     transform var(--ds-dropdown-duration) var(--ds-dropdown-ease);
 }
 
-.ds-dropdown[data-expanded="true"] .ds-dropdown__panelMotion {
+.ds-dropdown[data-expanded="true"] .ds-dropdown__menuMotion {
   opacity: 1;
   transform: translateY(0);
 }
 
+/* Portaled overlay menu (`variant="overlay"`). */
+.ds-dropdown__menuOverlay {
+  position: fixed;
+  z-index: 200;
+  box-sizing: border-box;
+  margin: 0;
+  padding: var(--spacing-padding-2);
+  border-radius: var(--radius-lg);
+  border: var(--border-width-base) solid var(--color-border-extra-weak);
+  background: var(--color-background-elevation);
+  box-shadow: 0 8px 24px color-mix(in srgb, var(--color-black-alpha-950) 12%, transparent);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  pointer-events: auto;
+}
+
+[data-theme="dark"] .ds-dropdown__menuOverlay {
+  border-color: var(--color-border-weak);
+  box-shadow: 0 8px 24px color-mix(in srgb, var(--color-black) 40%, transparent);
+}
+
+.ds-dropdown__menuOverlayInner {
+  flex: 1 1 auto;
+  min-height: 0;
+  min-width: 0;
+  overflow: auto;
+  width: 100%;
+}
+
 @media (prefers-reduced-motion: reduce) {
-  .ds-dropdownLegacy__trailingRotate,
-  .ds-dropdownLegacy__panel,
-  .ds-dropdownLegacy__panelMotion,
   .ds-dropdown__trailingRotate,
-  .ds-dropdown__panel,
-  .ds-dropdown__panelMotion {
+  .ds-dropdown__menu,
+  .ds-dropdown__menuMotion {
     transition: none;
   }
 
-  .ds-dropdownLegacy:not([data-expanded="true"]) .ds-dropdownLegacy__panelMotion,
-  .ds-dropdown:not([data-expanded="true"]) .ds-dropdown__panelMotion {
+  .ds-dropdown:not([data-expanded="true"]) .ds-dropdown__menuMotion {
     opacity: 0;
     transform: none;
   }
 
-  .ds-dropdownLegacy[data-expanded="true"] .ds-dropdownLegacy__panelMotion,
-  .ds-dropdown[data-expanded="true"] .ds-dropdown__panelMotion {
+  .ds-dropdown[data-expanded="true"] .ds-dropdown__menuMotion {
     opacity: 1;
     transform: none;
   }
@@ -832,7 +666,7 @@ button.ds-dropdown__trigger.ds-input {
   }
 }
 
-.ds-dropdown__panelPlaceholder {
+.ds-dropdown__menuPlaceholder {
   box-sizing: border-box;
   flex: 1 1 auto;
   min-height: var(--size-10);
@@ -929,61 +763,45 @@ button.ds-nativeInput {
   text-align: unset;
 }
 
-/* CategorySelect-style trigger (button + chevron) */
-.ds-selectTriggerWrap {
-  position: relative;
-  width: 100%;
-}
-
-.ds-selectTrigger {
-  display: flex;
-  align-items: center;
-  gap: var(--spacing-gap-2);
-  width: 100%;
-  cursor: pointer;
-  text-align: left;
-  padding-right: var(--spacing-padding-10);
-}
-
-.ds-selectTriggerIcon {
-  width: var(--size-icon-sm);
-  height: var(--size-icon-sm);
-  flex-shrink: 0;
-  color: var(--color-main-primary);
-  transition: transform 500ms cubic-bezier(0.33, 1, 0.68, 1);
-}
-
-.ds-selectTriggerLabel {
-  transition: color 500ms cubic-bezier(0.33, 1, 0.68, 1);
-}
-
-.ds-selectTriggerChevron {
-  position: absolute;
-  right: var(--spacing-padding-3);
-  top: 50%;
-  transform: translateY(-50%);
-  width: var(--size-icon-sm);
-  height: var(--size-icon-sm);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  pointer-events: none;
-  color: var(--color-main-tertiary);
-}
-
-.ds-selectTriggerChevronIcon {
+/* DropdownMenu — list body inside {@link Dropdown} `panelSlot` (overlay inner or inline menu) */
+.ds-dropdownMenu {
   box-sizing: border-box;
-  width: 100%;
-  height: 100%;
   display: flex;
-  align-items: center;
-  justify-content: center;
+  flex-direction: column;
+  gap: var(--spacing-gap-1);
+  width: max(100%, calc(var(--spacing-80) - var(--size-12)));
+  min-width: calc(var(--spacing-80) - var(--size-12));
 }
 
-.ds-selectTriggerChevronIcon svg {
+.ds-dropdownMenu__divider {
+  box-sizing: border-box;
+  height: var(--border-width-base);
+  margin-inline: calc(var(--spacing-1) + var(--spacing-050));
+  border-radius: var(--radius-full);
+  background: var(--color-border-weak);
+  flex-shrink: 0;
+}
+
+/* Transparent option row inside DropdownMenu */
+.ds-dropdownMenu__option.ds-button {
+  height: auto;
+  min-height: calc(var(--size-10) + var(--spacing-1));
+  flex: 0 0 auto;
   width: 100%;
-  height: 100%;
-  display: block;
+  justify-content: flex-start;
+}
+
+.ds-dropdownMenu__option.ds-button:hover:not(:disabled):not([aria-disabled="true"]) {
+  background: var(--color-background-weak);
+}
+
+.ds-dropdownMenu__option.ds-button[data-dropdown-selected="true"] {
+  background: var(--color-background-weak);
+}
+
+/* Leading glyph: muted like `.ds-input__slot`; label keeps transparent Button `main-primary`. */
+.ds-dropdownMenu__option.ds-button .ds-button__iconSlot[data-part="leading-slot"] {
+  color: var(--color-main-tertiary);
 }
 
 /* SizeSelector row */
@@ -1109,8 +927,8 @@ button.ds-nativeInput {
 }
 
 /*
- * Collapsible body: same grid 0fr → 1fr + inner fade/slide as `.ds-dropdown__panel` /
- * `.ds-dropdown__panelMotion` (spacing uses section gap token).
+ * Collapsible body: same grid 0fr → 1fr + inner fade/slide as `.ds-dropdown__menu` /
+ * `.ds-dropdown__menuMotion` (spacing uses section gap token).
  */
 .ds-inputSection__collapsiblePanel {
   box-sizing: border-box;
@@ -1129,7 +947,7 @@ button.ds-nativeInput {
 
 .ds-inputSection--collapsible[data-expanded="true"] .ds-inputSection__collapsiblePanel {
   grid-template-rows: 1fr;
-  /* Same spacing tween as `.ds-dropdown[data-expanded="true"] .ds-dropdown__panel`. */
+  /* Same spacing tween as `.ds-dropdown[data-expanded="true"] .ds-dropdown__menu`. */
   margin-top: var(--spacing-gap-2);
   pointer-events: auto;
 }
@@ -1857,6 +1675,32 @@ button.ds-inputSection__labelRow.ds-inputSection__labelRow--toggle {
   box-shadow: var(--shadow-focus-accent);
 }
 
+.ds-iconCard__block {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  width: 100%;
+}
+
+/* Filename chip: below card on hover / keyboard focus only */
+.ds-iconCard__hoverMeta {
+  position: absolute;
+  left: 50%;
+  top: calc(100% + var(--spacing-1));
+  z-index: 2;
+  transform: translateX(-50%);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease;
+  white-space: nowrap;
+}
+
+.ds-iconCard__block:hover .ds-iconCard__hoverMeta,
+.ds-iconCard__block:focus-within .ds-iconCard__hoverMeta {
+  opacity: 1;
+}
+
 .ds-iconCard__copyFeedback {
   position: fixed;
   z-index: 50;
@@ -1934,7 +1778,8 @@ button.ds-inputSection__labelRow.ds-inputSection__labelRow--toggle {
   }
 
   .ds-iconCard,
-  .ds-iconCard__select {
+  .ds-iconCard__select,
+  .ds-iconCard__hoverMeta {
     transition-duration: 0.01ms;
   }
 }

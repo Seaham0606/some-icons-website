@@ -3,9 +3,14 @@
 /**
  * Dropdown — trigger uses the same `.ds-input` shell as {@link Input};
  * wrap with {@link InputField} for a label row like other fields.
+ *
+ * For list-style `panelSlot` content, use {@link DropdownMenu} (and optional
+ * {@link DropdownMenuDivider}) inside the overlay or inline menu — the portaled shell
+ * stays on this component; the menu is layout/rows only.
  */
 
 import * as React from "react"
+import { createPortal } from "react-dom"
 import { cn } from "../../utils"
 
 export type DropdownStatus = "default" | "error"
@@ -21,11 +26,11 @@ export function DropdownLeadingSlotPlaceholder() {
   )
 }
 
-/** Placeholder for the expandable panel region below the header (Figma dashed slot). */
+/** Placeholder for the expandable menu region below the header (Figma dashed slot). */
 export function DropdownPanelSlotPlaceholder() {
   return (
     <div
-      className="ds-dropdown__panelPlaceholder"
+      className="ds-dropdown__menuPlaceholder"
       data-part="slot-placeholder"
       aria-hidden
     />
@@ -38,13 +43,13 @@ export interface DropdownProps
     "className" | "children" | "type" | "onTransitionEnd"
   > {
   className?: string
-  /** Fires on the root (panel `grid-template-rows` / `margin-top` transitions bubble here). */
+  /** Fires on the root (`grid-template-rows` / `margin-top` transitions on `.ds-dropdown__menu` bubble here). */
   onTransitionEnd?: React.TransitionEventHandler<HTMLDivElement>
   /** Label / value text in the header row */
   children?: React.ReactNode
   /** When true, placeholder styling and no leading column (Figma `selected=false`). */
   empty?: boolean
-  /** Open state; panel region renders when true. */
+  /** Open state; menu region renders when true. */
   expanded?: boolean
   status?: DropdownStatus
   showLeading?: boolean
@@ -54,14 +59,25 @@ export interface DropdownProps
   leadingSlot?: React.ReactNode
   trailingSlot?: React.ReactNode
   /**
-   * Panel below the trigger when `expanded`. Omit or leave undefined to show
-   * `DropdownPanelSlotPlaceholder`. Pass `null` to expand without a panel (e.g. chevron-only).
+   * Menu content below the trigger when `expanded`. Omit or leave undefined to show
+   * `DropdownPanelSlotPlaceholder`. Pass `null` to expand without a menu (e.g. chevron-only).
    */
   panelSlot?: React.ReactNode | null
   /** Sets value/slot color via `--ds-input-content-color` (`currentColor` for icons). */
   contentColor?: React.CSSProperties["color"]
   /** Full width instead of default 240px. */
   fullWidth?: boolean
+  /**
+   * `"inline"` (default): `.ds-dropdown__menu` expands in document flow below the trigger.
+   * `"overlay"`: menu is portaled under `document.body`, fixed below the trigger; pass
+   * {@link DropdownProps.onOverlayDismiss} for outside-click and Escape handling.
+   */
+  variant?: "inline" | "overlay"
+  /**
+   * When `variant="overlay"` and the menu is open: outside click and Escape.
+   * Recommended whenever using the overlay variant.
+   */
+  onOverlayDismiss?: () => void
 }
 
 export const Dropdown = React.forwardRef<HTMLButtonElement, DropdownProps>(
@@ -80,6 +96,8 @@ export const Dropdown = React.forwardRef<HTMLButtonElement, DropdownProps>(
       panelSlot,
       contentColor,
       fullWidth = false,
+      variant = "inline",
+      onOverlayDismiss,
       "aria-invalid": ariaInvalid,
       onFocus,
       onBlur,
@@ -94,6 +112,29 @@ export const Dropdown = React.forwardRef<HTMLButtonElement, DropdownProps>(
 
     const showLead = !empty && (showLeading ?? leadingSlot != null)
     const showTrail = showTrailing !== false
+    const isOverlay = variant === "overlay" && panelSlot !== null
+
+    const overlayListId = React.useId()
+    const triggerElRef = React.useRef<HTMLButtonElement | null>(null)
+    const overlayPanelRef = React.useRef<HTMLDivElement | null>(null)
+    const [overlayBox, setOverlayBox] = React.useState<{
+      top: number
+      left: number
+      width: number
+      maxHeight: number
+    } | null>(null)
+
+    const setTriggerRef = React.useCallback(
+      (node: HTMLButtonElement | null) => {
+        triggerElRef.current = node
+        if (typeof ref === "function") {
+          ref(node)
+        } else if (ref) {
+          ;(ref as React.MutableRefObject<HTMLButtonElement | null>).current = node
+        }
+      },
+      [ref],
+    )
 
     const shellStyle: React.CSSProperties | undefined =
       contentColor !== undefined && contentColor !== null
@@ -102,6 +143,68 @@ export const Dropdown = React.forwardRef<HTMLButtonElement, DropdownProps>(
 
     const lastPointerDownRef = React.useRef(0)
     const [keyboardFocusRing, setKeyboardFocusRing] = React.useState(false)
+
+    const updateOverlayPosition = React.useCallback(() => {
+      const el = triggerElRef.current
+      if (!el) return
+      const r = el.getBoundingClientRect()
+      const margin = 16
+      const gap = 8
+      const top = r.bottom + gap
+      const maxHeight = Math.max(120, window.innerHeight - top - margin)
+      let left = r.left
+      const w = r.width
+      const rightEdge = left + w
+      if (rightEdge > window.innerWidth - margin) {
+        left = Math.max(margin, window.innerWidth - margin - w)
+      }
+      if (left < margin) {
+        left = margin
+      }
+      setOverlayBox({ top, left, width: w, maxHeight })
+    }, [])
+
+    React.useLayoutEffect(() => {
+      if (!isOverlay || !expanded) return
+      updateOverlayPosition()
+    }, [expanded, isOverlay, updateOverlayPosition])
+
+    React.useEffect(() => {
+      if (!isOverlay || !expanded) return
+      updateOverlayPosition()
+      window.addEventListener("resize", updateOverlayPosition)
+      window.addEventListener("scroll", updateOverlayPosition, true)
+      return () => {
+        window.removeEventListener("resize", updateOverlayPosition)
+        window.removeEventListener("scroll", updateOverlayPosition, true)
+      }
+    }, [expanded, isOverlay, updateOverlayPosition])
+
+    React.useEffect(() => {
+      if (!isOverlay || !expanded) return
+      const onDocPointerDown = (e: PointerEvent) => {
+        const t = e.target
+        if (!(t instanceof Node)) return
+        if (triggerElRef.current?.contains(t)) return
+        if (overlayPanelRef.current?.contains(t)) return
+        onOverlayDismiss?.()
+      }
+      document.addEventListener("pointerdown", onDocPointerDown, true)
+      return () =>
+        document.removeEventListener("pointerdown", onDocPointerDown, true)
+    }, [expanded, isOverlay, onOverlayDismiss])
+
+    React.useEffect(() => {
+      if (!isOverlay || !expanded) return
+      const onKey = (e: KeyboardEvent) => {
+        if (e.key === "Escape") {
+          e.stopPropagation()
+          onOverlayDismiss?.()
+        }
+      }
+      window.addEventListener("keydown", onKey, true)
+      return () => window.removeEventListener("keydown", onKey, true)
+    }, [expanded, isOverlay, onOverlayDismiss])
 
     const handlePointerDownCapture = React.useCallback(
       (e: React.PointerEvent<HTMLButtonElement>) => {
@@ -130,7 +233,7 @@ export const Dropdown = React.forwardRef<HTMLButtonElement, DropdownProps>(
         }
         onFocus?.(e)
       },
-      [onFocus]
+      [onFocus],
     )
 
     const handleBlur = React.useCallback(
@@ -141,16 +244,44 @@ export const Dropdown = React.forwardRef<HTMLButtonElement, DropdownProps>(
       [onBlur]
     )
 
+    const overlayPortal =
+      isOverlay &&
+      expanded &&
+      typeof document !== "undefined" &&
+      overlayBox &&
+      createPortal(
+        <div
+          ref={overlayPanelRef}
+          className="ds-dropdown__menuOverlay"
+          style={{
+            top: overlayBox.top,
+            left: overlayBox.left,
+            width: overlayBox.width,
+            maxHeight: overlayBox.maxHeight,
+          }}
+        >
+          <div className="ds-dropdown__menuOverlayInner" id={overlayListId}>
+            {panelSlot === undefined ? (
+              <DropdownPanelSlotPlaceholder />
+            ) : (
+              panelSlot
+            )}
+          </div>
+        </div>,
+        document.body,
+      )
+
     return (
       <div
         className={cn("ds-dropdown", className)}
         data-component="dropdown"
+        data-variant={isOverlay ? "overlay" : undefined}
         data-expanded={expanded ? "true" : undefined}
         data-full-width={fullWidth ? "true" : undefined}
-        onTransitionEnd={onTransitionEnd}
+        onTransitionEnd={isOverlay ? undefined : onTransitionEnd}
       >
         <button
-          ref={ref}
+          ref={setTriggerRef}
           type="button"
           className="ds-input ds-dropdown__trigger"
           style={shellStyle}
@@ -164,6 +295,7 @@ export const Dropdown = React.forwardRef<HTMLButtonElement, DropdownProps>(
           disabled={disabled}
           aria-expanded={expanded}
           aria-haspopup="listbox"
+          aria-controls={isOverlay && expanded ? overlayListId : undefined}
           aria-invalid={ariaInvalid}
           onPointerDownCapture={handlePointerDownCapture}
           onFocus={handleFocus}
@@ -186,13 +318,13 @@ export const Dropdown = React.forwardRef<HTMLButtonElement, DropdownProps>(
             </div>
           ) : null}
         </button>
-        {panelSlot !== null ? (
+        {!isOverlay && panelSlot !== null ? (
           <span
-            className="ds-dropdown__panel"
-            data-part="panel"
+            className="ds-dropdown__menu"
+            data-part="menu"
             aria-hidden={expanded ? undefined : true}
           >
-            <span className="ds-dropdown__panelMotion">
+            <span className="ds-dropdown__menuMotion">
               {panelSlot === undefined ? (
                 <DropdownPanelSlotPlaceholder />
               ) : (
@@ -201,14 +333,18 @@ export const Dropdown = React.forwardRef<HTMLButtonElement, DropdownProps>(
             </span>
           </span>
         ) : null}
+        {overlayPortal}
       </div>
     )
-  }
+  },
 )
 
 export {
-  LegacyDropdown,
-  LegacyDropdownLeadingSlotPlaceholder,
-  LegacyDropdownPanelSlotPlaceholder,
-} from "./legacy"
-export type { LegacyDropdownProps, LegacyDropdownStatus } from "./legacy"
+  DropdownMenu,
+  DropdownMenuDivider,
+  dropdownMenuOptionClassName,
+} from "./dropdown-menu"
+export type {
+  DropdownMenuProps,
+  DropdownMenuDividerProps,
+} from "./dropdown-menu"

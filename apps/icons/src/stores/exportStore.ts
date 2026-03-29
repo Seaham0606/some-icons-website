@@ -21,12 +21,15 @@ export const useExportStore = create<ExportState>((set, get) => ({
   setShowValidationErrors: (show) => set({ showValidationErrors: show }),
   isValid: () => {
     const state = get()
-    return state.size !== null && state.size > 0 && state.format !== null
+    if (state.format === null) return false
+    if (state.format === 'code') return true
+    return state.size !== null && state.size > 0
   },
   validate: () => {
     const state = get()
+    const isCode = state.format === 'code'
     return {
-      sizeValid: state.size !== null && state.size > 0,
+      sizeValid: isCode || (state.size !== null && state.size > 0),
       formatValid: state.format !== null,
     }
   },

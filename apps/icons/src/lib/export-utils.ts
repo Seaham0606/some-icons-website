@@ -1,6 +1,6 @@
 import JSZip from 'jszip'
 import { applyColorToSvg, ensureViewBox, setSvgDimensions } from './svg-utils'
-import type { ExportFormat } from './constants'
+import type { AssetExportFormat } from './constants'
 
 interface ExportIcon {
   id: string
@@ -9,8 +9,23 @@ interface ExportIcon {
 
 interface ExportOptions {
   size: number
-  format: ExportFormat
+  format: AssetExportFormat
   color: string | null
+}
+
+/** One processed asset (SVG or PNG) ready to download or add to a ZIP. */
+export async function createExportBlobForIcon(
+  svg: string,
+  options: ExportOptions,
+): Promise<Blob> {
+  let processed = ensureViewBox(svg)
+  processed = applyColorToSvg(processed, options.color)
+  processed = setSvgDimensions(processed, options.size)
+
+  if (options.format === 'svg') {
+    return new Blob([processed], { type: 'image/svg+xml;charset=utf-8' })
+  }
+  return svgToPng(processed, options.size)
 }
 
 export async function exportToZip(
@@ -18,18 +33,11 @@ export async function exportToZip(
   options: ExportOptions
 ): Promise<Blob> {
   const zip = new JSZip()
+  const ext = options.format === 'svg' ? 'svg' : 'png'
 
   for (const { id, svg } of icons) {
-    let processed = ensureViewBox(svg)
-    processed = applyColorToSvg(processed, options.color)
-    processed = setSvgDimensions(processed, options.size)
-
-    if (options.format === 'svg') {
-      zip.file(`${id}.svg`, processed)
-    } else {
-      const pngBlob = await svgToPng(processed, options.size)
-      zip.file(`${id}.png`, pngBlob)
-    }
+    const blob = await createExportBlobForIcon(svg, options)
+    zip.file(`${id}.${ext}`, blob)
   }
 
   return zip.generateAsync({ type: 'blob' })

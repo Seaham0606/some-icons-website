@@ -5,6 +5,7 @@ import type { ExportFormat } from '@/lib/constants'
 const OPTIONS = [
   { value: 'svg' as const, label: 'SVG' },
   { value: 'png' as const, label: 'PNG' },
+  { value: 'code' as const, label: 'Code' },
 ]
 
 export function FormatSelector() {

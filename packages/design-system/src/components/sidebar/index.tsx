@@ -3,7 +3,7 @@
 import * as React from "react"
 import { cn } from "../../utils"
 import { Button } from "../button"
-import { VersionChip, type VersionChipVariant } from "../version-chip"
+import { Chip, type ChipVariant } from "../chip"
 
 export interface SidebarProps {
   className?: string
@@ -16,13 +16,22 @@ export interface SidebarProps {
   pageName?: React.ReactNode
 
   /**
-   * Version string shown as a chip next to `pageName` (e.g. "3.0.0"; a leading "v" is stripped for display).
-   * If omitted, no chip is rendered.
+   * Text content for a `Chip` next to `pageName`.
+   * Ignored when `chipSlot` is set. If both are omitted, no chip is rendered.
    */
   version?: string
 
-  /** Passed to `VersionChip` (e.g. `beta` shows “Beta” while `version` still supplies the release line). */
-  versionChipVariant?: VersionChipVariant
+  /** Visual style for the chip rendered from `version`. Ignored when `chipSlot` is set. */
+  chipVariant?: ChipVariant
+
+  /** When true, the auto-rendered version chip uses backdrop blur. Ignored when `chipSlot` is set. */
+  chipBackdropBlur?: boolean
+
+  /**
+   * Replace the default version chip entirely (e.g. custom label and `aria-label`).
+   * When set, `version`, `chipVariant`, and `chipBackdropBlur` are not used for the chip.
+   */
+  chipSlot?: React.ReactNode
 
   /**
    * Logo placeholder shown in `asideHeader`.
@@ -107,7 +116,9 @@ export function Sidebar({
   children,
   pageName,
   version,
-  versionChipVariant = "default",
+  chipVariant = "neutral",
+  chipBackdropBlur = false,
+  chipSlot,
   logo,
   themeButton,
   copyright,
@@ -123,9 +134,11 @@ export function Sidebar({
               {pageName}
             </div>
           ) : null}
-          {version ? (
-            <VersionChip version={version} variant={versionChipVariant} />
-          ) : null}
+          {chipSlot ?? (version ? (
+            <Chip variant={chipVariant} backdropBlur={chipBackdropBlur}>
+              {version}
+            </Chip>
+          ) : null)}
         </div>
       </div>
 

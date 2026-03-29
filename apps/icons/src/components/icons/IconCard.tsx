@@ -15,6 +15,12 @@ interface IconCardProps {
   icon: Icon
 }
 
+/** File segment of a path without extension (e.g. CDN SVG path → basename). */
+function basenameWithoutExtension(path: string): string {
+  const segment = path.split(/[/\\]/).pop() ?? path
+  return segment.replace(/\.[^.]+$/, '')
+}
+
 export const IconCard = memo(function IconCard({ icon }: IconCardProps) {
   const style = useFilterStore((state) => state.style)
   const selectedColor = useColorStore((state) => state.selectedColor)
@@ -22,7 +28,12 @@ export const IconCard = memo(function IconCard({ icon }: IconCardProps) {
   const toggle = useSelectionStore((state) => state.toggle)
   const { copy } = useClipboard()
   const queryClient = useQueryClient()
-  const { data: svg } = useSvgFetch(icon.files[style])
+  const activeFilePath = icon.files[style]
+  const { data: svg } = useSvgFetch(activeFilePath)
+  const hoverFilenameLabel =
+    activeFilePath != null && activeFilePath !== ''
+      ? basenameWithoutExtension(activeFilePath)
+      : undefined
 
   useEffect(() => {
     if (!svg) return
@@ -109,7 +120,8 @@ export const IconCard = memo(function IconCard({ icon }: IconCardProps) {
 
   return (
     <IconCardUI
-      title={icon.id}
+      aria-label={icon.id}
+      hoverFilenameLabel={hoverFilenameLabel}
       selected={isSelected}
       previewSlot={
         <LazyIconPreview path={icon.files[style]} />

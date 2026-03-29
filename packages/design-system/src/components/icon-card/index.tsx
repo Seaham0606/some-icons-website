@@ -2,6 +2,7 @@
 
 import * as React from "react"
 import { cn } from "../../utils"
+import { Chip } from "../chip"
 import { SomeIcon } from "../some-icon"
 
 export interface IconCardCopyFeedbackPosition {
@@ -22,8 +23,13 @@ export interface IconCardProps
   /** Shell wrapper (covers primary + selection control). */
   onMouseEnter?: React.MouseEventHandler<HTMLDivElement>
   onMouseLeave?: React.MouseEventHandler<HTMLDivElement>
-  /** Shown as the native `title` tooltip (e.g. icon id). */
-  title: string
+  /** Optional native tooltip (`title` attribute); prefer `aria-label` on the button if you only need an accessible name. */
+  title?: string
+  /**
+   * Basename without extension (or similar); on shell hover, shown in an inverse blurred chip
+   * `var(--spacing-1)` below the card.
+   */
+  hoverFilenameLabel?: string
   selected?: boolean
   showSelectionControl?: boolean
   previewSlot: React.ReactNode
@@ -47,6 +53,7 @@ export const IconCard = React.forwardRef<HTMLButtonElement, IconCardProps>(
     {
       className,
       title,
+      hoverFilenameLabel,
       selected = false,
       showSelectionControl = true,
       previewSlot,
@@ -80,48 +87,59 @@ export const IconCard = React.forwardRef<HTMLButtonElement, IconCardProps>(
     return (
       <>
         <div
-          className={cn("ds-iconCard__shell", className)}
-          data-selected={selected ? "true" : undefined}
+          className={cn("ds-iconCard__block", className)}
           onMouseEnter={onMouseEnter}
           onMouseLeave={onMouseLeave}
         >
-          <button
-            ref={ref}
-            type={type}
-            title={title}
-            className="ds-iconCard"
-            onClick={onPrimaryClick}
-            {...rest}
+          <div
+            className="ds-iconCard__shell"
+            data-selected={selected ? "true" : undefined}
           >
-            <span className="ds-iconCard__previewWrap">
-              <span className="ds-iconCard__preview">{previewSlot}</span>
-            </span>
-          </button>
-          {showSelectionControl ? (
             <button
-              type="button"
-              className="ds-iconCard__select"
-              onClick={handleSelectionClick}
-              aria-label={selected ? "Deselect icon" : "Select icon"}
+              ref={ref}
+              type={type}
+              title={title}
+              className="ds-iconCard"
+              onClick={onPrimaryClick}
+              {...rest}
             >
-              {selected ? (
-                <SomeIcon
-                  iconName="symbol-check-circle"
-                  iconStyle="fill"
-                  cdnBaseUrl={cdnBaseUrl}
-                  iconSize="sm"
-                  padding="0"
-                />
-              ) : (
-                <SomeIcon
-                  iconName="interface-button-radio"
-                  iconStyle="outline"
-                  cdnBaseUrl={cdnBaseUrl}
-                  iconSize="sm"
-                  padding="0"
-                />
-              )}
+              <span className="ds-iconCard__previewWrap">
+                <span className="ds-iconCard__preview">{previewSlot}</span>
+              </span>
             </button>
+            {showSelectionControl ? (
+              <button
+                type="button"
+                className="ds-iconCard__select"
+                onClick={handleSelectionClick}
+                aria-label={selected ? "Deselect icon" : "Select icon"}
+              >
+                {selected ? (
+                  <SomeIcon
+                    iconName="symbol-check-circle"
+                    iconStyle="fill"
+                    cdnBaseUrl={cdnBaseUrl}
+                    iconSize="sm"
+                    padding="0"
+                  />
+                ) : (
+                  <SomeIcon
+                    iconName="interface-button-radio"
+                    iconStyle="outline"
+                    cdnBaseUrl={cdnBaseUrl}
+                    iconSize="sm"
+                    padding="0"
+                  />
+                )}
+              </button>
+            ) : null}
+          </div>
+          {hoverFilenameLabel ? (
+            <div className="ds-iconCard__hoverMeta" aria-hidden>
+              <Chip variant="inverse" backdropBlur>
+                {hoverFilenameLabel}
+              </Chip>
+            </div>
           ) : null}
         </div>
         {copyFeedbackOpen ? (

@@ -32,7 +32,12 @@ function getDerivedSortKey(iconId: string): string {
   return iconId
 }
 
-export function IconGrid() {
+interface IconGridProps {
+  /** Extra bottom padding when a bottom gradient overlay is shown (px). */
+  gradientOverlayInsetPx?: number
+}
+
+export function IconGrid({ gradientOverlayInsetPx = 0 }: IconGridProps) {
   const { data: icons, isLoading, error } = useIcons()
   const searchQuery = useFilterStore((state) => state.searchQuery)
   const category = useFilterStore((state) => state.category)
@@ -107,7 +112,7 @@ export function IconGrid() {
       isLoading={isLoading}
       hasError={!!error}
       isEmpty={!isLoading && !error && filteredIcons.length === 0}
-      paddingBottomPx={bottomPadding}
+      paddingBottomPx={bottomPadding + gradientOverlayInsetPx}
     >
       {filteredIcons.map((icon) => (
         <IconCard key={icon.id} icon={icon} />

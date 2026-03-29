@@ -1,17 +1,29 @@
 import logoSymbol from '../../assets/images/logo-some-icons-symbol.svg'
 import figmaIcon from '../../assets/images/logo-figma-icon.svg'
 import githubIcon from '../../assets/images/logo-github-icon.svg'
+import {
+  GradientOverlay,
+  GRADIENT_OVERLAY_HOME_HEIGHT_PX,
+} from '@/components/overlay/GradientOverlay'
 import { PageContent } from '@/components/layout/PageContent'
 import { IconGrid } from '@/components/icons/IconGrid'
+import { getCategoryIcon, getCategoryLabel } from '@/lib/category-icons'
 import type { ExportFormat } from '@/lib/constants'
 import { SIZE_PRESETS } from '@/lib/constants'
+import {
+  getCodeCopyCtaLabel,
+  getDefaultCodeFramework,
+} from '@/lib/code-export'
 import { useColorStore } from '@/stores/colorStore'
 import { useExportStore } from '@/stores/exportStore'
 import { useFilterStore } from '@/stores/filterStore'
 import { useUIStore } from '@/stores/uiStore'
 import {
   Button,
+  Chip,
   Dropdown,
+  DropdownMenu,
+  DropdownMenuDivider,
   Input,
   InputField,
   InputSection,
@@ -19,16 +31,20 @@ import {
   Sidebar,
   SomeIcon,
   ThemeButton,
+  dropdownMenuOptionClassName,
 } from 'design-system'
 import { ExportNoSelectionTooltip } from '@/components/export/ExportNoSelectionTooltip'
 import { useIconExport } from '@/hooks/useIconExport'
+import { getCategories, useIcons } from '@/hooks/useIcons'
 import { getHighestVersion, useChangelog } from '@/hooks/useChangelog'
 import type { IconStyle } from '@/types/icon'
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import type { CSSProperties, TransitionEvent } from 'react'
+import { Fragment, useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import type { CSSProperties } from 'react'
 
-/** Matches `--ds-dropdown-duration` in design-system `components.css` + small buffer. */
-const CATEGORY_DROPDOWN_TRANSITION_MS = 400
+/** Strips a conventional semver `v` prefix for accessible version phrases (display is customized via `Chip`). */
+function stripLeadingV(version: string): string {
+  return version.trim().replace(/^v(?=\d)/i, '')
+}
 
 /** Complete `#rgb` / `#rrggbb` only; returns normalized `#rrggbb` or null for empty / invalid. */
 function normalizeHexInput(value: string): string | null {
@@ -56,6 +72,78 @@ function HomeThemeButton() {
   )
 }
 
+interface HomeCategoryDropdownMenuProps {
+  onSelect: (category: string) => void
+  onClose?: () => void
+  className?: string
+}
+
+function HomeCategoryDropdownMenu({
+  onSelect,
+  onClose,
+  className,
+}: HomeCategoryDropdownMenuProps) {
+  const { data: icons } = useIcons()
+  const categories = getCategories(icons)
+  const category = useFilterStore((s) => s.category)
+  const [hasSelection, setHasSelection] = useState(false)
+  const selectedRowRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    const selected = selectedRowRef.current
+    if (!selected) return
+    const id = window.setTimeout(() => {
+      selected.scrollIntoView({ block: 'nearest', behavior: 'smooth' })
+    }, 0)
+    return () => window.clearTimeout(id)
+  }, [category])
+
+  const allCategories = ['all', ...categories]
+
+  return (
+    <DropdownMenu
+      className={className}
+      role="listbox"
+      aria-label="Categories"
+      onMouseLeave={() => {
+        if (hasSelection && onClose) onClose()
+      }}
+    >
+      {allCategories.map((cat, index) => (
+        <Fragment key={cat}>
+          <div ref={category === cat ? selectedRowRef : null}>
+            <Button
+              type="button"
+              variant="transparent"
+              tint="default"
+              size="md"
+              fullWidth
+              aria-selected={category === cat}
+              data-dropdown-selected={category === cat ? 'true' : 'false'}
+              className={dropdownMenuOptionClassName}
+              leadingSlot={
+                <SomeIcon
+                  iconName={getCategoryIcon(cat)}
+                  iconStyle="outline"
+                  iconSize="sm"
+                  padding="050"
+                />
+              }
+              onClick={() => {
+                onSelect(cat)
+                setHasSelection(true)
+              }}
+            >
+              {getCategoryLabel(cat)}
+            </Button>
+          </div>
+          {index === 0 ? <DropdownMenuDivider /> : null}
+        </Fragment>
+      ))}
+    </DropdownMenu>
+  )
+}
+
 const STYLE_SEGMENT_OPTIONS = [
   { value: 'outline' as const, label: 'Outline' },
   { value: 'filled' as const, label: 'Filled' },
@@ -69,25 +157,23 @@ const EXPORT_SIZE_OPTIONS = SIZE_PRESETS.map((size) => ({
 const EXPORT_FORMAT_OPTIONS = [
   { value: 'svg' as const, label: 'SVG' },
   { value: 'png' as const, label: 'PNG' },
+  { value: 'code' as const, label: 'Code' },
 ]
+
+const codeFramework = getDefaultCodeFramework()
 
 export default function HomePage() {
   const searchQuery = useFilterStore((s) => s.searchQuery)
   const setSearchQuery = useFilterStore((s) => s.setSearchQuery)
   const iconStyle = useFilterStore((s) => s.style)
   const setIconStyle = useFilterStore((s) => s.setStyle)
+  const category = useFilterStore((s) => s.category)
+  const setCategory = useFilterStore((s) => s.setCategory)
   const selectedColor = useColorStore((s) => s.selectedColor)
   const setIconColor = useColorStore((s) => s.setColor)
   const { data: entries } = useChangelog()
   const version = getHighestVersion(entries)
   const [categoryDropdownOpen, setCategoryDropdownOpen] = useState(false)
-  /** Captures Customize/Export expanded state when opening the category dropdown; restored when it closes. */
-  const sectionsBeforeCategoryDropdownRef = useRef<{
-    customize: boolean
-    export: boolean
-  } | null>(null)
-  /** Keeps `homepage-sidebar--category-dropdown-open` through panel close so flex/ grid transitions can finish. */
-  const [categorySidebarLayoutOpen, setCategorySidebarLayoutOpen] = useState(false)
   const [customizeSectionExpanded, setCustomizeSectionExpanded] = useState(true)
   const [exportSectionExpanded, setExportSectionExpanded] = useState(true)
   const exportSize = useExportStore((s) => s.size)
@@ -149,93 +235,17 @@ export default function HomePage() {
   const canResetIconColor =
     hasUserHexInput || selectedColor !== null
 
-  const categoryDropdownOpenRef = useRef(categoryDropdownOpen)
-  categoryDropdownOpenRef.current = categoryDropdownOpen
-
-  const layoutHoldFallbackRef = useRef<ReturnType<typeof setTimeout> | null>(null)
-
-  const restoreSectionsFromCategoryDropdownSnapshot = useCallback(() => {
-    const snap = sectionsBeforeCategoryDropdownRef.current
-    if (!snap) return
-    setCustomizeSectionExpanded(snap.customize)
-    setExportSectionExpanded(snap.export)
-    sectionsBeforeCategoryDropdownRef.current = null
-  }, [])
-
-  useEffect(() => {
-    if (categoryDropdownOpen) {
-      setCategorySidebarLayoutOpen(true)
-    }
-  }, [categoryDropdownOpen])
-
-  const releaseCategorySidebarLayout = useCallback(() => {
-    if (layoutHoldFallbackRef.current !== null) {
-      clearTimeout(layoutHoldFallbackRef.current)
-      layoutHoldFallbackRef.current = null
-    }
-    setCategorySidebarLayoutOpen(false)
-  }, [])
-
-  const handleCategoryDropdownTransitionEnd = useCallback(
-    (event: TransitionEvent<HTMLDivElement>) => {
-      if (categoryDropdownOpenRef.current) return
-      const el = event.target
-      if (!(el instanceof HTMLElement)) return
-      if (el.dataset.part !== 'panel') return
-      if (
-        event.propertyName !== 'grid-template-rows' &&
-        event.propertyName !== 'margin-top'
-      ) {
-        return
-      }
-      /* Trigger close: panel collapse finished → drop category layout, then open Customize/Export. */
-      releaseCategorySidebarLayout()
-      restoreSectionsFromCategoryDropdownSnapshot()
-    },
-    [releaseCategorySidebarLayout, restoreSectionsFromCategoryDropdownSnapshot]
-  )
-
-  useEffect(() => {
-    if (categoryDropdownOpen) return
-    if (!categorySidebarLayoutOpen) return
-
-    const reduced =
-      typeof window !== 'undefined' &&
-      window.matchMedia('(prefers-reduced-motion: reduce)').matches
-
-    if (layoutHoldFallbackRef.current !== null) {
-      clearTimeout(layoutHoldFallbackRef.current)
-    }
-    layoutHoldFallbackRef.current = setTimeout(() => {
-      layoutHoldFallbackRef.current = null
-      releaseCategorySidebarLayout()
-      restoreSectionsFromCategoryDropdownSnapshot()
-    }, reduced ? 0 : CATEGORY_DROPDOWN_TRANSITION_MS)
-
-    return () => {
-      if (layoutHoldFallbackRef.current !== null) {
-        clearTimeout(layoutHoldFallbackRef.current)
-        layoutHoldFallbackRef.current = null
-      }
-    }
-  }, [
-    categoryDropdownOpen,
-    categorySidebarLayoutOpen,
-    releaseCategorySidebarLayout,
-    restoreSectionsFromCategoryDropdownSnapshot,
-  ])
-
   return (
     <div className="homepage-shell">
       <Sidebar
-        className={
-          categoryDropdownOpen || categorySidebarLayoutOpen
-            ? 'homepage-sidebar--category-dropdown-open'
-            : undefined
-        }
         pageName="Icon library"
-        version={version}
-        versionChipVariant="beta"
+        chipSlot={
+          version ? (
+            <Chip variant="accent" aria-label={`Beta, version ${stripLeadingV(version)}`}>
+              Beta
+            </Chip>
+          ) : null
+        }
         logo={
           <img
             src={logoSymbol}
@@ -331,40 +341,28 @@ export default function HomePage() {
                     className="homepage-category-dropdown"
                     empty={false}
                     fullWidth
+                    variant="overlay"
                     expanded={categoryDropdownOpen}
-                    onClick={() => {
-                      if (categoryDropdownOpen) {
-                        setCategoryDropdownOpen(false)
-                        return
-                      }
-                      sectionsBeforeCategoryDropdownRef.current = {
-                        customize: customizeSectionExpanded,
-                        export: exportSectionExpanded,
-                      }
-                      setCustomizeSectionExpanded(false)
-                      setExportSectionExpanded(false)
-                      setCategoryDropdownOpen(true)
-                    }}
-                    onTransitionEnd={handleCategoryDropdownTransitionEnd}
+                    onOverlayDismiss={() => setCategoryDropdownOpen(false)}
+                    onClick={() =>
+                      setCategoryDropdownOpen((open) => !open)
+                    }
                     panelSlot={
-                      <div
+                      <HomeCategoryDropdownMenu
                         className="homepage-category-dropdown-panel"
-                        role="listbox"
-                        aria-label="Categories"
-                      >
-                        {/*
-                          Future categories: on select: setCategoryDropdownOpen(false); restore
-                          runs after panel transition (or layout timeout). Also update label.
-                        */}
-                      </div>
+                        onSelect={(c) => {
+                          setCategory(c)
+                          setCategoryDropdownOpen(false)
+                        }}
+                        onClose={() => setCategoryDropdownOpen(false)}
+                      />
                     }
                     leadingSlot={
                       <SomeIcon
-                        iconName="interface-grid"
+                        iconName={getCategoryIcon(category)}
                         iconStyle="outline"
                         iconSize="md"
                         padding="2"
-                        color="var(--color-main-primary)"
                       />
                     }
                     trailingSlot={
@@ -377,7 +375,7 @@ export default function HomePage() {
                       />
                     }
                   >
-                    Category name
+                    {getCategoryLabel(category)}
                   </Dropdown>
                 }
               />
@@ -392,11 +390,6 @@ export default function HomePage() {
             setCustomizeSectionExpanded(expanded)
             if (expanded && categoryDropdownOpen) {
               setCategoryDropdownOpen(false)
-              const snap = sectionsBeforeCategoryDropdownRef.current
-              if (snap) {
-                setExportSectionExpanded(snap.export)
-                sectionsBeforeCategoryDropdownRef.current = null
-              }
             }
           }}
           leadingSlot={
@@ -518,11 +511,6 @@ export default function HomePage() {
             setExportSectionExpanded(expanded)
             if (expanded && categoryDropdownOpen) {
               setCategoryDropdownOpen(false)
-              const snap = sectionsBeforeCategoryDropdownRef.current
-              if (snap) {
-                setCustomizeSectionExpanded(snap.customize)
-                sectionsBeforeCategoryDropdownRef.current = null
-              }
             }
           }}
           leadingSlot={
@@ -535,52 +523,64 @@ export default function HomePage() {
           leadingColor="var(--color-main-secondary)"
           contentSlot={
             <>
-              <InputField
-                className={
-                  isExportSizeRowExpanded
-                    ? 'homepage-size-export-field homepage-size-export-field--expanded'
-                    : 'homepage-size-export-field'
-                }
-                label="Size"
-                showCol2
-                col2Width="size-12"
-                contentSlot={
-                  <SegmentedControl<(typeof SIZE_PRESETS)[number]>
-                    options={EXPORT_SIZE_OPTIONS}
-                    value={sizePresetValue}
-                    onChange={handleExportPresetSize}
-                    hasError={sizeFieldError}
-                  />
-                }
-                secondarySlot={
-                  <Input
-                    className="homepage-size-custom-input"
-                    showLeading={false}
-                    showTrailing={false}
-                    value={customExportSize}
-                    inputMode="numeric"
-                    pattern="[0-9]*"
-                    autoComplete="off"
-                    status={sizeFieldError ? 'error' : 'default'}
-                    onFocus={() => setCustomExportSizeFocused(true)}
-                    onBlur={() => setCustomExportSizeFocused(false)}
-                    onChange={(e) =>
-                      handleCustomExportSizeChange(e.target.value)
-                    }
-                  />
-                }
-              />
-              <InputField
-                label="Format"
-                contentSlot={
-                  <SegmentedControl<ExportFormat>
-                    options={EXPORT_FORMAT_OPTIONS}
-                    value={exportFormat}
-                    onChange={setExportFormat}
-                    hasError={formatFieldError}
-                  />
-                }
-              />
+              <div className="homepage-export-metaFields">
+                <InputField
+                  label="Format"
+                  contentSlot={
+                    <SegmentedControl<ExportFormat>
+                      options={EXPORT_FORMAT_OPTIONS}
+                      value={exportFormat}
+                      onChange={setExportFormat}
+                      hasError={formatFieldError}
+                    />
+                  }
+                />
+                <div
+                  className="homepage-export-sizeReveal"
+                  data-expanded={
+                    exportFormat !== 'code' ? 'true' : 'false'
+                  }
+                  aria-hidden={exportFormat === 'code' ? true : undefined}
+                >
+                  <div className="homepage-export-sizeReveal__motion">
+                    <InputField
+                      className={
+                        isExportSizeRowExpanded
+                          ? 'homepage-size-export-field homepage-size-export-field--expanded'
+                          : 'homepage-size-export-field'
+                      }
+                      label="Size"
+                      showCol2
+                      col2Width="size-12"
+                      contentSlot={
+                        <SegmentedControl<(typeof SIZE_PRESETS)[number]>
+                          options={EXPORT_SIZE_OPTIONS}
+                          value={sizePresetValue}
+                          onChange={handleExportPresetSize}
+                          hasError={sizeFieldError}
+                        />
+                      }
+                      secondarySlot={
+                        <Input
+                          className="homepage-size-custom-input"
+                          showLeading={false}
+                          showTrailing={false}
+                          value={customExportSize}
+                          inputMode="numeric"
+                          pattern="[0-9]*"
+                          autoComplete="off"
+                          status={sizeFieldError ? 'error' : 'default'}
+                          onFocus={() => setCustomExportSizeFocused(true)}
+                          onBlur={() => setCustomExportSizeFocused(false)}
+                          onChange={(e) =>
+                            handleCustomExportSizeChange(e.target.value)
+                          }
+                        />
+                      }
+                    />
+                  </div>
+                </div>
+              </div>
               <div ref={exportButtonWrapRef} className="w-full">
                 <Button
                   variant="primary"
@@ -589,7 +589,11 @@ export default function HomePage() {
                   radius="lg"
                   disabled={isExporting}
                   onClick={() => void handleExport()}
-                  aria-label="Export selected icons"
+                  aria-label={
+                    exportFormat === 'code'
+                      ? 'Copy React import for selected icons'
+                      : 'Export selected icons'
+                  }
                   leadingSlot={
                     isExporting ? (
                       <SomeIcon
@@ -604,9 +608,11 @@ export default function HomePage() {
                 >
                   {isExporting
                     ? 'Exporting...'
-                    : selectionCount > 0
-                      ? `Export ${selectionCount} icon${selectionCount > 1 ? 's' : ''}`
-                      : 'Export'}
+                    : exportFormat === 'code'
+                      ? getCodeCopyCtaLabel(codeFramework)
+                      : selectionCount > 0
+                        ? `Export ${selectionCount} icon${selectionCount > 1 ? 's' : ''}`
+                        : 'Export'}
                 </Button>
               </div>
               {noSelectionFeedback ? (
@@ -622,9 +628,24 @@ export default function HomePage() {
       </Sidebar>
 
       <main className="homepage-main">
-        <PageContent>
-          <IconGrid />
-        </PageContent>
+        <div className="homepage-pageContentWrap">
+          <PageContent>
+            <IconGrid
+              gradientOverlayInsetPx={
+                selectionCount > 0 ? GRADIENT_OVERLAY_HOME_HEIGHT_PX : 0
+              }
+            />
+          </PageContent>
+          <GradientOverlay
+            visible={selectionCount > 0}
+            fullWidth
+            style={{ height: GRADIENT_OVERLAY_HOME_HEIGHT_PX }}
+            progressiveBlur
+            progressiveBlurIntensity={80}
+            progressiveBlurPosition="bottom"
+            backdropBlur={false}
+          />
+        </div>
       </main>
     </div>
   )

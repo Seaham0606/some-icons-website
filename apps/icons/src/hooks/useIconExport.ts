@@ -3,12 +3,24 @@ import { useExportStore } from '@/stores/exportStore'
 import { useColorStore } from '@/stores/colorStore'
 import { useFilterStore } from '@/stores/filterStore'
 import { useIcons } from '@/hooks/useIcons'
-import { exportToZip, downloadBlob } from '@/lib/export-utils'
+import {
+  createExportBlobForIcon,
+  exportToZip,
+  downloadBlob,
+} from '@/lib/export-utils'
 import { fetchSvg } from '@/lib/api'
+import {
+  generateFrameworkImportSnippet,
+  getDefaultCodeFramework,
+} from '@/lib/code-export'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { toast } from 'sonner'
 
-/** Icons-app export flow (ZIP). UI: DS `Button` + `ExportNoSelectionTooltip` when needed. */
+/**
+ * Export flow: SVG/PNG as a single file when one icon is selected, ZIP when multiple;
+ * clipboard import line for Code (React). UI: `Button` + `ExportNoSelectionTooltip`
+ * when export is invoked with no selection.
+ */
 export function useIconExport() {
   const { data: icons } = useIcons()
   const selectedIds = useSelectionStore((state) => state.selectedIds)
@@ -66,6 +78,23 @@ export function useIconExport() {
       return
     }
 
+    if (format === 'code') {
+      const orderedIds = Array.from(selectedIds)
+      const snippet = generateFrameworkImportSnippet(
+        getDefaultCodeFramework(),
+        orderedIds,
+        style,
+      )
+      try {
+        await navigator.clipboard.writeText(snippet)
+        toast.success('Copied import to clipboard')
+      } catch (error) {
+        console.error('Clipboard copy failed:', error)
+        toast.error('Could not copy. Check clipboard permissions.')
+      }
+      return
+    }
+
     if (!icons) {
       return
     }
@@ -89,16 +118,24 @@ export function useIconExport() {
         }),
       )
 
-      const blob = await exportToZip(iconData, {
+      const exportOpts = {
         size,
         format,
         color: selectedColor,
-      })
+      } as const
 
-      const filename = `some-icons-${style}-${size}px.zip`
-      downloadBlob(blob, filename)
-
-      toast.success(`Downloaded ${count} icon${count > 1 ? 's' : ''}`)
+      if (count === 1) {
+        const { id, svg } = iconData[0]
+        const blob = await createExportBlobForIcon(svg, exportOpts)
+        const ext = format === 'svg' ? 'svg' : 'png'
+        downloadBlob(blob, `${id}.${ext}`)
+        toast.success('Downloaded icon')
+      } else {
+        const blob = await exportToZip(iconData, exportOpts)
+        const filename = `some-icons-${style}-${size}px.zip`
+        downloadBlob(blob, filename)
+        toast.success(`Downloaded ${count} icons`)
+      }
       clear()
     } catch (error) {
       console.error('Download failed:', error)
