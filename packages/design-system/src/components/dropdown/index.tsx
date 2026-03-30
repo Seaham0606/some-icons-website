@@ -13,6 +13,9 @@ import * as React from "react"
 import { createPortal } from "react-dom"
 import { cn } from "../../utils"
 
+/** Max height for portaled overlay (`variant="overlay"`); inner scrolls when content exceeds. */
+const DROPDOWN_OVERLAY_MAX_HEIGHT_PX = 320
+
 export type DropdownStatus = "default" | "error"
 
 /** Placeholder inside the leading 40×40 slot (same as {@link InputSlotPlaceholder}). */
@@ -117,12 +120,17 @@ export const Dropdown = React.forwardRef<HTMLButtonElement, DropdownProps>(
     const overlayListId = React.useId()
     const triggerElRef = React.useRef<HTMLButtonElement | null>(null)
     const overlayPanelRef = React.useRef<HTMLDivElement | null>(null)
+    const prevExpandedRef = React.useRef(expanded)
+    const [overlayExitPending, setOverlayExitPending] = React.useState(false)
+    const [overlayMotionOpen, setOverlayMotionOpen] = React.useState(false)
     const [overlayBox, setOverlayBox] = React.useState<{
       top: number
       left: number
       width: number
       maxHeight: number
     } | null>(null)
+
+    const overlayActive = expanded || overlayExitPending
 
     const setTriggerRef = React.useCallback(
       (node: HTMLButtonElement | null) => {
@@ -149,9 +157,10 @@ export const Dropdown = React.forwardRef<HTMLButtonElement, DropdownProps>(
       if (!el) return
       const r = el.getBoundingClientRect()
       const margin = 16
-      const gap = 8
-      const top = r.bottom + gap
-      const maxHeight = Math.max(120, window.innerHeight - top - margin)
+      /* Top-align with trigger so the overlay covers it (same `top` as trigger box). */
+      const top = r.top
+      const viewportCap = Math.max(120, window.innerHeight - top - margin)
+      const maxHeight = Math.min(DROPDOWN_OVERLAY_MAX_HEIGHT_PX, viewportCap)
       let left = r.left
       const w = r.width
       const rightEdge = left + w
@@ -165,12 +174,12 @@ export const Dropdown = React.forwardRef<HTMLButtonElement, DropdownProps>(
     }, [])
 
     React.useLayoutEffect(() => {
-      if (!isOverlay || !expanded) return
+      if (!isOverlay || !overlayActive) return
       updateOverlayPosition()
-    }, [expanded, isOverlay, updateOverlayPosition])
+    }, [overlayActive, isOverlay, updateOverlayPosition])
 
     React.useEffect(() => {
-      if (!isOverlay || !expanded) return
+      if (!isOverlay || !overlayActive) return
       updateOverlayPosition()
       window.addEventListener("resize", updateOverlayPosition)
       window.addEventListener("scroll", updateOverlayPosition, true)
@@ -178,7 +187,46 @@ export const Dropdown = React.forwardRef<HTMLButtonElement, DropdownProps>(
         window.removeEventListener("resize", updateOverlayPosition)
         window.removeEventListener("scroll", updateOverlayPosition, true)
       }
-    }, [expanded, isOverlay, updateOverlayPosition])
+    }, [overlayActive, isOverlay, updateOverlayPosition])
+
+    React.useEffect(() => {
+      if (!isOverlay) return
+      const prev = prevExpandedRef.current
+
+      if (expanded) {
+        setOverlayExitPending(false)
+        setOverlayMotionOpen(false)
+        const id = requestAnimationFrame(() => {
+          requestAnimationFrame(() => setOverlayMotionOpen(true))
+        })
+        prevExpandedRef.current = expanded
+        return () => cancelAnimationFrame(id)
+      }
+
+      if (prev && !expanded) {
+        setOverlayMotionOpen(false)
+        setOverlayExitPending(true)
+      }
+      prevExpandedRef.current = expanded
+    }, [expanded, isOverlay])
+
+    React.useEffect(() => {
+      if (!overlayExitPending || overlayMotionOpen) return
+      const ms = 280
+      const t = window.setTimeout(() => setOverlayExitPending(false), ms)
+      return () => window.clearTimeout(t)
+    }, [overlayExitPending, overlayMotionOpen])
+
+    const handleOverlayTransitionEnd = React.useCallback(
+      (e: React.TransitionEvent<HTMLDivElement>) => {
+        if (e.target !== e.currentTarget) return
+        if (e.propertyName !== "opacity") return
+        if (!expanded) {
+          setOverlayExitPending(false)
+        }
+      },
+      [expanded],
+    )
 
     React.useEffect(() => {
       if (!isOverlay || !expanded) return
@@ -246,19 +294,21 @@ export const Dropdown = React.forwardRef<HTMLButtonElement, DropdownProps>(
 
     const overlayPortal =
       isOverlay &&
-      expanded &&
+      overlayActive &&
       typeof document !== "undefined" &&
       overlayBox &&
       createPortal(
         <div
           ref={overlayPanelRef}
           className="ds-dropdown__menuOverlay"
+          data-overlay-open={overlayMotionOpen ? "true" : "false"}
           style={{
             top: overlayBox.top,
             left: overlayBox.left,
             width: overlayBox.width,
             maxHeight: overlayBox.maxHeight,
           }}
+          onTransitionEnd={handleOverlayTransitionEnd}
         >
           <div className="ds-dropdown__menuOverlayInner" id={overlayListId}>
             {panelSlot === undefined ? (

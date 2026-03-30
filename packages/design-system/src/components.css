@@ -415,7 +415,7 @@
   appearance: none;
   font-family: var(--font-family-sans);
   font-size: var(--font-size-input);
-  font-weight: 500;
+  font-weight: 600;
   font-style: normal;
   line-height: var(--line-height-input);
   color: var(--ds-input-content-color, var(--color-main-primary));
@@ -451,7 +451,7 @@
 
 .ds-input__input::placeholder {
   color: var(--ds-input-content-color, var(--color-main-quaternary));
-  font-weight: 500;
+  font-weight: 600;
 }
 
 .ds-input__input::selection {
@@ -496,9 +496,8 @@
   opacity: 0.7;
 }
 
-/* Optional: bolder empty state (e.g. color picker “Default”) */
+/* Optional: tighter line when empty (e.g. color picker “Default”) */
 .ds-input--placeholderEmphasis[data-filled="false"] .ds-input__input {
-  font-weight: 600;
   line-height: normal;
 }
 
@@ -601,19 +600,33 @@ button.ds-dropdown__trigger.ds-input {
 
 /* Portaled overlay menu (`variant="overlay"`). */
 .ds-dropdown__menuOverlay {
+  --ds-dropdown-overlay-ease: cubic-bezier(0.33, 1, 0.68, 1);
+  --ds-dropdown-overlay-duration: 220ms;
   position: fixed;
   z-index: 200;
   box-sizing: border-box;
   margin: 0;
-  padding: var(--spacing-padding-2);
+  padding: 0;
   border-radius: var(--radius-lg);
-  border: var(--border-width-base) solid var(--color-border-extra-weak);
-  background: var(--color-background-elevation);
+  border: var(--border-width-base) solid var(--color-border-strong);
+  background: var(--color-background-menu);
   box-shadow: 0 8px 24px color-mix(in srgb, var(--color-black-alpha-950) 12%, transparent);
   overflow: hidden;
   display: flex;
   flex-direction: column;
   min-height: 0;
+  transform-origin: top center;
+  opacity: 0;
+  transform: translateY(calc(-1 * var(--spacing-gap-1)));
+  pointer-events: none;
+  transition:
+    opacity var(--ds-dropdown-overlay-duration) var(--ds-dropdown-overlay-ease),
+    transform var(--ds-dropdown-overlay-duration) var(--ds-dropdown-overlay-ease);
+}
+
+.ds-dropdown__menuOverlay[data-overlay-open="true"] {
+  opacity: 1;
+  transform: translateY(0);
   pointer-events: auto;
 }
 
@@ -623,14 +636,30 @@ button.ds-dropdown__trigger.ds-input {
 }
 
 .ds-dropdown__menuOverlayInner {
+  box-sizing: border-box;
   flex: 1 1 auto;
   min-height: 0;
   min-width: 0;
   overflow: auto;
   width: 100%;
+  padding: var(--spacing-padding-1);
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .ds-dropdown__menuOverlay {
+    transition: none;
+  }
+
+  .ds-dropdown__menuOverlay[data-overlay-open="false"] {
+    opacity: 0;
+    transform: none;
+  }
+
+  .ds-dropdown__menuOverlay[data-overlay-open="true"] {
+    opacity: 1;
+    transform: none;
+  }
+
   .ds-dropdown__trailingRotate,
   .ds-dropdown__menu,
   .ds-dropdown__menuMotion {
@@ -693,7 +722,7 @@ button.ds-dropdown__trigger.ds-input {
   font-family: var(--font-family-sans);
   font-size: var(--font-size-input);
   line-height: var(--line-height-input);
-  font-weight: 500;
+  font-weight: 600;
   font-style: normal;
   color: var(--color-main-primary);
   outline: none;
@@ -706,7 +735,7 @@ button.ds-dropdown__trigger.ds-input {
 
 .ds-nativeInput::placeholder {
   color: var(--color-main-tertiary);
-  font-weight: 500;
+  font-weight: 600;
 }
 
 .ds-nativeInput:hover:not(:disabled) {
@@ -754,7 +783,7 @@ button.ds-dropdown__trigger.ds-input {
   background: transparent;
   font-family: inherit;
   font-size: 14px;
-  font-weight: 500;
+  font-weight: 600;
   color: var(--color-main-primary);
 }
 
@@ -799,7 +828,7 @@ button.ds-nativeInput {
   background: var(--color-background-weak);
 }
 
-/* Leading glyph: muted like `.ds-input__slot`; label keeps transparent Button `main-primary`. */
+/* Leading glyph: muted like `.ds-input__slot`. */
 .ds-dropdownMenu__option.ds-button .ds-button__iconSlot[data-part="leading-slot"] {
   color: var(--color-main-tertiary);
 }
@@ -1114,6 +1143,95 @@ button.ds-inputSection__labelRow.ds-inputSection__labelRow--toggle {
   flex: 0 0 var(--size-12);
   width: var(--size-12);
   max-width: var(--size-12);
+}
+
+/* ColorSwatch — Figma: 40×40, padding 2 (8px), swatch radius sm, border strong */
+.ds-colorSwatch {
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--size-10);
+  height: var(--size-10);
+  min-width: var(--size-10);
+  min-height: var(--size-10);
+  padding: var(--spacing-padding-2);
+  flex-shrink: 0;
+}
+
+.ds-colorSwatch__fill {
+  box-sizing: border-box;
+  flex: 1 1 0%;
+  align-self: stretch;
+  min-width: 0;
+  min-height: 0;
+  border-radius: var(--radius-sm);
+  border: var(--border-width-base) solid var(--color-border-base);
+  /* Default fill: black (stands in for `currentColor` / icon default in ColorField). */
+  background-color: var(--ds-colorSwatch-fill, var(--color-black));
+}
+
+/* ColorField — hex + picker slot */
+.ds-colorField {
+  box-sizing: border-box;
+  width: 100%;
+  min-width: 0;
+}
+
+.ds-colorField__pickerSlot {
+  width: 100%;
+  min-width: 0;
+}
+
+/*
+ * Read-only pickers skip default input hover; align border treatment with the editable hex field.
+ */
+.ds-colorField__pickerSlot
+  .ds-input[data-status="default"]:not([data-disabled="true"]):not(:focus-within):hover {
+  border-color: var(--color-border-strong);
+}
+
+.ds-colorField__reset {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0;
+  padding: 0;
+  border: none;
+  background: none;
+  color: inherit;
+  cursor: default;
+  line-height: 0;
+}
+
+.ds-colorField__reset:disabled {
+  opacity: 0.38;
+  color: var(--color-main-disabled);
+}
+
+.ds-colorField__reset:not(:disabled) {
+  color: var(--color-main-quaternary);
+  cursor: pointer;
+}
+
+.ds-colorField__reset:not(:disabled):hover {
+  color: var(--color-intent-warning);
+}
+
+.ds-colorField__reset:not(:disabled):hover svg {
+  transform: rotate(-360deg);
+}
+
+.ds-colorField__reset svg {
+  transition:
+    transform 0.45s ease,
+    color 0.15s ease;
+}
+
+.ds-colorField__reset:focus-visible {
+  outline: none;
+  box-shadow: var(--shadow-focus-accent);
+  border-radius: var(--radius-sm);
 }
 
 /* Figma SlotPlaceholder (node 115:8535) — default empty content */
@@ -1493,6 +1611,19 @@ button.ds-inputSection__labelRow.ds-inputSection__labelRow--toggle {
   background-color: var(--color-overlay-dark-pressed);
 }
 
+/*
+ * DropdownMenu option rows use transparent Button; their label colors must come *after*
+ * `.ds-button[data-variant="transparent"]` (same specificity + later in the sheet).
+ */
+.ds-dropdownMenu__option.ds-button[data-variant="transparent"] {
+  color: var(--color-main-tertiary);
+}
+
+.ds-dropdownMenu__option.ds-button[data-variant="transparent"][data-dropdown-selected="true"]
+  .ds-button__label {
+  color: var(--color-main-primary);
+}
+
 /* ThemeButton: vertical strip (moon → sun → moon); --ds-theme-button-row must match cell height + track gap. */
 .ds-theme-button {
   --ds-theme-button-row: calc(var(--size-6) + var(--spacing-gap-3));
@@ -1683,7 +1814,7 @@ button.ds-inputSection__labelRow.ds-inputSection__labelRow--toggle {
   width: 100%;
 }
 
-/* Filename chip: below card on hover / keyboard focus only */
+/* Filename chip: below card on hover, or when primary/select is keyboard-focused (`:focus-visible`, not mouse-click focus) */
 .ds-iconCard__hoverMeta {
   position: absolute;
   left: 50%;
@@ -1697,7 +1828,8 @@ button.ds-inputSection__labelRow.ds-inputSection__labelRow--toggle {
 }
 
 .ds-iconCard__block:hover .ds-iconCard__hoverMeta,
-.ds-iconCard__block:focus-within .ds-iconCard__hoverMeta {
+.ds-iconCard__block:has(.ds-iconCard:focus-visible) .ds-iconCard__hoverMeta,
+.ds-iconCard__block:has(.ds-iconCard__select:focus-visible) .ds-iconCard__hoverMeta {
   opacity: 1;
 }
 

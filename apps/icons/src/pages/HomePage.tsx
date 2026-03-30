@@ -21,6 +21,7 @@ import { useUIStore } from '@/stores/uiStore'
 import {
   Button,
   Chip,
+  ColorField,
   Dropdown,
   DropdownMenu,
   DropdownMenuDivider,
@@ -39,24 +40,10 @@ import { getCategories, useIcons } from '@/hooks/useIcons'
 import { getHighestVersion, useChangelog } from '@/hooks/useChangelog'
 import type { IconStyle } from '@/types/icon'
 import { Fragment, useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import type { CSSProperties } from 'react'
 
 /** Strips a conventional semver `v` prefix for accessible version phrases (display is customized via `Chip`). */
 function stripLeadingV(version: string): string {
   return version.trim().replace(/^v(?=\d)/i, '')
-}
-
-/** Complete `#rgb` / `#rrggbb` only; returns normalized `#rrggbb` or null for empty / invalid. */
-function normalizeHexInput(value: string): string | null {
-  const t = value.trim()
-  if (t === '' || t === '#') return null
-  const m = t.match(/^#([0-9a-f]{3}|[0-9a-f]{6})$/i)
-  if (!m) return null
-  let h = m[1]
-  if (h.length === 3) {
-    h = [...h].map((c) => c + c).join('')
-  }
-  return `#${h.toLowerCase()}`
 }
 
 function HomeThemeButton() {
@@ -182,7 +169,6 @@ export default function HomePage() {
   const setExportFormat = useExportStore((s) => s.setFormat)
   const showExportValidation = useExportStore((s) => s.showValidationErrors)
   const validateExport = useExportStore((s) => s.validate)
-  const [customizeHex, setCustomizeHex] = useState('')
   const [customExportSize, setCustomExportSize] = useState('')
   const [customExportSizeFocused, setCustomExportSizeFocused] = useState(false)
 
@@ -228,12 +214,6 @@ export default function HomePage() {
     },
     [setExportSize],
   )
-
-  const customizeHexTrimmed = customizeHex.trim()
-  const hasUserHexInput =
-    customizeHexTrimmed !== '' && customizeHexTrimmed !== '#'
-  const canResetIconColor =
-    hasUserHexInput || selectedColor !== null
 
   return (
     <div className="homepage-shell">
@@ -401,105 +381,9 @@ export default function HomePage() {
           }
           leadingColor="var(--color-main-secondary)"
           contentSlot={
-            <InputField
-              label="Color"
-              showCol2
-              col2Width="size-12"
-              contentSlot={
-                <Input
-                  value={customizeHex}
-                  onChange={(e) => {
-                    const v = e.target.value
-                    setCustomizeHex(v)
-                    const trimmed = v.trim()
-                    if (trimmed === '' || trimmed === '#') {
-                      setIconColor(null)
-                      return
-                    }
-                    const normalized = normalizeHexInput(v)
-                    if (normalized) setIconColor(normalized)
-                  }}
-                  onFocus={(e) => {
-                    if (e.target.value === '') setCustomizeHex('#')
-                  }}
-                  onBlur={(e) => {
-                    const v = e.target.value.trim()
-                    if (v === '' || v === '#') {
-                      setCustomizeHex('')
-                      setIconColor(null)
-                      return
-                    }
-                    const normalized = normalizeHexInput(v)
-                    if (normalized) {
-                      setCustomizeHex(normalized)
-                      setIconColor(normalized)
-                    }
-                  }}
-                  placeholder="default"
-                  autoCapitalize="none"
-                  autoCorrect="off"
-                  spellCheck={false}
-                  trailingSlot={
-                    <button
-                      type="button"
-                      className="ds-iconColor-reset"
-                      aria-label="Reset icon color to default"
-                      disabled={!canResetIconColor}
-                      onClick={() => {
-                        setCustomizeHex('')
-                        setIconColor(null)
-                      }}
-                    >
-                      <SomeIcon
-                        iconName="arrow-undo"
-                        iconStyle="outline"
-                        iconSize="md"
-                        padding="2"
-                      />
-                    </button>
-                  }
-                />
-              }
-              secondarySlot={
-                <div
-                  className="homepage-customize-colorPreview"
-                  onMouseDownCapture={(e) => e.preventDefault()}
-                  style={
-                    selectedColor
-                      ? ({
-                          ['--homepage-customize-swatch']: selectedColor,
-                        } as CSSProperties)
-                      : undefined
-                  }
-                >
-                  <Input
-                    readOnly
-                    tabIndex={-1}
-                    aria-label="Selected icon color preview"
-                    contentColor={selectedColor ?? undefined}
-                    leadingSlot={
-                      <span
-                        className={
-                          selectedColor
-                            ? 'homepage-customize-colorPreview__hideLeading'
-                            : undefined
-                        }
-                        aria-hidden={!!selectedColor}
-                      >
-                        <SomeIcon
-                          iconName="formatting-eyedropper"
-                          iconStyle="fill"
-                          iconSize="md"
-                          padding="2"
-                          color={selectedColor ?? undefined}
-                        />
-                      </span>
-                    }
-                    showLeading
-                    showTrailing={false}
-                  />
-                </div>
-              }
+            <ColorField
+              color={selectedColor}
+              onColorChange={setIconColor}
             />
           }
         />

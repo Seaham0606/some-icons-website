@@ -9,6 +9,10 @@ export { InputSection, InputSectionSlotPlaceholder } from "./components/input-se
 export type { InputSectionProps } from "./components/input-section"
 export { InputField } from "./components/input-field"
 export type { InputFieldProps } from "./components/input-field"
+export { ColorField, normalizeHexColorInput } from "./components/color-field"
+export type { ColorFieldProps } from "./components/color-field"
+export { ColorSwatch } from "./components/color-swatch"
+export type { ColorSwatchProps } from "./components/color-swatch"
 export {
   Input,
   InputSlotPlaceholder,
