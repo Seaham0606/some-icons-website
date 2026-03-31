@@ -6,7 +6,6 @@
   --color-main-quaternary: var(--color-black-alpha-100);
   --color-main-disabled: var(--color-black-alpha-25);
   --color-main-inverse: var(--color-gray-10);
-  --color-main-warning: var(--color-intent-warning);
 
   /* intent */
   --color-intent-accent: var(--color-blue-400);
@@ -15,8 +14,8 @@
   --color-intent-success-strong: var(--color-green-600);
   --color-intent-warning: var(--color-yellow-400);
   --color-intent-warning-strong: var(--color-yellow-600);
-  --color-intent-error: var(--color-purple-400);
-  --color-intent-error-strong: var(--color-purple-600);
+  --color-intent-error: var(--color-red-400);
+  --color-intent-error-strong: var(--color-red-600);
 
   /* overlay */
   --color-overlay-weak: var(--color-black-alpha-15);
@@ -113,8 +112,8 @@
   --color-intent-success-strong: var(--color-green-300);
   --color-intent-warning: var(--color-yellow-400);
   --color-intent-warning-strong: var(--color-yellow-300);
-  --color-intent-error: var(--color-purple-400);
-  --color-intent-error-strong: var(--color-purple-300);
+  --color-intent-error: var(--color-red-400);
+  --color-intent-error-strong: var(--color-red-300);
 
   /* overlay */
   --color-overlay-weak: var(--color-white-alpha-15);

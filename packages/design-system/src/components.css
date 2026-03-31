@@ -846,70 +846,6 @@ button.ds-nativeInput {
   min-width: 0;
 }
 
-/* ColorPicker layout */
-.ds-colorPickerRow {
-  display: flex;
-  align-items: center;
-  gap: var(--spacing-gap-2);
-}
-
-.ds-colorPickerInputWrap {
-  position: relative;
-  flex: 1 1 0%;
-  min-width: 0;
-}
-
-.ds-colorSwatchHost {
-  position: relative;
-}
-
-.ds-colorSwatchButton {
-  width: 44px;
-  min-width: 44px;
-  flex-shrink: 0;
-  padding: 0;
-  overflow: hidden;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-}
-
-.ds-colorSwatchButton:hover:not(:disabled) {
-  border-color: var(--color-border-weak);
-}
-
-.ds-colorPickerSwatchPlaceholder {
-  width: var(--size-icon-sm);
-  height: var(--size-icon-sm);
-  pointer-events: none;
-  color: var(--color-main-tertiary);
-}
-
-.ds-colorPickerSwatchIcon {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.ds-colorPickerPopover {
-  position: absolute;
-  top: 100%;
-  right: 0;
-  z-index: 50;
-  margin-top: var(--spacing-gap-2);
-  padding: var(--spacing-padding-4);
-  border-radius: var(--radius-lg);
-  border: var(--border-width-base) solid var(--color-border-extra-weak);
-  background: var(--color-background-input);
-  box-shadow: 0 8px 24px color-mix(in srgb, var(--color-black-alpha-950) 12%, transparent);
-}
-
-[data-theme="dark"] .ds-colorPickerPopover {
-  border-color: var(--color-border-weak);
-  box-shadow: 0 8px 24px color-mix(in srgb, var(--color-black) 40%, transparent);
-}
-
 .ds-nativeInput--numeric {
   flex-shrink: 0;
   text-align: center;
@@ -1155,7 +1091,7 @@ button.ds-inputSection__labelRow.ds-inputSection__labelRow--toggle {
   height: var(--size-10);
   min-width: var(--size-10);
   min-height: var(--size-10);
-  padding: var(--spacing-padding-2);
+  padding: var(--spacing-padding-3);
   flex-shrink: 0;
 }
 
@@ -1176,6 +1112,24 @@ button.ds-inputSection__labelRow.ds-inputSection__labelRow--toggle {
   box-sizing: border-box;
   width: 100%;
   min-width: 0;
+}
+
+/* Swatch mount: fade in (slot only exists when not default / or while typing) */
+@keyframes ds-colorFieldSwatchIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.ds-colorField__swatchReveal {
+  animation: ds-colorFieldSwatchIn 0.22s ease;
+}
+
+.ds-colorField__hexInput .ds-input__input {
+  transition: color 0.2s ease;
 }
 
 .ds-colorField__pickerSlot {
@@ -1215,7 +1169,7 @@ button.ds-inputSection__labelRow.ds-inputSection__labelRow--toggle {
 }
 
 .ds-colorField__reset:not(:disabled):hover {
-  color: var(--color-intent-warning);
+  color: var(--color-intent-error);
 }
 
 .ds-colorField__reset:not(:disabled):hover svg {
@@ -1315,10 +1269,6 @@ button.ds-inputSection__labelRow.ds-inputSection__labelRow--toggle {
 
 [data-theme="dark"] .ds-segmentedControl[data-has-error="true"]:hover {
   border-color: var(--color-intent-warning);
-}
-
-[data-theme="dark"] .ds-colorSwatchButton:hover:not(:disabled) {
-  border-color: var(--color-border-base);
 }
 
 .ds-segmentedControl__dividerWrap {
@@ -1851,6 +1801,13 @@ button.ds-inputSection__labelRow.ds-inputSection__labelRow--toggle {
   background: var(--color-iconCard-feedback-bg);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
+}
+
+/* --- Context bar (multi-select / bulk summary) --- */
+
+.ds-contextBar {
+  box-sizing: border-box;
+  /* Placeholder until visual design: unobtrusive block for count copy */
 }
 
 /* --- Icon grid (library) --- */

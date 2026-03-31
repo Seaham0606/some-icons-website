@@ -1,4 +1,4 @@
-import { useMemo, useState, useEffect } from 'react'
+import { useMemo } from 'react'
 import { IconCard } from './IconCard'
 import { useIcons } from '@/hooks/useIcons'
 import { useFilterStore } from '@/stores/filterStore'
@@ -42,44 +42,6 @@ export function IconGrid({ gradientOverlayInsetPx = 0 }: IconGridProps) {
   const searchQuery = useFilterStore((state) => state.searchQuery)
   const category = useFilterStore((state) => state.category)
   const style = useFilterStore((state) => state.style)
-  const [bottomPadding, setBottomPadding] = useState<number>(32 * 4)
-
-  useEffect(() => {
-    const calculatePadding = () => {
-      const footer = document.getElementById('main-footer')
-      if (footer) {
-        const footerHeight = footer.offsetHeight
-        setBottomPadding(footerHeight + 24)
-      }
-    }
-
-    const timeoutId = setTimeout(() => {
-      calculatePadding()
-    }, 0)
-
-    const resizeObserver = new ResizeObserver(() => {
-      requestAnimationFrame(calculatePadding)
-    })
-
-    const observeFooter = () => {
-      const footer = document.getElementById('main-footer')
-      if (footer) {
-        resizeObserver.observe(footer)
-      } else {
-        setTimeout(observeFooter, 100)
-      }
-    }
-
-    observeFooter()
-
-    window.addEventListener('resize', calculatePadding)
-
-    return () => {
-      clearTimeout(timeoutId)
-      resizeObserver.disconnect()
-      window.removeEventListener('resize', calculatePadding)
-    }
-  }, [])
 
   const filteredIcons = useMemo(() => {
     if (!icons) return []
@@ -112,7 +74,7 @@ export function IconGrid({ gradientOverlayInsetPx = 0 }: IconGridProps) {
       isLoading={isLoading}
       hasError={!!error}
       isEmpty={!isLoading && !error && filteredIcons.length === 0}
-      paddingBottomPx={bottomPadding + gradientOverlayInsetPx}
+      paddingBottomPx={gradientOverlayInsetPx}
     >
       {filteredIcons.map((icon) => (
         <IconCard key={icon.id} icon={icon} />

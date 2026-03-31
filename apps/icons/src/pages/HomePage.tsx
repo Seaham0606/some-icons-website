@@ -22,6 +22,7 @@ import {
   Button,
   Chip,
   ColorField,
+  ContextBar,
   Dropdown,
   DropdownMenu,
   DropdownMenuDivider,
@@ -475,7 +476,7 @@ export default function HomePage() {
                   onClick={() => void handleExport()}
                   aria-label={
                     exportFormat === 'code'
-                      ? 'Copy React import for selected icons'
+                      ? 'Copy React code for selected icons'
                       : 'Export selected icons'
                   }
                   leadingSlot={
@@ -494,9 +495,7 @@ export default function HomePage() {
                     ? 'Exporting...'
                     : exportFormat === 'code'
                       ? getCodeCopyCtaLabel(codeFramework)
-                      : selectionCount > 0
-                        ? `Export ${selectionCount} icon${selectionCount > 1 ? 's' : ''}`
-                        : 'Export'}
+                      : 'Export'}
                 </Button>
               </div>
               {noSelectionFeedback ? (
@@ -513,6 +512,7 @@ export default function HomePage() {
 
       <main className="homepage-main">
         <div className="homepage-pageContentWrap">
+          <ContextBar selectedCount={selectionCount} />
           <PageContent>
             <IconGrid
               gradientOverlayInsetPx={

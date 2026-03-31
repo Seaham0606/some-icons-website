@@ -1,8 +1,8 @@
 "use client"
 
 /**
- * ColorField — two-column row: hex entry (leading placeholder for future swatch) + read-only picker slot (eyedropper).
- * Canonical value: `null` means default / `currentColor`.
+ * ColorField — two-column row: hex entry (leading ColorSwatch when committed, drafting, or focused) + read-only picker slot (eyedropper).
+ * Canonical value: `null` means default / `currentColor`. Live commits use **6-digit** hex only; `#rgb` shorthand applies on **blur**.
  */
 
 import * as React from "react"
@@ -12,22 +12,37 @@ import { ColorSwatch } from "../color-swatch"
 import { Input } from "../input"
 import { SomeIcon } from "../some-icon"
 
-/** Complete `#rgb` / `#rrggbb` only; returns normalized `#rrggbb` or null for empty / invalid. */
-export function normalizeHexColorInput(value: string): string | null {
-  const t = value.trim()
-  if (t === "" || t === "#") return null
-  const m = t.match(/^#([0-9a-f]{3}|[0-9a-f]{6})$/i)
-  if (!m) return null
-  let h = m[1]
-  if (h.length === 3) {
-    h = [...h].map((c) => c + c).join("")
-  }
-  return `#${h.toLowerCase()}`
+interface NormalizeHexColorInputOptions {
+  /**
+   * When true (default), `#rgb` expands to `#RRGGBB`. Set false while typing so values like `#CA3`
+   * stay partial until the user finishes six digits or blurs.
+   */
+  allowShorthand?: boolean
 }
 
-/** Keeps at most six hex digits; optional `#`; strips other characters. */
+/** Complete `#rgb` / `#rrggbb` (when allowed) → normalized `#RRGGBB`, or null. */
+function normalizeHexColorInput(
+  value: string,
+  options?: NormalizeHexColorInputOptions
+): string | null {
+  const allowShorthand = options?.allowShorthand !== false
+  const t = value.trim()
+  if (t === "" || t === "#") return null
+  const pattern = allowShorthand
+    ? /^#([0-9a-f]{3}|[0-9a-f]{6})$/i
+    : /^#([0-9a-f]{6})$/i
+  const m = t.match(pattern)
+  if (!m) return null
+  let h = m[1]
+  if (allowShorthand && h.length === 3) {
+    h = [...h].map((c) => c + c).join("")
+  }
+  return `#${h.toUpperCase()}`
+}
+
+/** Keeps at most six hex digits; optional `#`; strips other characters; **uppercase** output. */
 function sanitizePartialHex(raw: string): string {
-  const hex = raw.replace(/[^0-9a-fA-F]/g, "").slice(0, 6)
+  const hex = raw.replace(/[^0-9a-fA-F]/g, "").slice(0, 6).toUpperCase()
   if (hex.length === 0) return raw.includes("#") ? "#" : ""
   return `#${hex}`
 }
@@ -36,7 +51,7 @@ export interface ColorFieldProps {
   className?: string
   showLabel?: boolean
   label?: React.ReactNode
-  /** Canonical `#rrggbb`, or `null` for default (`currentColor`). */
+  /** Canonical `#RRGGBB`, or `null` for default (`currentColor`). */
   color: string | null
   onColorChange: (color: string | null) => void
   col2Width?: "equal" | "size-12"
@@ -50,13 +65,22 @@ export function ColorField({
   onColorChange,
   col2Width = "size-12",
 }: ColorFieldProps) {
-  const [hexText, setHexText] = React.useState(() => color ?? "")
+  const [hexText, setHexText] = React.useState(() =>
+    color != null
+      ? normalizeHexColorInput(color, { allowShorthand: true }) ?? color
+      : "",
+  )
+  const [hexFocused, setHexFocused] = React.useState(false)
   const prevColorRef = React.useRef(color)
 
   React.useEffect(() => {
     if (color !== prevColorRef.current) {
       prevColorRef.current = color
-      setHexText(color ?? "")
+      if (color != null) {
+        setHexText(
+          normalizeHexColorInput(color, { allowShorthand: true }) ?? color,
+        )
+      }
     }
   }, [color])
 
@@ -64,6 +88,8 @@ export function ColorField({
   const hasUserHexInput =
     hexTrimmed !== "" && hexTrimmed !== "#"
   const canReset = hasUserHexInput || color !== null
+  const showLeadingSwatch =
+    color !== null || hexFocused || hasUserHexInput
 
   return (
     <div className={cn("ds-colorField", className)} data-component="color-field">
@@ -74,6 +100,7 @@ export function ColorField({
         col2Width={col2Width}
         contentSlot={
           <Input
+            className="ds-colorField__hexInput"
             value={hexText}
             onChange={(e) => {
               const next = sanitizePartialHex(e.target.value)
@@ -83,20 +110,30 @@ export function ColorField({
                 onColorChange(null)
                 return
               }
-              const normalized = normalizeHexColorInput(next)
-              if (normalized) onColorChange(normalized)
+              const strict = normalizeHexColorInput(next, {
+                allowShorthand: false,
+              })
+              if (strict) {
+                onColorChange(strict)
+              } else {
+                onColorChange(null)
+              }
             }}
             onFocus={(e) => {
+              setHexFocused(true)
               if (e.target.value === "") setHexText("#")
             }}
             onBlur={(e) => {
+              setHexFocused(false)
               const v = e.target.value.trim()
               if (v === "" || v === "#") {
                 setHexText("")
                 onColorChange(null)
                 return
               }
-              const normalized = normalizeHexColorInput(v)
+              const normalized = normalizeHexColorInput(v, {
+                allowShorthand: true,
+              })
               if (normalized) {
                 setHexText(normalized)
                 onColorChange(normalized)
@@ -106,7 +143,13 @@ export function ColorField({
             autoCapitalize="none"
             autoCorrect="off"
             spellCheck={false}
-            leadingSlot={<ColorSwatch color={color} />}
+            leadingSlot={
+              showLeadingSwatch ? (
+                <div className="ds-colorField__swatchReveal">
+                  <ColorSwatch color={color} />
+                </div>
+              ) : undefined
+            }
             trailingSlot={
               <button
                 type="button"

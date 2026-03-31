@@ -10,7 +10,7 @@ export default defineConfig({
     alias: {
       '@': path.resolve(__dirname, './src'),
     },
-    // Ensure design-system and Radix use the app's React (prevents "Invalid hook call" / blank page)
+    // Ensure the workspace design-system uses the same React as the app (avoids invalid hook call / blank page)
     dedupe: ['react', 'react-dom'],
   },
   // Don’t pre-bundle the linked design-system package: it can drop non-DOM props (e.g. leadingSlot)

@@ -10,7 +10,7 @@ import {
 } from '@/lib/export-utils'
 import { fetchSvg } from '@/lib/api'
 import {
-  generateFrameworkImportSnippet,
+  generateFrameworkCodeSnippet,
   getDefaultCodeFramework,
 } from '@/lib/code-export'
 import { useCallback, useEffect, useRef, useState } from 'react'
@@ -18,7 +18,7 @@ import { toast } from 'sonner'
 
 /**
  * Export flow: SVG/PNG as a single file when one icon is selected, ZIP when multiple;
- * clipboard import line for Code (React). UI: `Button` + `ExportNoSelectionTooltip`
+ * Code (React): clipboard snippet (import + JSX). UI: `ExportNoSelectionTooltip`
  * when export is invoked with no selection.
  */
 export function useIconExport() {
@@ -80,14 +80,14 @@ export function useIconExport() {
 
     if (format === 'code') {
       const orderedIds = Array.from(selectedIds)
-      const snippet = generateFrameworkImportSnippet(
-        getDefaultCodeFramework(),
-        orderedIds,
+      const snippet = generateFrameworkCodeSnippet(getDefaultCodeFramework(), {
+        orderedIconIds: orderedIds,
         style,
-      )
+        size: size ?? 24,
+      })
       try {
         await navigator.clipboard.writeText(snippet)
-        toast.success('Copied import to clipboard')
+        toast.success('Copied React code to clipboard')
       } catch (error) {
         console.error('Clipboard copy failed:', error)
         toast.error('Could not copy. Check clipboard permissions.')
