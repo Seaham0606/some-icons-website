@@ -50,12 +50,18 @@ export function Sidebar({ children, className }: SidebarProps) {
       <aside
         className={cn(
           // Desktop: always visible
-          'hidden md:flex w-80 shrink-0 bg-background-secondary flex-col h-full overflow-hidden',
+          'hidden md:flex w-64 shrink-0 flex-col h-full overflow-hidden',
           // Mobile: slide-in overlay
-          'max-md:fixed max-md:inset-y-0 max-md:left-0 max-md:z-50 max-md:w-80 max-md:transform max-md:transition-transform max-md:duration-300',
+          'max-md:fixed max-md:inset-y-0 max-md:left-0 max-md:z-50 max-md:w-64 max-md:transform max-md:transition-transform max-md:duration-150',
           sidebarOpen ? 'max-md:flex max-md:translate-x-0' : 'max-md:translate-x-[-100%]',
           className
         )}
+        style={{
+          background: 'var(--win-bg)',
+          borderRight: '2px solid var(--win-shadow)',
+          boxShadow: 'inset -1px 0 0 var(--win-dark-shadow)',
+          borderRadius: 0,
+        }}
       >
         {children}
       </aside>

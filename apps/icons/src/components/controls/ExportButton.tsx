@@ -146,20 +146,16 @@ export function ExportButton() {
     {/* Tooltip for no icons selected */}
     {showNoIconsTooltip && (
       <div
-        className={cn(
-          "fixed pointer-events-none z-50 pl-2 pr-4 py-1 rounded-[999px] text-base font-medium whitespace-nowrap flex items-center gap-1.5 backdrop-blur-[10px]",
-          isDark ? "text-white" : "text-black"
-        )}
+        className="fixed pointer-events-none z-50 win-tooltip whitespace-nowrap flex items-center gap-1"
         style={{
           left: `${tooltipPosition.x}px`,
           top: `${tooltipPosition.y}px`,
           transform: 'translate(-50%, -100%)',
-          backgroundColor: isDark 
-            ? 'var(--color-white-alpha-100)' 
-            : 'var(--color-black-alpha-100)',
+          padding: '2px 6px',
+          fontSize: '11px',
         }}
       >
-        <CdnIcon iconId="symbol-warning-circle" className="w-4 h-4" />
+        <CdnIcon iconId="symbol-warning-circle" className="w-3 h-3" />
         Please select icons to download
       </div>
     )}

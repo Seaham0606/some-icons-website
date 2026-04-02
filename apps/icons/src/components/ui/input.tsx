@@ -3,25 +3,25 @@ import * as React from "react"
 import { cn } from "@/lib/utils"
 import { CdnIcon } from "./cdn-icon"
 
-// Shared base styles for all input-like controls
+// Shared base styles for all input-like controls (Win2K style)
 const inputBaseStyles = [
-  "h-[44px] w-full min-w-0 rounded-[10px]",
-  "text-[15px] leading-[100%] font-medium",
-  "bg-[var(--color-input-bg)]",
-  "border border-[var(--color-input-stroke)]",
-  "p-3",
-  "text-[var(--color-text-primary)]",
-  "placeholder:text-[var(--color-text-tertiary)] placeholder:font-medium",
+  "h-[22px] w-full min-w-0 rounded-none",
+  "text-[11px] leading-[100%] font-normal",
+  "bg-[var(--win-white)]",
+  "border border-[var(--win-shadow)]",
+  "px-2 py-0",
+  "text-[var(--win-text)]",
+  "placeholder:text-[var(--win-shadow)] placeholder:font-normal",
   "outline-none",
-  "transition-[border-color,box-shadow,background-color]",
-  "hover:border-[var(--color-input-stroke-hover)]",
-  "focus:border-[var(--color-input-stroke-typing)]",
-  "focus-visible:border-[var(--color-input-stroke-typing)]",
+  "transition-none",
+  "hover:border-[var(--win-dark-shadow)]",
+  "focus:border-[var(--win-navy)]",
+  "focus-visible:border-[var(--win-navy)]",
   "disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50",
-  "selection:bg-primary selection:text-primary-foreground",
-  "aria-invalid:border-destructive aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40",
+  "selection:bg-[var(--win-titlebar)] selection:text-white",
+  "[box-shadow:inset_1px_1px_0_var(--win-shadow),inset_-1px_-1px_0_var(--win-light)]",
   // File input specific styles
-  "file:text-foreground file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium",
+  "file:text-foreground file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-xs file:font-normal",
 ]
 
 interface InputProps extends Omit<React.ComponentProps<"input">, "className"> {

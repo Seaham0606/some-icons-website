@@ -131,17 +131,13 @@ export const IconCard = memo(function IconCard({ icon }: IconCardProps) {
         onMouseLeave={handleMouseLeave}
         title={icon.id}
         className={cn(
-          'group relative aspect-square rounded-[10px] overflow-hidden cursor-pointer',
-          'border border-border-subtle',
-          'transition-[background-color,border-color] duration-200 ease-in-out',
-          isSelected
-            ? 'border-primary'
-            : 'hover:bg-background-hover-light hover:border-primary'
+          'group relative aspect-square overflow-hidden cursor-default',
+          'win-card',
+          isSelected && 'selected'
         )}
         style={{
-          backgroundColor: isSelected
-            ? (isHovered ? 'var(--color-blue-alpha-50)' : 'var(--color-blue-alpha-25)')
-            : undefined,
+          borderRadius: 0,
+          transition: 'none',
         }}
       >
       <div className="w-full h-full grid place-items-center p-4">
@@ -173,20 +169,16 @@ export const IconCard = memo(function IconCard({ icon }: IconCardProps) {
       {/* Tooltip that follows cursor - only in single select mode */}
       {showTooltip && !isSelectionMode && (
         <div
-          className={cn(
-            "fixed pointer-events-none z-50 pl-2 pr-4 py-1 rounded-[999px] text-base font-semibold whitespace-nowrap flex items-center gap-1.5 backdrop-blur-[10px]",
-            isDark ? "text-white" : "text-black"
-          )}
+          className="fixed pointer-events-none z-50 win-tooltip whitespace-nowrap flex items-center gap-1.5"
           style={{
-            left: `${tooltipPosition.x + 10}px`,
-            top: `${tooltipPosition.y + 10}px`,
-            backgroundColor: isDark 
-              ? 'var(--color-white-alpha-100)' 
-              : 'var(--color-black-alpha-100)',
+            left: `${tooltipPosition.x + 12}px`,
+            top: `${tooltipPosition.y + 12}px`,
+            padding: '2px 6px',
+            fontSize: '11px',
           }}
         >
-          <CdnIcon iconId="symbol-check-mark" className="w-4 h-4" />
-          Copied
+          <CdnIcon iconId="symbol-check-mark" className="w-3 h-3" />
+          Copied to clipboard
         </div>
       )}
     </>

@@ -113,55 +113,50 @@ export function CategoryList({ isOpen, onSelect, onClose, className }: CategoryL
     <div
       ref={containerRef}
       className={cn(
-        'absolute top-full left-0 mt-2 z-50',
-        'min-w-[272px] w-auto',
-        'max-h-[320px] overflow-y-auto',
-        'rounded-[10px]',
-        'border border-[var(--color-input-stroke)]',
-        'bg-[var(--color-input-bg)]',
-        'p-1',
-        'transition-[border-color]',
-        'hover:border-[var(--color-input-stroke-hover)]',
+        'absolute top-full left-0 mt-0 z-50',
+        'min-w-[200px] w-auto',
+        'max-h-[220px] overflow-y-auto',
         className
       )}
       style={{
-        boxShadow: isDark
-          ? `
-            0px 100px 80px 0px rgba(0, 0, 0, 0.28),
-            0px 42px 33px 0px rgba(0, 0, 0, 0.20),
-            0px 23px 18px 0px rgba(0, 0, 0, 0.18),
-            0px 13px 10px 0px rgba(0, 0, 0, 0.14),
-            0px 7px 6px 0px rgba(0, 0, 0, 0.16),
-            0px 4px 2px 0px rgba(0, 0, 0, 0.08)
-          `
-          : `
-            0px 100px 80px 0px rgba(0, 0, 0, 0.07),
-            0px 42px 33px 0px rgba(0, 0, 0, 0.05),
-            0px 23px 18px 0px rgba(0, 0, 0, 0.045),
-            0px 13px 10px 0px rgba(0, 0, 0, 0.035),
-            0px 7px 6px 0px rgba(0, 0, 0, 0.04),
-            0px 4px 2px 0px rgba(0, 0, 0, 0.02)
-          `
+        background: 'var(--win-white)',
+        border: '2px solid var(--win-shadow)',
+        boxShadow: 'inset 1px 1px 0 var(--win-shadow), 2px 2px 0 rgba(0,0,0,0.3)',
+        borderRadius: 0,
       }}
       onMouseLeave={handleMouseLeave}
     >
-      <div className="flex flex-col gap-1 w-full">
+      <div className="flex flex-col w-full">
         {allCategories.map((cat, index) => (
           <React.Fragment key={cat}>
             <div
               ref={category === cat ? selectedButtonRef : null}
+              onClick={() => handleSelect(cat)}
+              className="flex items-center gap-2 px-2 cursor-default"
+              style={{
+                height: '20px',
+                fontSize: '11px',
+                fontFamily: "'Tahoma','MS Sans Serif',Arial,sans-serif",
+                background: category === cat ? 'var(--win-titlebar)' : 'var(--win-white)',
+                color: category === cat ? 'white' : 'var(--win-text)',
+              }}
+              onMouseEnter={(e) => {
+                if (category !== cat) {
+                  (e.currentTarget as HTMLDivElement).style.background = 'var(--win-titlebar)'
+                  ;(e.currentTarget as HTMLDivElement).style.color = 'white'
+                }
+              }}
+              onMouseLeave={(e) => {
+                if (category !== cat) {
+                  (e.currentTarget as HTMLDivElement).style.background = 'var(--win-white)'
+                  ;(e.currentTarget as HTMLDivElement).style.color = 'var(--win-text)'
+                }
+              }}
             >
-              <SegmentedButton
-                isActive={category === cat}
-                onClick={() => handleSelect(cat)}
-                leadingIcon={getCategoryIcon(cat)}
-                textString={cat === 'all' ? 'All icons' : cat.charAt(0).toUpperCase() + cat.slice(1)}
-                className="!w-full !flex-none h-[44px] !justify-start"
-                iconStyle="outline"
-              />
+              {cat === 'all' ? 'All icons' : cat.charAt(0).toUpperCase() + cat.slice(1)}
             </div>
             {index === 0 && (
-              <div className="h-px mx-1.5 rounded-full bg-[var(--color-divider-stroke)]" />
+              <div style={{ height: '1px', background: 'var(--win-shadow)', margin: '1px 0' }} />
             )}
           </React.Fragment>
         ))}

@@ -37,27 +37,53 @@ export function CategorySelect() {
 
   return (
     <div className="relative w-full" ref={containerRef}>
-      <button
-        type="button"
-        onClick={() => setIsOpen(!isOpen)}
-        className={cn(
-          inputBaseStyles,
-          "pr-[40px] cursor-pointer text-left",
-          "flex items-center gap-2"
-        )}
-      >
-        <CdnIcon 
-          iconId={getCategoryIcon(category)} 
-          style="outline"
-          className="h-5 w-5 shrink-0 text-[var(--color-text-primary)] transition-all duration-500 [transition-timing-function:cubic-bezier(0.33,1,0.68,1)]" 
-        />
-        <span className="transition-all duration-500 [transition-timing-function:cubic-bezier(0.33,1,0.68,1)]">{getCategoryLabel(category)}</span>
-      </button>
-      <div className="absolute right-3 top-1/2 -translate-y-1/2 h-5 w-5 flex items-center justify-center pointer-events-none text-[var(--color-text-tertiary)]">
-        <CdnIcon 
-          iconId={isOpen ? "arrow-up-triangle" : "arrow-down-triangle"} 
-          className="h-5 w-5" 
-        />
+      <div className="flex w-full" style={{ height: '22px' }}>
+        <div
+          role="button"
+          tabIndex={0}
+          onClick={() => setIsOpen(!isOpen)}
+          style={{
+            flex: 1,
+            background: 'var(--win-white)',
+            border: '1px solid var(--win-shadow)',
+            borderRight: 'none',
+            boxShadow: 'inset 1px 1px 0 var(--win-shadow)',
+            fontSize: '11px',
+            fontFamily: "'Tahoma','MS Sans Serif',Arial,sans-serif",
+            color: 'var(--win-text)',
+            padding: '0 4px',
+            display: 'flex',
+            alignItems: 'center',
+            cursor: 'default',
+            overflow: 'hidden',
+            whiteSpace: 'nowrap',
+            textOverflow: 'ellipsis',
+          }}
+          onKeyDown={(e) => e.key === 'Enter' && setIsOpen(!isOpen)}
+        >
+          {getCategoryLabel(category)}
+        </div>
+        <button
+          type="button"
+          onClick={() => setIsOpen(!isOpen)}
+          className="win-raised"
+          style={{
+            width: '20px',
+            height: '22px',
+            flexShrink: 0,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            cursor: 'default',
+            borderRadius: 0,
+          }}
+          aria-label="Open category dropdown"
+        >
+          <CdnIcon 
+            iconId="arrow-down-triangle"
+            className="h-3 w-3" 
+          />
+        </button>
       </div>
       <CategoryList isOpen={isOpen} onSelect={handleSelect} onClose={() => setIsOpen(false)} />
     </div>

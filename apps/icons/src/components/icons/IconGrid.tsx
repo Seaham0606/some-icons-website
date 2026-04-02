@@ -142,8 +142,8 @@ export function IconGrid() {
 
   return (
     <div 
-      className="grid grid-cols-[repeat(auto-fill,minmax(88px,1fr))] sm:grid-cols-[repeat(auto-fill,minmax(104px,1fr))] gap-2 sm:gap-3 p-4 sm:p-6 content-start"
-      style={{ paddingBottom: `${bottomPadding}px` }}
+      className="grid grid-cols-[repeat(auto-fill,minmax(72px,1fr))] sm:grid-cols-[repeat(auto-fill,minmax(80px,1fr))] gap-1 p-2 sm:p-3 content-start"
+      style={{ paddingBottom: `${bottomPadding}px`, background: 'var(--win-white)' }}
     >
       {filteredIcons.map((icon) => (
         <IconCard key={icon.id} icon={icon} />

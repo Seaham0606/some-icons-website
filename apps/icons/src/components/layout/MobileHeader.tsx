@@ -15,24 +15,27 @@ export function MobileHeader({ title, showLogo = true, className }: MobileHeader
   return (
     <header
       className={cn(
-        'md:hidden flex items-center justify-between px-4 py-3 border-b border-border-subtle bg-background',
+        'md:hidden flex items-center justify-between px-2 win-titlebar',
         className
       )}
+      style={{ height: '22px', flexShrink: 0 }}
     >
-      <div className="flex items-center gap-3">
+      <div className="flex items-center gap-2">
         {showLogo && (
-          <img src="/logo.svg" alt="Some Icons" className="h-5 w-auto" />
+          <img src="/logo.svg" alt="Some Icons" className="h-3 w-auto" style={{ filter: 'invert(1)' }} />
         )}
         {title && (
-          <h1 className="font-semibold text-foreground">{title}</h1>
+          <h1 style={{ fontSize: '11px', fontWeight: 'bold', color: 'white' }}>{title}</h1>
         )}
+        {!title && <span style={{ fontSize: '11px', fontWeight: 'bold', color: 'white' }}>Some Icons</span>}
       </div>
       <button
         onClick={toggleSidebar}
-        className="p-2 -mr-2 text-foreground-secondary hover:text-foreground transition-colors"
+        className="win-raised"
+        style={{ width: '18px', height: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'default' }}
         aria-label={sidebarOpen ? 'Close menu' : 'Open menu'}
       >
-        <CdnIcon iconId="arrow-down-triangle" className="h-6 w-6" />
+        <CdnIcon iconId="arrow-down-triangle" className="h-3 w-3" />
       </button>
     </header>
   )
