@@ -10,19 +10,16 @@ import { IconGrid } from '@/components/icons/IconGrid'
 import { getCategoryIcon, getCategoryLabel } from '@/lib/category-icons'
 import type { ExportFormat } from '@/lib/constants'
 import { SIZE_PRESETS } from '@/lib/constants'
-import {
-  getCodeCopyCtaLabel,
-  getDefaultCodeFramework,
-} from '@/lib/code-export'
 import { useColorStore } from '@/stores/colorStore'
 import { useExportStore } from '@/stores/exportStore'
+import { useSelectionStore } from '@/stores/selectionStore'
 import { useFilterStore } from '@/stores/filterStore'
 import { useUIStore } from '@/stores/uiStore'
 import {
+  BulkActionBar,
   Button,
   Chip,
   ColorField,
-  ContextBar,
   Dropdown,
   DropdownMenu,
   DropdownMenuDivider,
@@ -35,12 +32,20 @@ import {
   ThemeButton,
   dropdownMenuOptionClassName,
 } from 'design-system'
-import { ExportNoSelectionTooltip } from '@/components/export/ExportNoSelectionTooltip'
+import { useFilteredGridIcons } from '@/hooks/useFilteredGridIcons'
 import { useIconExport } from '@/hooks/useIconExport'
 import { getCategories, useIcons } from '@/hooks/useIcons'
 import { getHighestVersion, useChangelog } from '@/hooks/useChangelog'
 import type { IconStyle } from '@/types/icon'
-import { Fragment, useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import {
+  Fragment,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  type KeyboardEvent,
+} from 'react'
 
 /** Strips a conventional semver `v` prefix for accessible version phrases (display is customized via `Chip`). */
 function stripLeadingV(version: string): string {
@@ -148,8 +153,6 @@ const EXPORT_FORMAT_OPTIONS = [
   { value: 'code' as const, label: 'Code' },
 ]
 
-const codeFramework = getDefaultCodeFramework()
-
 export default function HomePage() {
   const searchQuery = useFilterStore((s) => s.searchQuery)
   const setSearchQuery = useFilterStore((s) => s.setSearchQuery)
@@ -162,23 +165,31 @@ export default function HomePage() {
   const { data: entries } = useChangelog()
   const version = getHighestVersion(entries)
   const [categoryDropdownOpen, setCategoryDropdownOpen] = useState(false)
-  const [customizeSectionExpanded, setCustomizeSectionExpanded] = useState(true)
-  const [exportSectionExpanded, setExportSectionExpanded] = useState(true)
+  const [settingsSectionExpanded, setSettingsSectionExpanded] = useState(true)
   const exportSize = useExportStore((s) => s.size)
+  const gridPreviewPx = useExportStore((s) => s.gridPreviewPx)
   const setExportSize = useExportStore((s) => s.setSize)
   const exportFormat = useExportStore((s) => s.format)
   const setExportFormat = useExportStore((s) => s.setFormat)
   const showExportValidation = useExportStore((s) => s.showValidationErrors)
+  const exportFormatLabel = useMemo(() => {
+    if (exportFormat == null) return 'SVG'
+    return (
+      EXPORT_FORMAT_OPTIONS.find((o) => o.value === exportFormat)?.label ??
+      exportFormat.toUpperCase()
+    )
+  }, [exportFormat])
   const validateExport = useExportStore((s) => s.validate)
   const [customExportSize, setCustomExportSize] = useState('')
   const [customExportSizeFocused, setCustomExportSizeFocused] = useState(false)
 
   const sizePresetValue = useMemo((): (typeof SIZE_PRESETS)[number] | null => {
+    if (gridPreviewPx === null) return null
     if (exportSize == null) return null
     return (SIZE_PRESETS as readonly number[]).includes(exportSize)
       ? (exportSize as (typeof SIZE_PRESETS)[number])
       : null
-  }, [exportSize])
+  }, [exportSize, gridPreviewPx])
 
   const { sizeValid, formatValid } = validateExport()
   const sizeFieldError = showExportValidation && !sizeValid
@@ -187,12 +198,38 @@ export default function HomePage() {
     customExportSize.length > 0 || customExportSizeFocused
 
   const {
-    handleExport,
-    isExporting,
+    handleCopy,
+    handleDownload,
+    isCopying,
+    isDownloading,
     selectionCount,
-    buttonWrapRef: exportButtonWrapRef,
-    noSelectionFeedback,
   } = useIconExport()
+  const clearSelection = useSelectionStore((s) => s.clear)
+  const bulkSessionActive = useSelectionStore((s) => s.bulkSessionActive)
+
+  const copyActionDisabled = exportFormat === 'png'
+  const downloadActionDisabled = exportFormat === 'code'
+  const visibleGridIcons = useFilteredGridIcons()
+  const selectedIds = useSelectionStore((s) => s.selectedIds)
+  const selectAllVisible = useSelectionStore((s) => s.selectAll)
+  const deselectMany = useSelectionStore((s) => s.deselectMany)
+
+  const visibleIds = useMemo(
+    () => visibleGridIcons.map((icon) => icon.id),
+    [visibleGridIcons],
+  )
+
+  const allVisibleSelected =
+    visibleIds.length > 0 && visibleIds.every((id) => selectedIds.has(id))
+
+  const handleToggleSelectAllVisible = useCallback(() => {
+    if (visibleIds.length === 0) return
+    if (allVisibleSelected) {
+      deselectMany(visibleIds, { keepBulkSessionWhenEmpty: true })
+    } else {
+      selectAllVisible(visibleIds)
+    }
+  }, [allVisibleSelected, deselectMany, selectAllVisible, visibleIds])
 
   const handleExportPresetSize = useCallback(
     (preset: (typeof SIZE_PRESETS)[number]) => {
@@ -214,6 +251,31 @@ export default function HomePage() {
       }
     },
     [setExportSize],
+  )
+
+  const handleCustomExportSizeKeyDown = useCallback(
+    (e: KeyboardEvent<HTMLInputElement>) => {
+      if (e.key !== 'ArrowUp' && e.key !== 'ArrowDown') return
+      e.preventDefault()
+      const delta = e.key === 'ArrowUp' ? 1 : -1
+      const raw = e.currentTarget.value
+      const digitsOnly = raw.replace(/\D/g, '')
+      const parsed = parseInt(digitsOnly, 10)
+      const hasTypedDigits = digitsOnly !== '' && !isNaN(parsed)
+      const base = hasTypedDigits
+        ? parsed
+        : exportSize != null && exportSize > 0
+          ? exportSize
+          : 0
+
+      const next = base + delta
+      if (next < 1) {
+        handleCustomExportSizeChange('')
+        return
+      }
+      handleCustomExportSizeChange(String(next))
+    },
+    [exportSize, handleCustomExportSizeChange],
   )
 
   return (
@@ -364,43 +426,18 @@ export default function HomePage() {
           }
         />
         <InputSection
-          label="Customize"
+          label="Settings"
           collapsible
-          expanded={customizeSectionExpanded}
+          expanded={settingsSectionExpanded}
           onExpandedChange={(expanded) => {
-            setCustomizeSectionExpanded(expanded)
+            setSettingsSectionExpanded(expanded)
             if (expanded && categoryDropdownOpen) {
               setCategoryDropdownOpen(false)
             }
           }}
           leadingSlot={
             <SomeIcon
-              iconName="formatting-pencil-alt"
-              iconStyle="outline"
-              iconSize="sm"
-            />
-          }
-          leadingColor="var(--color-main-secondary)"
-          contentSlot={
-            <ColorField
-              color={selectedColor}
-              onColorChange={setIconColor}
-            />
-          }
-        />
-        <InputSection
-          label="Export"
-          collapsible
-          expanded={exportSectionExpanded}
-          onExpandedChange={(expanded) => {
-            setExportSectionExpanded(expanded)
-            if (expanded && categoryDropdownOpen) {
-              setCategoryDropdownOpen(false)
-            }
-          }}
-          leadingSlot={
-            <SomeIcon
-              iconName="arrow-up-out"
+              iconName="interface-settings-nut"
               iconStyle="outline"
               iconSize="sm"
             />
@@ -409,23 +446,13 @@ export default function HomePage() {
           contentSlot={
             <>
               <div className="homepage-export-metaFields">
-                <InputField
-                  label="Format"
-                  contentSlot={
-                    <SegmentedControl<ExportFormat>
-                      options={EXPORT_FORMAT_OPTIONS}
-                      value={exportFormat}
-                      onChange={setExportFormat}
-                      hasError={formatFieldError}
-                    />
-                  }
+                <ColorField
+                  color={selectedColor}
+                  onColorChange={setIconColor}
                 />
                 <div
                   className="homepage-export-sizeReveal"
-                  data-expanded={
-                    exportFormat !== 'code' ? 'true' : 'false'
-                  }
-                  aria-hidden={exportFormat === 'code' ? true : undefined}
+                  data-expanded="true"
                 >
                   <div className="homepage-export-sizeReveal__motion">
                     <InputField
@@ -457,6 +484,7 @@ export default function HomePage() {
                           status={sizeFieldError ? 'error' : 'default'}
                           onFocus={() => setCustomExportSizeFocused(true)}
                           onBlur={() => setCustomExportSizeFocused(false)}
+                          onKeyDown={handleCustomExportSizeKeyDown}
                           onChange={(e) =>
                             handleCustomExportSizeChange(e.target.value)
                           }
@@ -465,46 +493,18 @@ export default function HomePage() {
                     />
                   </div>
                 </div>
-              </div>
-              <div ref={exportButtonWrapRef} className="w-full">
-                <Button
-                  variant="primary"
-                  fullWidth
-                  size="lg"
-                  radius="lg"
-                  disabled={isExporting}
-                  onClick={() => void handleExport()}
-                  aria-label={
-                    exportFormat === 'code'
-                      ? 'Copy React code for selected icons'
-                      : 'Export selected icons'
+                <InputField
+                  label="Format"
+                  contentSlot={
+                    <SegmentedControl<ExportFormat>
+                      options={EXPORT_FORMAT_OPTIONS}
+                      value={exportFormat}
+                      onChange={setExportFormat}
+                      hasError={formatFieldError}
+                    />
                   }
-                  leadingSlot={
-                    isExporting ? (
-                      <SomeIcon
-                        iconName="interface-loading"
-                        iconStyle="outline"
-                        iconSize="sm"
-                        padding="050"
-                        className="animate-spin"
-                      />
-                    ) : undefined
-                  }
-                >
-                  {isExporting
-                    ? 'Exporting...'
-                    : exportFormat === 'code'
-                      ? getCodeCopyCtaLabel(codeFramework)
-                      : 'Export'}
-                </Button>
-              </div>
-              {noSelectionFeedback ? (
-                <ExportNoSelectionTooltip
-                  x={noSelectionFeedback.x}
-                  y={noSelectionFeedback.y}
-                  isDark={noSelectionFeedback.isDark}
                 />
-              ) : null}
+              </div>
             </>
           }
         />
@@ -512,23 +512,157 @@ export default function HomePage() {
 
       <main className="homepage-main">
         <div className="homepage-pageContentWrap">
-          <ContextBar selectedCount={selectionCount} />
           <PageContent>
             <IconGrid
               gradientOverlayInsetPx={
-                selectionCount > 0 ? GRADIENT_OVERLAY_HOME_HEIGHT_PX : 0
+                bulkSessionActive ? GRADIENT_OVERLAY_HOME_HEIGHT_PX : 0
               }
             />
           </PageContent>
           <GradientOverlay
-            visible={selectionCount > 0}
+            visible={bulkSessionActive}
             fullWidth
+            className="homepage-bulkOverlay"
             style={{ height: GRADIENT_OVERLAY_HOME_HEIGHT_PX }}
             progressiveBlur
             progressiveBlurIntensity={80}
             progressiveBlurPosition="bottom"
             backdropBlur={false}
-          />
+          >
+            <BulkActionBar
+              selectedCount={selectionCount}
+              sessionActive={bulkSessionActive}
+              summaryTrailingSlot={
+                <Button
+                  type="button"
+                  variant="transparent"
+                  size="md"
+                  radius="md"
+                  disabled={visibleGridIcons.length === 0}
+                  aria-label={
+                    allVisibleSelected
+                      ? 'Deselect visible icons'
+                      : 'Select all icons'
+                  }
+                  title={
+                    allVisibleSelected
+                      ? 'Deselect visible icons'
+                      : 'Select all icons'
+                  }
+                  aria-pressed={allVisibleSelected}
+                  onClick={handleToggleSelectAllVisible}
+                  leadingSlot={
+                    <SomeIcon
+                      iconName="symbol-check-multiple"
+                      iconStyle="outline"
+                      iconSize="sm"
+                      padding="050"
+                    />
+                  }
+                />
+              }
+            >
+              <>
+                <div className="ds-buttonGroup">
+                  <Button
+                  type="button"
+                  variant="transparent"
+                  size="md"
+                  radius="md"
+                  disabled={copyActionDisabled || isCopying}
+                  aria-busy={isCopying}
+                  title={
+                    copyActionDisabled
+                      ? 'Copy is only available for SVG and Code formats'
+                      : `Copy selected icons as ${exportFormatLabel}`
+                  }
+                  onClick={() => void handleCopy()}
+                  aria-label={
+                    copyActionDisabled
+                      ? 'Copy is only available for SVG and Code formats'
+                      : `Copy selected icons as ${exportFormatLabel}`
+                  }
+                  leadingSlot={
+                    isCopying ? (
+                      <SomeIcon
+                        iconName="interface-loading"
+                        iconStyle="outline"
+                        iconSize="sm"
+                        padding="050"
+                        className="animate-spin"
+                      />
+                    ) : (
+                      <SomeIcon
+                        iconName="interface-copy"
+                        iconStyle="outline"
+                        iconSize="sm"
+                        padding="050"
+                      />
+                    )
+                  }
+                />
+                <Button
+                  type="button"
+                  variant="transparent"
+                  size="md"
+                  radius="md"
+                  disabled={downloadActionDisabled || isDownloading}
+                  aria-busy={isDownloading}
+                  title={
+                    downloadActionDisabled
+                      ? 'Download is not available for Code; use Copy'
+                      : `Download selected icons as ${exportFormatLabel}`
+                  }
+                  onClick={() => void handleDownload()}
+                  aria-label={
+                    downloadActionDisabled
+                      ? 'Download is not available for Code; use Copy'
+                      : `Download selected icons as ${exportFormatLabel}`
+                  }
+                  leadingSlot={
+                    isDownloading ? (
+                      <SomeIcon
+                        iconName="interface-loading"
+                        iconStyle="outline"
+                        iconSize="sm"
+                        padding="050"
+                        className="animate-spin"
+                      />
+                    ) : (
+                      <SomeIcon
+                        iconName="arrow-down"
+                        iconStyle="outline"
+                        iconSize="sm"
+                        padding="050"
+                      />
+                    )
+                  }
+                />
+                </div>
+                <div className="ds-segmentedControl__dividerWrap" aria-hidden>
+                  <div className="ds-segmentedControl__divider" />
+                </div>
+                <Button
+                  type="button"
+                  variant="transparent"
+                  size="md"
+                  radius="md"
+                  className="ds-bulkActionBar__dismiss"
+                  aria-label="Clear selection and exit selection mode"
+                  title="Clear selection"
+                  onClick={() => clearSelection()}
+                  leadingSlot={
+                    <SomeIcon
+                      iconName="symbol-multiply"
+                      iconStyle="outline"
+                      iconSize="sm"
+                      padding="050"
+                    />
+                  }
+                />
+              </>
+            </BulkActionBar>
+          </GradientOverlay>
         </div>
       </main>
     </div>

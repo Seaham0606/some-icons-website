@@ -50,13 +50,15 @@ export function LazyIconPreview({ path, className }: LazyIconPreviewProps) {
   }, [])
 
   return (
-    <div ref={containerRef} className={cn('w-full h-full', className)}>
+    <div
+      ref={containerRef}
+      className={cn('flex h-full w-full items-center justify-center', className)}
+    >
       {isVisible ? (
-        <IconPreview path={path} className="w-full h-full" />
+        <IconPreview path={path} className="icon-grid-preview" />
       ) : (
-        // Placeholder with same dimensions to prevent layout shift
         <div
-          className="w-full h-full"
+          className="icon-grid-preview"
           style={{ backgroundColor: 'var(--item-grid)' }}
           aria-hidden="true"
         />

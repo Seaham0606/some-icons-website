@@ -89,7 +89,7 @@
 }
 
 .ds-chip[data-variant="inverse"] {
-  color: var(--color-main-inverse);
+  color: var(--color-main-inverse-primary);
   background: var(--color-background-inverse);
 }
 
@@ -456,7 +456,7 @@
 
 .ds-input__input::selection {
   background: var(--color-intent-accent);
-  color: var(--color-main-inverse);
+  color: var(--color-main-inverse-primary);
 }
 
 /* Input trailing actions: `SomeIcon` supplies `iconSize` / `padding` (box size). */
@@ -758,7 +758,7 @@ button.ds-dropdown__trigger.ds-input {
 
 .ds-nativeInput::selection {
   background: var(--color-intent-accent);
-  color: var(--color-main-inverse);
+  color: var(--color-main-inverse-primary);
 }
 
 .ds-nativeInput[aria-invalid="true"] {
@@ -1504,7 +1504,7 @@ button.ds-inputSection__labelRow.ds-inputSection__labelRow--toggle {
 .ds-button[data-variant="secondary"][data-tint="default"] {
   border-width: var(--border-width-base);
   border-color: var(--color-border-base);
-  color: var(--color-main-inverse);
+  color: var(--color-main-inverse-primary);
 }
 
 .ds-button[data-variant="primary"][data-tint="default"] {
@@ -1803,11 +1803,96 @@ button.ds-inputSection__labelRow.ds-inputSection__labelRow--toggle {
   -webkit-backdrop-filter: blur(10px);
 }
 
-/* --- Context bar (multi-select / bulk summary) --- */
+/* --- Button group (tight horizontal actions) --- */
 
-.ds-contextBar {
+.ds-buttonGroup {
   box-sizing: border-box;
-  /* Placeholder until visual design: unobtrusive block for count copy */
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--spacing-gap-050);
+}
+
+/* --- Bulk action bar (multi-select summary + actions) --- */
+
+.ds-bulkActionBar {
+  box-sizing: border-box;
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-gap-2);
+  max-width: 100%;
+  padding: var(--spacing-padding-2);
+  padding-left: var(--spacing-padding-5);
+  border-radius: var(--radius-xl);
+  border: var(--border-width-base) solid var(--color-border-weak);
+  background: var(--color-background-elevation);
+  box-shadow:
+    0 var(--spacing-padding-050) var(--spacing-padding-3) var(--color-overlay-weak);
+}
+
+.ds-bulkActionBar__textWrapper {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: var(--spacing-gap-2);
+  align-self: stretch;
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.ds-bulkActionBar__summaryTrailing {
+  box-sizing: border-box;
+  display: flex;
+  flex: 0 0 auto;
+  align-items: center;
+}
+
+.ds-bulkActionBar__summary {
+  margin: 0;
+  flex: 0 1 auto;
+  min-width: 0;
+  /* Single line with trailing select-all control */
+  white-space: nowrap;
+  font-family: var(--font-family-sans);
+  font-size: var(--font-size-input-section-label);
+  font-weight: 600;
+  line-height: var(--line-height-input-section-label);
+  color: var(--color-main-secondary);
+  text-align: center;
+}
+
+.ds-bulkActionBar__actions {
+  display: flex;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-gap-2);
+  min-width: 0;
+}
+
+/* Dismiss: muted icon → primary on hover / press (outside the copy+download group) */
+.ds-button.ds-bulkActionBar__dismiss[data-variant="transparent"] {
+  color: var(--color-main-quaternary);
+}
+
+.ds-button.ds-bulkActionBar__dismiss[data-variant="transparent"]:hover:not(:disabled):not([aria-disabled="true"]),
+.ds-button.ds-bulkActionBar__dismiss[data-variant="transparent"]:focus-visible:not(:disabled):not([aria-disabled="true"]),
+.ds-button.ds-bulkActionBar__dismiss[data-variant="transparent"]:active:not(:disabled):not([aria-disabled="true"]) {
+  color: var(--color-main-primary);
+}
+
+@media (min-width: 480px) {
+  .ds-bulkActionBar {
+    flex-wrap: nowrap;
+    justify-content: space-between;
+  }
+
+  .ds-bulkActionBar__summary {
+    text-align: start;
+  }
 }
 
 /* --- Icon grid (library) --- */
@@ -1818,12 +1903,22 @@ button.ds-inputSection__labelRow.ds-inputSection__labelRow--toggle {
   gap: var(--spacing-gap-2);
   align-content: start;
   box-sizing: border-box;
+  /**
+   * Max on-card preview glyph size (matches `.ds-iconCard__preview` 60% of cell minus preview wrap padding).
+   * Apps can set `--icon-preview-user-px` so `min(user, cap)` scales previews with export size without exceeding layout.
+   */
+  --ds-iconGrid-preview-cap: calc(
+    0.6 * (88px - 2 * var(--spacing-padding-4))
+  );
 }
 
 @media (min-width: 640px) {
   .ds-iconGrid {
     grid-template-columns: repeat(auto-fill, minmax(104px, 1fr));
     gap: var(--spacing-gap-3);
+    --ds-iconGrid-preview-cap: calc(
+      0.6 * (104px - 2 * var(--spacing-padding-4))
+    );
   }
 }
 

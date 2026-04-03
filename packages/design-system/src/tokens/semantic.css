@@ -5,7 +5,13 @@
   --color-main-tertiary: var(--color-black-alpha-200);
   --color-main-quaternary: var(--color-black-alpha-100);
   --color-main-disabled: var(--color-black-alpha-25);
-  --color-main-inverse: var(--color-gray-10);
+
+  /* main / inverse (on inverse surfaces — light theme UI uses light tints) */
+  --color-main-inverse-primary: var(--color-gray-10);
+  --color-main-inverse-secondary: var(--color-white-alpha-600);
+  --color-main-inverse-tertiary: var(--color-white-alpha-300);
+  --color-main-inverse-quaternary: var(--color-white-alpha-150);
+  --color-main-inverse-disabled: var(--color-white-alpha-50);
 
   /* intent */
   --color-intent-accent: var(--color-blue-400);
@@ -102,7 +108,14 @@
   --color-main-tertiary: var(--color-white-alpha-300);
   --color-main-quaternary: var(--color-white-alpha-150);
   --color-main-disabled: var(--color-white-alpha-50);
-  --color-main-inverse: var(--color-gray-925);
+
+  /* main / inverse (on inverse surfaces — dark theme UI uses dark tints) */
+  --color-main-inverse-primary: var(--color-gray-925);
+  --color-main-inverse-secondary: var(--color-black-alpha-600);
+  --color-main-inverse-tertiary: var(--color-black-alpha-200);
+  --color-main-inverse-quaternary: var(--color-black-alpha-100);
+  --color-main-inverse-disabled: var(--color-black-alpha-25);
+
   --color-main-warning: var(--color-intent-warning);
 
   /* intent */

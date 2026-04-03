@@ -56,5 +56,5 @@ export type {
 } from "./components/icon-card"
 export { IconGrid } from "./components/icon-grid"
 export type { IconGridProps } from "./components/icon-grid"
-export { ContextBar } from "./components/context-bar"
-export type { ContextBarProps } from "./components/context-bar"
+export { BulkActionBar } from "./components/bulk-action-bar"
+export type { BulkActionBarProps } from "./components/bulk-action-bar"

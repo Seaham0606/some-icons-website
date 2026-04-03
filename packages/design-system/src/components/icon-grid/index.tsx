@@ -5,6 +5,7 @@ import { cn } from "../../utils"
 
 export interface IconGridProps {
   className?: string
+  style?: React.CSSProperties
   isLoading?: boolean
   hasError?: boolean
   /** When true and not loading/error, shows the empty state instead of `children`. */
@@ -19,6 +20,7 @@ export interface IconGridProps {
 
 export function IconGrid({
   className,
+  style,
   isLoading = false,
   hasError = false,
   isEmpty = false,
@@ -33,11 +35,16 @@ export function IconGrid({
       ? { paddingBottom: `${paddingBottomPx}px` }
       : undefined
 
+  const mergedStyle: React.CSSProperties | undefined =
+    bottomStyle != null || style != null
+      ? { ...style, ...bottomStyle }
+      : style
+
   if (isLoading) {
     return (
       <div
         className={cn("ds-iconGrid__message", className)}
-        style={bottomStyle}
+        style={mergedStyle}
         role="status"
         aria-busy="true"
       >
@@ -54,7 +61,7 @@ export function IconGrid({
           "ds-iconGrid__message--error",
           className
         )}
-        style={bottomStyle}
+        style={mergedStyle}
         role="alert"
       >
         {errorMessage}
@@ -64,14 +71,14 @@ export function IconGrid({
 
   if (isEmpty) {
     return (
-      <div className={cn("ds-iconGrid__message", className)} style={bottomStyle}>
+      <div className={cn("ds-iconGrid__message", className)} style={mergedStyle}>
         {emptyMessage}
       </div>
     )
   }
 
   return (
-    <div className={cn("ds-iconGrid", className)} style={bottomStyle}>
+    <div className={cn("ds-iconGrid", className)} style={mergedStyle}>
       {children}
     </div>
   )

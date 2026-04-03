@@ -169,9 +169,9 @@ body {
 }
 
 /*
- * Export panel: format + size share one column so flex gap on the section does not double
- * when the size row collapses. Motion matches `.ds-inputSection__collapsiblePanel` /
- * `__panelMotion` (design-system components.css).
+ * Export panel: size + format stack; gap between rows (size reveal is always expanded).
+ * Motion on `.homepage-export-sizeReveal` matches `.ds-inputSection__collapsiblePanel` /
+ * `__panelMotion` (design-system components.css) if collapse is used again.
  */
 .homepage-export-metaFields {
   box-sizing: border-box;
@@ -180,7 +180,7 @@ body {
   align-items: flex-start;
   width: 100%;
   min-width: 0;
-  gap: 0;
+  gap: var(--spacing-gap-3);
   --ds-dropdown-ease: ease-in-out;
   --ds-dropdown-duration: 360ms;
 }
@@ -195,14 +195,12 @@ body {
   margin-top: 0;
   flex-shrink: 0;
   pointer-events: none;
-  transition:
-    grid-template-rows var(--ds-dropdown-duration) var(--ds-dropdown-ease),
-    margin-top var(--ds-dropdown-duration) var(--ds-dropdown-ease);
+  transition: grid-template-rows var(--ds-dropdown-duration)
+    var(--ds-dropdown-ease);
 }
 
 .homepage-export-sizeReveal[data-expanded="true"] {
   grid-template-rows: 1fr;
-  margin-top: var(--spacing-gap-3);
   pointer-events: auto;
 }
 
@@ -269,6 +267,17 @@ body {
   text-align: center;
 }
 
+/**
+ * Grid icon previews: after the user sets export size in the sidebar, the app sets
+ * `--icon-preview-user-px` on `.ds-iconGrid`; until then the var is unset and size is cap-only.
+ * Still capped by `--ds-iconGrid-preview-cap`.
+ */
+.icon-grid-preview {
+  flex: 0 0 auto;
+  width: min(var(--icon-preview-user-px, 1000px), var(--ds-iconGrid-preview-cap));
+  height: min(var(--icon-preview-user-px, 1000px), var(--ds-iconGrid-preview-cap));
+}
+
 /* Main column: scroll area + absolutely positioned overlay. */
 .homepage-pageContentWrap {
   position: relative;
@@ -285,6 +294,7 @@ body {
   z-index: 2;
   display: flex;
   flex-direction: column;
+  align-items: stretch;
   pointer-events: none;
   opacity: 0;
   transition: opacity 0.2s ease;
@@ -346,12 +356,31 @@ body {
 .gradient-overlay__content {
   position: relative;
   z-index: 12;
-  margin-top: auto;
+  flex: 1 1 auto;
   display: flex;
-  align-items: flex-end;
+  align-items: center;
   justify-content: center;
   width: 100%;
+  min-height: 0;
   padding: var(--spacing-padding-6);
+  pointer-events: auto;
+}
+
+/* Home: blur stays in main column; bulk bar is fixed to viewport horizontal center. */
+.homepage-bulkOverlay .gradient-overlay__content {
+  align-items: flex-end;
+  justify-content: center;
+  padding-bottom: 0;
+  pointer-events: none;
+}
+
+.homepage-bulkOverlay .ds-bulkActionBar {
+  position: fixed;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: var(--spacing-padding-10);
+  z-index: 13;
+  max-width: min(100%, calc(100vw - 2 * var(--spacing-padding-6)));
   pointer-events: auto;
 }
 
