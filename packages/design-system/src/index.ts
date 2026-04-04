@@ -20,7 +20,12 @@ export {
 } from "./components/input"
 export type { InputProps, InputStatus } from "./components/input"
 export { Button } from "./components/button"
-export type { ButtonProps, ButtonRadius, ButtonVariant } from "./components/button"
+export type {
+  ButtonProps,
+  ButtonRadius,
+  ButtonStateIcon,
+  ButtonVariant,
+} from "./components/button"
 export {
   Dropdown,
   DropdownLeadingSlotPlaceholder,
@@ -47,8 +52,6 @@ export type {
   SomeIconProps,
   SomeIconStyle,
 } from "./components/some-icon"
-export { ThemeButton } from "./components/theme-button"
-export type { ThemeButtonProps } from "./components/theme-button"
 export { IconCard } from "./components/icon-card"
 export type {
   IconCardProps,

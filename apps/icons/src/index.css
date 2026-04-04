@@ -374,14 +374,87 @@ body {
   pointer-events: none;
 }
 
-.homepage-bulkOverlay .ds-bulkActionBar {
+.homepage-bulkBarsWrap {
   position: fixed;
   left: 50%;
   transform: translateX(-50%);
-  bottom: var(--spacing-padding-10);
+  bottom: calc(var(--spacing-padding-10) + var(--spacing-padding-5));
   z-index: 13;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-gap-3);
   max-width: min(100%, calc(100vw - 2 * var(--spacing-padding-6)));
   pointer-events: auto;
+}
+
+.homepage-bulkOverlay .ds-bulkActionBar {
+  position: relative;
+  flex: 0 1 auto;
+  min-width: 0;
+  max-width: 100%;
+}
+
+/* Second shell: single dismiss control, matches main bulk bar chrome */
+.homepage-bulkBarAside {
+  box-sizing: border-box;
+  display: inline-flex;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: center;
+  padding: var(--spacing-padding-2);
+  border-radius: var(--radius-xl);
+  border: var(--border-width-base) solid var(--color-border-weak);
+  background: var(--color-background-strong);
+  box-shadow:
+    0 var(--spacing-padding-050) var(--spacing-padding-3) var(--color-overlay-weak);
+}
+
+/* Bulk bar: inverse label chip (IconCard filename pattern: centered, just past the control edge). */
+.homepage-bulkAction-hoverWrap {
+  position: relative;
+  display: inline-flex;
+  vertical-align: middle;
+}
+
+.homepage-bulkAction-hoverMeta {
+  position: absolute;
+  left: 50%;
+  top: calc(100% + var(--spacing-4));
+  z-index: 5;
+  transform: translateX(-50%);
+  opacity: 0;
+  pointer-events: none;
+  white-space: nowrap;
+  transition: opacity 0.1s ease;
+}
+
+/*
+ * Hover / keyboard focus shows chip; `:focus-within` omitted so click-focus doesn’t stick.
+ * No chip when the wrapped control is disabled (`:disabled` or `aria-disabled`).
+ */
+.homepage-bulkAction-hoverWrap:not(:has(.ds-button:disabled)):not(:has(.ds-button[aria-disabled="true"])):hover
+  .homepage-bulkAction-hoverMeta,
+.homepage-bulkAction-hoverWrap:has(.ds-button:focus-visible:not(:disabled):not([aria-disabled="true"]))
+  .homepage-bulkAction-hoverMeta {
+  opacity: 1;
+}
+
+/* Settings control: quaternary icon → primary on hover / focus / press */
+.homepage-bulkAction-settingsBtn.ds-button[data-variant="transparent"] .ds-button__iconSlot {
+  color: var(--color-main-quaternary);
+}
+
+.homepage-bulkAction-settingsBtn.ds-button[data-variant="transparent"]:hover:not(:disabled):not([aria-disabled="true"]) .ds-button__iconSlot,
+.homepage-bulkAction-settingsBtn.ds-button[data-variant="transparent"]:focus-visible:not(:disabled):not([aria-disabled="true"]) .ds-button__iconSlot,
+.homepage-bulkAction-settingsBtn.ds-button[data-variant="transparent"]:active:not(:disabled):not([aria-disabled="true"]) .ds-button__iconSlot {
+  color: var(--color-main-primary);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .homepage-bulkAction-hoverMeta {
+    transition-duration: 0.01ms;
+  }
 }
 
 /* Main column body: fills space beside aside; scrolls when icon grid is taller than viewport. */

@@ -1,5 +1,11 @@
 import type { Meta, StoryObj } from "@storybook/react"
-import { Button } from "design-system"
+import { useState } from "react"
+import { Button, type ButtonStateIcon } from "design-system"
+
+const demoStripIcons: [ButtonStateIcon, ButtonStateIcon] = [
+  { iconName: "weather-moon", iconStyle: "fill" },
+  { iconName: "weather-sun", iconStyle: "outline" },
+]
 
 /** Tiny demo icons — `currentColor` so they follow button text color. */
 function DemoDot() {
@@ -87,6 +93,20 @@ const meta: Meta<typeof Button> = {
     target: { table: { category: "Link" } },
     rel: { table: { category: "Link" } },
     download: { table: { category: "Link" } },
+    stateIcons: { control: false, table: { category: "Icon strip" } },
+    stripActiveIndex: {
+      control: "select",
+      options: [0, 1],
+      table: { category: "Icon strip" },
+    },
+    stripPlacement: {
+      control: "select",
+      options: ["start", "end"],
+      table: { category: "Icon strip" },
+    },
+    hasFeedback: { table: { category: "Icon strip" } },
+    respectReducedMotion: { table: { category: "Icon strip" } },
+    stripIconSize: { table: { category: "Icon strip" } },
   },
 }
 
@@ -200,6 +220,42 @@ export const Disabled: Story = {
     children: "Disabled",
     variant: "primary",
     disabled: true,
+  },
+}
+
+export const WithAnimatedIconStrip: Story = {
+  name: "With animated icon strip",
+  args: {
+    type: "button",
+    variant: "transparent",
+    size: "md",
+    radius: "lg",
+    "aria-label": "Demo strip",
+    stateIcons: demoStripIcons,
+    stripActiveIndex: 0,
+    contentColor: "var(--color-main-tertiary)",
+  },
+}
+
+export const AnimatedIconStripInteractive: Story = {
+  name: "Animated icon strip (interactive)",
+  render: function AnimatedIconStripInteractiveRender() {
+    const [stripActiveIndex, setStripActiveIndex] = useState<0 | 1>(0)
+    return (
+      <Button
+        type="button"
+        variant="transparent"
+        size="md"
+        radius="lg"
+        aria-label={stripActiveIndex === 0 ? "Show second" : "Show first"}
+        onClick={() =>
+          setStripActiveIndex((i) => (i === 0 ? 1 : 0))
+        }
+        stateIcons={demoStripIcons}
+        stripActiveIndex={stripActiveIndex}
+        contentColor="var(--color-main-tertiary)"
+      />
+    )
   },
 }
 

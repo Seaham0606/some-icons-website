@@ -25,9 +25,9 @@
 
   /* overlay */
   --color-overlay-weak: var(--color-black-alpha-15);
-  --color-overlay-light-hover: var(--color-white-alpha-50);
-  --color-overlay-light-pressed: var(--color-black-alpha-50);
-  --color-overlay-dark-hover: var(--color-black-alpha-50);
+  --color-overlay-light-hover: var(--color-white-alpha-75);
+  --color-overlay-light-pressed: var(--color-black-alpha-75);
+  --color-overlay-dark-hover: var(--color-black-alpha-25);
   --color-overlay-dark-pressed: var(--color-black-alpha-50);
   --color-overlay-accent: var(--color-blue-alpha-75);
   --color-overlay-success: var(--color-green-alpha-75);
@@ -35,6 +35,7 @@
   --color-overlay-error: var(--color-purple-alpha-75);
 
   /* background */
+  --color-background-strong: var(--color-white);
   --color-background-base: var(--color-gray-10);
   --color-background-weak: var(--color-black-alpha-10);
   --color-background-elevation: var(--color-white);
@@ -130,9 +131,9 @@
 
   /* overlay */
   --color-overlay-weak: var(--color-white-alpha-15);
-  --color-overlay-light-hover: var(--color-black-alpha-50);
-  --color-overlay-light-pressed: var(--color-white-alpha-50);
-  --color-overlay-dark-hover: var(--color-white-alpha-50);
+  --color-overlay-light-hover: var(--color-black-alpha-75);
+  --color-overlay-light-pressed: var(--color-white-alpha-75);
+  --color-overlay-dark-hover: var(--color-white-alpha-25);
   --color-overlay-dark-pressed: var(--color-white-alpha-50);
   --color-overlay-accent: var(--color-blue-alpha-75);
   --color-overlay-success: var(--color-green-alpha-75);
@@ -140,6 +141,7 @@
   --color-overlay-error: var(--color-purple-alpha-75);
 
   /* background */
+  --color-background-strong: var(--color-gray-990);
   --color-background-base: var(--color-gray-975);
   --color-background-weak: var(--color-white-alpha-10);
   --color-background-elevation: var(--color-white-alpha-10);

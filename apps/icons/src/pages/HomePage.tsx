@@ -18,6 +18,7 @@ import { useUIStore } from '@/stores/uiStore'
 import {
   BulkActionBar,
   Button,
+  type ButtonStateIcon,
   Chip,
   ColorField,
   Dropdown,
@@ -29,9 +30,10 @@ import {
   SegmentedControl,
   Sidebar,
   SomeIcon,
-  ThemeButton,
   dropdownMenuOptionClassName,
 } from 'design-system'
+import { ThemeButton } from '@/components/ThemeButton'
+import { useBulkActionStripFeedback } from '@/hooks/useBulkActionStripFeedback'
 import { useFilteredGridIcons } from '@/hooks/useFilteredGridIcons'
 import { useIconExport } from '@/hooks/useIconExport'
 import { getCategories, useIcons } from '@/hooks/useIcons'
@@ -45,11 +47,50 @@ import {
   useRef,
   useState,
   type KeyboardEvent,
+  type ReactNode,
 } from 'react'
+
+const BULK_COPY_STATE_ICONS = [
+  { iconName: 'interface-copy', iconStyle: 'outline' },
+  {
+    iconName: 'symbol-check-mark',
+    iconStyle: 'outline',
+    color: 'var(--color-intent-success-strong)',
+  },
+] as const satisfies [ButtonStateIcon, ButtonStateIcon]
+
+const BULK_DOWNLOAD_STATE_ICONS = [
+  { iconName: 'arrow-down', iconStyle: 'outline' },
+  {
+    iconName: 'symbol-check-mark',
+    iconStyle: 'outline',
+    color: 'var(--color-intent-success)',
+  },
+] as const satisfies [ButtonStateIcon, ButtonStateIcon]
 
 /** Strips a conventional semver `v` prefix for accessible version phrases (display is customized via `Chip`). */
 function stripLeadingV(version: string): string {
   return version.trim().replace(/^v(?=\d)/i, '')
+}
+
+/** Inverse chip on hover/focus — below the control (IconCard filename pattern). */
+function BulkActionHoverChip({
+  chipLabel,
+  children,
+}: {
+  chipLabel: string
+  children: ReactNode
+}) {
+  return (
+    <div className="homepage-bulkAction-hoverWrap">
+      {children}
+      <div className="homepage-bulkAction-hoverMeta" aria-hidden>
+        <Chip variant="inverse" backdropBlur>
+          {chipLabel}
+        </Chip>
+      </div>
+    </div>
+  )
 }
 
 function HomeThemeButton() {
@@ -205,10 +246,30 @@ export default function HomePage() {
     selectionCount,
   } = useIconExport()
   const clearSelection = useSelectionStore((s) => s.clear)
-  const bulkSessionActive = useSelectionStore((s) => s.bulkSessionActive)
 
-  const copyActionDisabled = exportFormat === 'png'
-  const downloadActionDisabled = exportFormat === 'code'
+  const {
+    copySuccessStrip,
+    downloadSuccessStrip,
+    flashCopySuccess,
+    flashDownloadSuccess,
+  } = useBulkActionStripFeedback()
+
+  const onBulkCopy = useCallback(async () => {
+    const ok = await handleCopy()
+    if (ok) flashCopySuccess()
+  }, [handleCopy, flashCopySuccess])
+
+  const onBulkDownload = useCallback(async () => {
+    const ok = await handleDownload()
+    if (ok) {
+      flashDownloadSuccess(() => {
+        clearSelection()
+      })
+    }
+  }, [clearSelection, flashDownloadSuccess, handleDownload])
+
+  const showCopyAction = exportFormat !== 'png'
+  const showDownloadAction = exportFormat !== 'code'
   const visibleGridIcons = useFilteredGridIcons()
   const selectedIds = useSelectionStore((s) => s.selectedIds)
   const selectAllVisible = useSelectionStore((s) => s.selectAll)
@@ -225,7 +286,7 @@ export default function HomePage() {
   const handleToggleSelectAllVisible = useCallback(() => {
     if (visibleIds.length === 0) return
     if (allVisibleSelected) {
-      deselectMany(visibleIds, { keepBulkSessionWhenEmpty: true })
+      deselectMany(visibleIds)
     } else {
       selectAllVisible(visibleIds)
     }
@@ -515,12 +576,12 @@ export default function HomePage() {
           <PageContent>
             <IconGrid
               gradientOverlayInsetPx={
-                bulkSessionActive ? GRADIENT_OVERLAY_HOME_HEIGHT_PX : 0
+                selectionCount > 0 ? GRADIENT_OVERLAY_HOME_HEIGHT_PX : 0
               }
             />
           </PageContent>
           <GradientOverlay
-            visible={bulkSessionActive}
+            visible={selectionCount > 0}
             fullWidth
             className="homepage-bulkOverlay"
             style={{ height: GRADIENT_OVERLAY_HOME_HEIGHT_PX }}
@@ -529,139 +590,150 @@ export default function HomePage() {
             progressiveBlurPosition="bottom"
             backdropBlur={false}
           >
-            <BulkActionBar
-              selectedCount={selectionCount}
-              sessionActive={bulkSessionActive}
-              summaryTrailingSlot={
-                <Button
-                  type="button"
-                  variant="transparent"
-                  size="md"
-                  radius="md"
-                  disabled={visibleGridIcons.length === 0}
-                  aria-label={
-                    allVisibleSelected
-                      ? 'Deselect visible icons'
-                      : 'Select all icons'
-                  }
-                  title={
-                    allVisibleSelected
-                      ? 'Deselect visible icons'
-                      : 'Select all icons'
-                  }
-                  aria-pressed={allVisibleSelected}
-                  onClick={handleToggleSelectAllVisible}
-                  leadingSlot={
-                    <SomeIcon
-                      iconName="symbol-check-multiple"
-                      iconStyle="outline"
-                      iconSize="sm"
-                      padding="050"
+            {selectionCount > 0 ? (
+            <div className="homepage-bulkBarsWrap">
+              <BulkActionBar
+                selectedCount={selectionCount}
+                summaryTrailingSlot={
+                  <BulkActionHoverChip
+                    chipLabel={allVisibleSelected ? 'Deselect all' : 'Select all'}
+                  >
+                    <Button
+                      type="button"
+                      variant="transparent"
+                      size="md"
+                      radius="md"
+                      disabled={visibleGridIcons.length === 0}
+                      aria-label={
+                        allVisibleSelected ? 'Deselect all' : 'Select all'
+                      }
+                      aria-pressed={allVisibleSelected}
+                      onClick={handleToggleSelectAllVisible}
+                      leadingSlot={
+                        <SomeIcon
+                          iconName="symbol-check-multiple"
+                          iconStyle="outline"
+                          iconSize="md"
+                          padding="0"
+                        />
+                      }
                     />
-                  }
-                />
-              }
-            >
-              <>
-                <div className="ds-buttonGroup">
+                  </BulkActionHoverChip>
+                }
+              >
+                <>
+                  {(showCopyAction || showDownloadAction) && (
+                    <div className="ds-buttonGroup">
+                      {showCopyAction ? (
+                        <BulkActionHoverChip
+                          chipLabel={
+                            copySuccessStrip
+                              ? `Copied ${exportFormatLabel}`
+                              : `Copy ${exportFormatLabel}`
+                          }
+                        >
+                          <Button
+                            type="button"
+                            variant="transparent"
+                            size="md"
+                            radius="md"
+                            disabled={isCopying}
+                            aria-busy={isCopying}
+                            onClick={() => void onBulkCopy()}
+                            aria-label={
+                              copySuccessStrip
+                                ? `Copied ${exportFormatLabel}`
+                                : `Copy ${exportFormatLabel}`
+                            }
+                            stateIcons={BULK_COPY_STATE_ICONS}
+                            stripActiveIndex={copySuccessStrip ? 1 : 0}
+                            stripActiveBackground="var(--color-overlay-success)"
+                          />
+                        </BulkActionHoverChip>
+                      ) : null}
+                      {showDownloadAction ? (
+                        <BulkActionHoverChip
+                          chipLabel={
+                            downloadSuccessStrip
+                              ? `Downloaded ${exportFormatLabel}`
+                              : `Download ${exportFormatLabel}`
+                          }
+                        >
+                          <Button
+                            type="button"
+                            variant="transparent"
+                            size="md"
+                            radius="md"
+                            disabled={isDownloading}
+                            aria-busy={isDownloading}
+                            onClick={() => void onBulkDownload()}
+                            aria-label={
+                              downloadSuccessStrip
+                                ? `Downloaded ${exportFormatLabel}`
+                                : `Download ${exportFormatLabel}`
+                            }
+                            stateIcons={BULK_DOWNLOAD_STATE_ICONS}
+                            stripActiveIndex={downloadSuccessStrip ? 1 : 0}
+                            stripActiveBackground="var(--color-overlay-success)"
+                          />
+                        </BulkActionHoverChip>
+                      ) : null}
+                    </div>
+                  )}
+                  {(showCopyAction || showDownloadAction) && (
+                    <div className="ds-segmentedControl__dividerWrap" aria-hidden>
+                      <div className="ds-segmentedControl__divider" />
+                    </div>
+                  )}
+                  <BulkActionHoverChip chipLabel="More options">
+                    <Button
+                      type="button"
+                      variant="transparent"
+                      size="md"
+                      radius="md"
+                      className="homepage-bulkAction-settingsBtn"
+                      aria-label="Settings"
+                      onClick={() => {
+                        setSettingsSectionExpanded(true)
+                        if (categoryDropdownOpen) {
+                          setCategoryDropdownOpen(false)
+                        }
+                      }}
+                      leadingSlot={
+                        <SomeIcon
+                          iconName="interface-ellipsis-horizontal"
+                          iconStyle="fill"
+                          iconSize="sm"
+                          padding="050"
+                        />
+                      }
+                    />
+                  </BulkActionHoverChip>
+                </>
+              </BulkActionBar>
+              <div className="homepage-bulkBarAside">
+                <BulkActionHoverChip chipLabel="Clear">
                   <Button
-                  type="button"
-                  variant="transparent"
-                  size="md"
-                  radius="md"
-                  disabled={copyActionDisabled || isCopying}
-                  aria-busy={isCopying}
-                  title={
-                    copyActionDisabled
-                      ? 'Copy is only available for SVG and Code formats'
-                      : `Copy selected icons as ${exportFormatLabel}`
-                  }
-                  onClick={() => void handleCopy()}
-                  aria-label={
-                    copyActionDisabled
-                      ? 'Copy is only available for SVG and Code formats'
-                      : `Copy selected icons as ${exportFormatLabel}`
-                  }
-                  leadingSlot={
-                    isCopying ? (
+                    type="button"
+                    variant="transparent"
+                    size="md"
+                    radius="md"
+                    className="ds-bulkActionBar__dismiss"
+                    aria-label="Clear"
+                    onClick={() => clearSelection()}
+                    leadingSlot={
                       <SomeIcon
-                        iconName="interface-loading"
+                        iconName="arrow-up-out-alt"
                         iconStyle="outline"
-                        iconSize="sm"
-                        padding="050"
-                        className="animate-spin"
+                        iconSize="md"
+                        padding="0"
                       />
-                    ) : (
-                      <SomeIcon
-                        iconName="interface-copy"
-                        iconStyle="outline"
-                        iconSize="sm"
-                        padding="050"
-                      />
-                    )
-                  }
-                />
-                <Button
-                  type="button"
-                  variant="transparent"
-                  size="md"
-                  radius="md"
-                  disabled={downloadActionDisabled || isDownloading}
-                  aria-busy={isDownloading}
-                  title={
-                    downloadActionDisabled
-                      ? 'Download is not available for Code; use Copy'
-                      : `Download selected icons as ${exportFormatLabel}`
-                  }
-                  onClick={() => void handleDownload()}
-                  aria-label={
-                    downloadActionDisabled
-                      ? 'Download is not available for Code; use Copy'
-                      : `Download selected icons as ${exportFormatLabel}`
-                  }
-                  leadingSlot={
-                    isDownloading ? (
-                      <SomeIcon
-                        iconName="interface-loading"
-                        iconStyle="outline"
-                        iconSize="sm"
-                        padding="050"
-                        className="animate-spin"
-                      />
-                    ) : (
-                      <SomeIcon
-                        iconName="arrow-down"
-                        iconStyle="outline"
-                        iconSize="sm"
-                        padding="050"
-                      />
-                    )
-                  }
-                />
-                </div>
-                <div className="ds-segmentedControl__dividerWrap" aria-hidden>
-                  <div className="ds-segmentedControl__divider" />
-                </div>
-                <Button
-                  type="button"
-                  variant="transparent"
-                  size="md"
-                  radius="md"
-                  className="ds-bulkActionBar__dismiss"
-                  aria-label="Clear selection and exit selection mode"
-                  title="Clear selection"
-                  onClick={() => clearSelection()}
-                  leadingSlot={
-                    <SomeIcon
-                      iconName="symbol-multiply"
-                      iconStyle="outline"
-                      iconSize="sm"
-                      padding="050"
-                    />
-                  }
-                />
-              </>
-            </BulkActionBar>
+                    }
+                  />
+                </BulkActionHoverChip>
+              </div>
+            </div>
+            ) : null}
           </GradientOverlay>
         </div>
       </main>

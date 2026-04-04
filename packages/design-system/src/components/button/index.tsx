@@ -18,6 +18,129 @@ export type ButtonRadius =
 
 export type ButtonVariant = "primary" | "secondary" | "tertiary" | "transparent"
 
+/** Entry in `stateIcons` for the two-state CDN icon strip. */
+export interface ButtonStateIcon {
+  iconName: string
+  iconStyle?: SomeIconStyle
+  /** Passed to `SomeIcon` (e.g. `var(--color-intent-success)` for a success glyph). */
+  color?: React.CSSProperties["color"]
+}
+
+type ButtonStripPlacement = "start" | "end"
+
+function ButtonAnimatedStrip({
+  stateIcons,
+  activeIndex,
+  hasFeedback = true,
+  respectReducedMotion = true,
+  cdnBaseUrl,
+  iconSize = "md",
+  className,
+}: {
+  stateIcons: [ButtonStateIcon, ButtonStateIcon]
+  activeIndex: 0 | 1
+  hasFeedback?: boolean
+  respectReducedMotion?: boolean
+  cdnBaseUrl?: string
+  iconSize?: SomeIconIconSize
+  className?: string
+}) {
+  const [a, b] = stateIcons
+  const prevIndexRef = React.useRef(activeIndex)
+  const stepRef = React.useRef(0)
+  const [step, setStep] = React.useState(() => (activeIndex === 1 ? 1 : 0))
+  stepRef.current = step
+  const [instant, setInstant] = React.useState(false)
+  const [systemReduceMotion, setSystemReduceMotion] = React.useState(false)
+
+  React.useEffect(() => {
+    const mq = window.matchMedia("(prefers-reduced-motion: reduce)")
+    setSystemReduceMotion(mq.matches)
+    const onChange = () => setSystemReduceMotion(mq.matches)
+    mq.addEventListener("change", onChange)
+    return () => mq.removeEventListener("change", onChange)
+  }, [])
+
+  const snap =
+    !hasFeedback || (respectReducedMotion && systemReduceMotion)
+
+  React.useEffect(() => {
+    if (snap) {
+      setInstant(false)
+      setStep(activeIndex === 1 ? 1 : 0)
+      prevIndexRef.current = activeIndex
+      return
+    }
+
+    const prev = prevIndexRef.current
+    if (prev === activeIndex) return
+
+    if (prev === 0 && activeIndex === 1) {
+      if (stepRef.current === 2) {
+        setInstant(true)
+        setStep(0)
+        requestAnimationFrame(() => {
+          setInstant(false)
+          setStep(1)
+        })
+      } else {
+        setInstant(false)
+        setStep(1)
+      }
+    } else if (prev === 1 && activeIndex === 0) {
+      setInstant(false)
+      setStep(2)
+    }
+    prevIndexRef.current = activeIndex
+  }, [activeIndex, snap])
+
+  const handleTrackTransitionEnd = (
+    e: React.TransitionEvent<HTMLDivElement>,
+  ) => {
+    if (e.propertyName !== "transform" || e.target !== e.currentTarget) return
+    if (step !== 2) return
+
+    setInstant(true)
+    setStep(0)
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        setInstant(false)
+      })
+    })
+  }
+
+  const trackStyle: React.CSSProperties = {
+    transform: `translateY(calc(-1 * ${step} * var(--ds-button-icon-strip-row)))`,
+    transition: instant ? "none" : undefined,
+  }
+
+  const cell = (spec: ButtonStateIcon, key: string) => (
+    <div className="ds-button-icon-strip__cell" key={key}>
+      <SomeIcon
+        iconName={spec.iconName}
+        iconStyle={spec.iconStyle ?? "outline"}
+        cdnBaseUrl={cdnBaseUrl}
+        iconSize={iconSize}
+        color={spec.color}
+      />
+    </div>
+  )
+
+  return (
+    <div className={cn("ds-button-icon-strip__viewport", className)}>
+      <div
+        className="ds-button-icon-strip__track"
+        style={trackStyle}
+        onTransitionEnd={handleTrackTransitionEnd}
+      >
+        {cell(a, "a")}
+        {cell(b, "b")}
+        {cell(a, "a-end")}
+      </div>
+    </div>
+  )
+}
+
 export interface ButtonProps
   extends Omit<
     React.ButtonHTMLAttributes<HTMLButtonElement>,
@@ -54,6 +177,33 @@ export interface ButtonProps
   target?: React.HTMLAttributeAnchorTarget
   rel?: string
   download?: string | boolean
+  /**
+   * Two-state animated CDN icon strip (A→B→A). When set, adds `ds-button-icon-strip` and renders
+   * the strip on the side given by `stripPlacement`. Overrides `leadingSlot` / `trailingSlot` /
+   * `iconName` on that side only.
+   */
+  stateIcons?: [ButtonStateIcon, ButtonStateIcon]
+  /** Settled strip index when `stateIcons` is set. @default 0 */
+  stripActiveIndex?: 0 | 1
+  /** Which slot receives `stateIcons`. @default "start" */
+  stripPlacement?: ButtonStripPlacement
+  /**
+   * When false, the icon strip snaps without scroll animation. Only applies when `stateIcons` is set.
+   * @default true
+   */
+  hasFeedback?: boolean
+  /**
+   * When true (default), `prefers-reduced-motion: reduce` disables strip motion. Only applies when `stateIcons` is set.
+   * @default true
+   */
+  respectReducedMotion?: boolean
+  /** Glyph size for strip `SomeIcon`s when `stateIcons` is set. @default "md" */
+  stripIconSize?: SomeIconIconSize
+  /**
+   * When `stateIcons` is set and `stripActiveIndex` is `1`, applied as `backgroundColor` on the button
+   * (e.g. `var(--color-overlay-success)`).
+   */
+  stripActiveBackground?: React.CSSProperties["backgroundColor"]
 }
 
 export function Button(props: ButtonProps) {
@@ -80,6 +230,14 @@ export function Button(props: ButtonProps) {
     download,
     onClick,
     tabIndex,
+    stateIcons,
+    stripActiveIndex = 0,
+    stripPlacement = "start",
+    hasFeedback = true,
+    respectReducedMotion = true,
+    stripIconSize = "md",
+    style,
+    stripActiveBackground,
     ...rest
   } = props
 
@@ -107,24 +265,59 @@ export function Button(props: ButtonProps) {
     />
   ) : null
 
-  const leadContent =
-    leadingSlot ??
-    (hasIconName && iconPlacement !== "end" ? cdnIcon : null)
-  const trailContent =
-    trailingSlot ?? (hasIconName && iconPlacement === "end" ? cdnIcon : null)
+  const stripOnStart = stateIcons != null && stripPlacement === "start"
+  const stripOnEnd = stateIcons != null && stripPlacement === "end"
+
+  const stripNode =
+    stateIcons != null ? (
+      <ButtonAnimatedStrip
+        stateIcons={stateIcons}
+        activeIndex={stripActiveIndex}
+        hasFeedback={hasFeedback}
+        respectReducedMotion={respectReducedMotion}
+        cdnBaseUrl={cdnBaseUrl}
+        iconSize={stripIconSize}
+      />
+    ) : null
+
+  const leadContent = stripOnStart
+    ? stripNode
+    : leadingSlot ??
+      (hasIconName && iconPlacement !== "end" ? cdnIcon : null)
+  const trailContent = stripOnEnd
+    ? stripNode
+    : trailingSlot ?? (hasIconName && iconPlacement === "end" ? cdnIcon : null)
 
   const showLeading = leadContent != null
   const showTrailing = trailContent != null
   const showLabel = children != null
 
+  const stripShowsSecondState =
+    stateIcons != null && stripActiveIndex === 1 && stripActiveBackground != null
+
+  const mergedStyle: React.CSSProperties | undefined =
+    style != null || stripShowsSecondState
+      ? {
+          ...style,
+          ...(stripShowsSecondState
+            ? { backgroundColor: stripActiveBackground }
+            : {}),
+        }
+      : undefined
+
   const common = {
-    className: cn("ds-button", className),
+    className: cn(
+      "ds-button",
+      stateIcons != null && "ds-button-icon-strip",
+      className,
+    ),
     "data-variant": variant,
     "data-tint": resolvedTint,
     "data-size": size,
     "data-radius": radius,
     ...(fullWidth ? { "data-full-width": "true" as const } : {}),
     ...(!showLabel ? { "data-icon-only": "true" as const } : {}),
+    ...(mergedStyle != null ? { style: mergedStyle } : {}),
   } as const
 
   const body = (

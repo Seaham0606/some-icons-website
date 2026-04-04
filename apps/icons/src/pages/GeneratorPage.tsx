@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom'
 import { GeneratorForm } from '@/components/generator/GeneratorForm'
-import { ThemeButton, SomeIcon } from 'design-system'
+import { SomeIcon } from 'design-system'
+import { ThemeButton } from '@/components/ThemeButton'
 import { useUIStore } from '@/stores/uiStore'
 
 function GeneratorThemeButton() {

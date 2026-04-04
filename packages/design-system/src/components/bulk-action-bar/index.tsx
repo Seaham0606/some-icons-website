@@ -7,10 +7,6 @@ export interface BulkActionBarProps
   extends Omit<React.ComponentPropsWithoutRef<"div">, "children"> {
   /** Number of items in context (e.g. icons selected in the grid). */
   selectedCount: number
-  /**
-   * When true, the bar stays visible even if `selectedCount` is 0 (bulk session still open).
-   */
-  sessionActive?: boolean
   /** Optional control(s) to the right of the count label (e.g. select-all). */
   summaryTrailingSlot?: React.ReactNode
   /** Primary actions (e.g. export button). */
@@ -24,12 +20,10 @@ function selectionSummaryLabel(selectedCount: number): string {
 }
 
 /**
- * Floating bulk-selection summary with an actions slot.
- * Shown when there is a selection or `sessionActive` keeps the session open after clearing the selection.
+ * Floating bulk-selection summary with an actions slot. Renders only when `selectedCount` &gt; 0.
  */
 export function BulkActionBar({
   selectedCount,
-  sessionActive = false,
   summaryTrailingSlot,
   children,
   className,
@@ -37,7 +31,7 @@ export function BulkActionBar({
   "aria-label": ariaLabel = "Bulk actions",
   ...props
 }: BulkActionBarProps) {
-  if (selectedCount <= 0 && !sessionActive) return null
+  if (selectedCount <= 0) return null
 
   const summary = selectionSummaryLabel(selectedCount)
 

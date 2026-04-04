@@ -20,7 +20,7 @@ export const useFilterStore = create<FilterState>((set) => ({
   setCategory: (category) =>
     set((state) => {
       if (state.category === category) return state
-      if (useSelectionStore.getState().bulkSessionActive) {
+      if (useSelectionStore.getState().count > 0) {
         useSelectionStore.getState().clear()
       }
       return { category }

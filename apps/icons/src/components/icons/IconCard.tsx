@@ -44,7 +44,7 @@ export const IconCard = memo(function IconCard({ icon }: IconCardProps) {
 
   const handleCardClick = () => {
     const sel = useSelectionStore.getState()
-    if (sel.bulkSessionActive || sel.count > 0) {
+    if (sel.count > 0) {
       toggle(icon.id)
     }
   }

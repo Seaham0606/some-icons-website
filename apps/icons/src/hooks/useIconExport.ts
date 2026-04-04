@@ -30,12 +30,12 @@ function processSvgForExport(
 /**
  * Export flow: **copy** (SVG markup or React code to clipboard) and **download** (SVG/PNG files).
  * Bulk actions only mount when there is a selection, so handlers assume `count > 0` in normal UI use.
+ * Returns whether the operation completed successfully (for in-UI feedback); errors still use `toast`.
  */
 export function useIconExport() {
   const { data: icons } = useIcons()
   const selectedIds = useSelectionStore((state) => state.selectedIds)
   const count = useSelectionStore((state) => state.count)
-  const clear = useSelectionStore((state) => state.clear)
   const size = useExportStore((state) => state.size)
   const format = useExportStore((state) => state.format)
   const isValid = useExportStore((state) => state.isValid)
@@ -48,18 +48,18 @@ export function useIconExport() {
   const [isCopying, setIsCopying] = useState(false)
   const [isDownloading, setIsDownloading] = useState(false)
 
-  const handleCopy = useCallback(async () => {
-    if (!count) return
+  const handleCopy = useCallback(async (): Promise<boolean> => {
+    if (!count) return false
 
     if (format === 'png') {
       toast.error('Copy is only available for SVG and Code formats.')
-      return
+      return false
     }
 
     if (format === 'code') {
       if (!isValid() || !size) {
         setShowValidationErrors(true)
-        return
+        return false
       }
       const orderedIds = Array.from(selectedIds)
       const snippet = generateFrameworkCodeSnippet(getDefaultCodeFramework(), {
@@ -69,21 +69,21 @@ export function useIconExport() {
       })
       try {
         await navigator.clipboard.writeText(snippet)
-        toast.success('Copied React code to clipboard')
+        return true
       } catch (error) {
         console.error('Clipboard copy failed:', error)
         toast.error('Could not copy. Check clipboard permissions.')
+        return false
       }
-      return
     }
 
-    if (format !== 'svg') return
+    if (format !== 'svg') return false
 
-    if (!icons) return
+    if (!icons) return false
 
     if (!isValid() || !size) {
       setShowValidationErrors(true)
-      return
+      return false
     }
 
     setIsCopying(true)
@@ -102,10 +102,11 @@ export function useIconExport() {
         return count > 1 ? `<!-- ${id}.svg -->\n${processed}` : processed
       })
       await navigator.clipboard.writeText(parts.join('\n\n'))
-      toast.success(count === 1 ? 'Copied SVG to clipboard' : `Copied ${count} SVGs to clipboard`)
+      return true
     } catch (error) {
       console.error('Copy failed:', error)
       toast.error('Could not copy. Check clipboard permissions.')
+      return false
     } finally {
       setIsCopying(false)
     }
@@ -121,21 +122,21 @@ export function useIconExport() {
     style,
   ])
 
-  const handleDownload = useCallback(async () => {
-    if (!count) return
+  const handleDownload = useCallback(async (): Promise<boolean> => {
+    if (!count) return false
 
     if (format === 'code') {
       toast.error('Use Copy for Code format.')
-      return
+      return false
     }
 
     if (!icons) {
-      return
+      return false
     }
 
     if (!isValid() || !size || !format) {
       setShowValidationErrors(true)
-      return
+      return false
     }
 
     setIsDownloading(true)
@@ -163,22 +164,20 @@ export function useIconExport() {
         const blob = await createExportBlobForIcon(svg, exportOpts)
         const ext = format === 'svg' ? 'svg' : 'png'
         downloadBlob(blob, `${id}.${ext}`)
-        toast.success('Downloaded icon')
       } else {
         const blob = await exportToZip(iconData, exportOpts)
         const filename = `some-icons-${style}-${size}px.zip`
         downloadBlob(blob, filename)
-        toast.success(`Downloaded ${count} icons`)
       }
-      clear()
+      return true
     } catch (error) {
       console.error('Download failed:', error)
       toast.error('Download failed. Please try again.')
+      return false
     } finally {
       setIsDownloading(false)
     }
   }, [
-    clear,
     count,
     format,
     icons,
