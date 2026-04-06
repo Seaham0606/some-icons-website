@@ -6,6 +6,9 @@
  * **Not the floating shell:** with `variant="overlay"`, {@link Dropdown} already portals
  * `.ds-dropdown__menuOverlay`. Place `DropdownMenu` inside `panelSlot`, then full-width
  * `variant="transparent"` buttons with {@link dropdownMenuOptionClassName}.
+ *
+ * For rows with a leading icon, label, and optional trailing control (e.g. checkbox),
+ * use `DropdownOption` from the same package export surface as `Dropdown`.
  */
 
 import * as React from "react"

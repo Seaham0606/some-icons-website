@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 
-const FEEDBACK_MS = 3000
+const FEEDBACK_MS = 1000
 
 /**
  * Drives `Button` `stateIcons` strip: after a successful bulk copy/download, shows the

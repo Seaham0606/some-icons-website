@@ -24,28 +24,6 @@
   line-height: 110%;
 }
 
-.ds-versionChip {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  flex: 0 0 auto;
-  white-space: nowrap;
-
-  padding-top: var(--spacing-padding-1);
-  padding-bottom: var(--spacing-padding-1);
-  padding-left: var(--spacing-padding-2);
-  padding-right: var(--spacing-padding-2);
-
-  color: var(--color-main-tertiary);
-  border-radius: var(--radius-full);
-  background: var(--color-overlay-dark-hover);
-}
-
-.ds-versionChip[data-variant="beta"] {
-  color: var(--color-intent-accent-strong);
-  background: var(--color-overlay-accent);
-}
-
 /* Chip — pill labels (IconCard hover filename uses `variant="inverse"` + `backdropBlur`) */
 .ds-chip {
   display: inline-flex;
@@ -828,6 +806,101 @@ button.ds-nativeInput {
   background: var(--color-background-weak);
 }
 
+/* DropdownOption — Figma row (leading + label + optional trailing; hover overlay-accent) */
+.ds-dropdownOption {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: var(--spacing-gap-2);
+  width: 100%;
+  min-width: 0;
+  padding: var(--spacing-padding-2);
+  border-radius: var(--radius-md);
+}
+
+.ds-dropdownOption--disabled {
+  opacity: 0.2;
+  pointer-events: none;
+}
+
+@media (hover: hover) {
+  .ds-dropdownOption:not(.ds-dropdownOption--disabled):hover {
+    background: var(--color-overlay-accent);
+  }
+}
+
+.ds-dropdownOption[data-dropdown-option-selected="true"] {
+  background: var(--color-background-weak);
+}
+
+.ds-dropdownOption[data-dropdown-option-selected="true"] .ds-dropdownOption__leading,
+.ds-dropdownOption[data-dropdown-option-selected="true"] .ds-dropdownOption__label {
+  color: var(--color-main-primary);
+}
+
+.ds-dropdownOption__main {
+  box-sizing: border-box;
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: var(--spacing-gap-2);
+  margin: 0;
+  padding: 0;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  font: inherit;
+  text-align: left;
+  color: inherit;
+}
+
+.ds-dropdownOption__main:disabled {
+  cursor: not-allowed;
+}
+
+.ds-dropdownOption__main:focus-visible {
+  outline: none;
+  box-shadow: var(--shadow-focus-accent);
+  border-radius: var(--radius-sm);
+}
+
+.ds-dropdownOption__leading {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-main-tertiary);
+}
+
+.ds-dropdownOption__label {
+  flex: 1 1 auto;
+  min-width: 0;
+  font-family: var(--font-family-sans);
+  font-size: var(--font-size-input);
+  font-weight: 500;
+  line-height: 1.1;
+  color: var(--color-main-tertiary);
+}
+
+@media (hover: hover) {
+  .ds-dropdownOption:not(.ds-dropdownOption--disabled):hover
+    .ds-dropdownOption__leading,
+  .ds-dropdownOption:not(.ds-dropdownOption--disabled):hover
+    .ds-dropdownOption__label {
+    color: var(--color-main-primary);
+  }
+}
+
+.ds-dropdownOption__trailing {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
 /* Leading glyph: muted like `.ds-input__slot`. */
 .ds-dropdownMenu__option.ds-button .ds-button__iconSlot[data-part="leading-slot"] {
   color: var(--color-main-tertiary);
@@ -1011,6 +1084,96 @@ button.ds-inputSection__labelRow.ds-inputSection__labelRow--toggle {
   flex-direction: column;
   align-items: flex-start;
   gap: var(--spacing-gap-3);
+}
+
+/* Checkbox — Figma 1089:9020 (Some Icons interface-checkbox-unchecked / interface-checkbox-checked) */
+.ds-checkbox {
+  box-sizing: border-box;
+  display: inline-flex;
+  flex-direction: row;
+  align-items: center;
+  gap: var(--spacing-gap-2);
+  width: fit-content;
+  max-width: 100%;
+  min-width: 0;
+  cursor: pointer;
+  user-select: none;
+  position: relative;
+  vertical-align: top;
+}
+
+.ds-checkbox--disabled {
+  cursor: not-allowed;
+  opacity: 0.45;
+}
+
+.ds-checkbox__input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.ds-checkbox__box {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-sm);
+  color: var(--color-border-strong);
+  transition:
+    color 0.15s ease,
+    filter 0.15s ease;
+}
+
+@media (hover: hover) {
+  .ds-checkbox:not(.ds-checkbox--disabled):hover .ds-checkbox__box {
+    color: var(--color-intent-accent);
+  }
+
+  .ds-checkbox:not(.ds-checkbox--disabled):has(
+      .ds-checkbox__input:checked
+    ):hover
+    .ds-checkbox__box {
+    filter: brightness(0.94);
+  }
+}
+
+.ds-checkbox__input:focus-visible + .ds-checkbox__box {
+  outline: none;
+  box-shadow: var(--shadow-focus-accent);
+}
+
+.ds-checkbox__glyph {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.ds-checkbox__glyph--checked {
+  display: none;
+}
+
+.ds-checkbox__input:checked + .ds-checkbox__box .ds-checkbox__glyph--unchecked {
+  display: none;
+}
+
+.ds-checkbox__input:checked + .ds-checkbox__box .ds-checkbox__glyph--checked {
+  display: flex;
+}
+
+.ds-checkbox__label {
+  flex: 1 1 auto;
+  min-width: 0;
+  color: var(--color-main-primary);
 }
 
 /* InputField — Figma InputWrapper (80:5593): label row + content; optional 2-col row (equal fill width, gap-3, height from content) */
@@ -1893,6 +2056,198 @@ button.ds-inputSection__labelRow.ds-inputSection__labelRow--toggle {
   .ds-bulkActionBar__summary {
     text-align: start;
   }
+}
+
+/* --- Site shell: header + footer (match icons app breakpoints: tablet 720–1023, laptop 1024+) --- */
+
+.ds-siteHeader {
+  position: relative;
+  z-index: 6;
+  box-sizing: border-box;
+  flex-shrink: 0;
+  padding: var(--spacing-padding-6);
+  padding-bottom: var(--spacing-padding-4);
+  background: var(--color-background-base);
+}
+
+/* Content track: fluid = shell padding only; contained = centered max width at lg gutters (Figma). */
+.ds-siteHeader__container {
+  box-sizing: border-box;
+  width: 100%;
+  min-width: 0;
+}
+
+.ds-siteHeader__container[data-content-layout='contained'] {
+  max-width: var(--layout-site-header-content-max);
+  margin-inline: auto;
+}
+
+.ds-siteHeader__row {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-gap-2);
+  min-width: 0;
+}
+
+.ds-siteHeader__brand {
+  display: flex;
+  min-width: 0;
+  flex: 1 1 auto;
+  align-items: center;
+  gap: var(--spacing-gap-3);
+}
+
+.ds-siteHeader__titleBlock {
+  display: inline-flex;
+  min-width: 0;
+  flex: 0 1 auto;
+  align-items: center;
+  gap: var(--spacing-gap-3);
+}
+
+.ds-siteHeader__title {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ds-siteHeader__tabletSearch {
+  flex: 0 1 240px;
+  min-width: 0;
+}
+
+.ds-siteHeader__searchField {
+  margin: 0;
+}
+
+.ds-siteHeader__actions {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  gap: var(--spacing-gap-1);
+}
+
+.ds-siteHeader__mobileSearchPanel {
+  margin-top: var(--spacing-gap-3);
+}
+
+@media (min-width: 1024px) {
+  .ds-siteHeader-tabletOnly,
+  .ds-siteHeader-mobileOnly {
+    display: none !important;
+  }
+}
+
+@media (min-width: 720px) and (max-width: 1023px) {
+  .ds-siteHeader-mobileOnly {
+    display: none !important;
+  }
+}
+
+@media (max-width: 719px) {
+  .ds-siteHeader-tabletOnly {
+    display: none !important;
+  }
+}
+
+/* Optional `layout` prop: force structural chrome at any viewport (defaults omit `data-layout`). */
+.ds-siteHeader[data-layout='full'] .ds-siteHeader-tabletOnly,
+.ds-siteHeader[data-layout='full'] .ds-siteHeader-mobileOnly {
+  display: none !important;
+}
+
+.ds-siteHeader[data-layout='compact'] .ds-siteHeader-mobileOnly {
+  display: none !important;
+}
+
+.ds-siteHeader[data-layout='compact'] .ds-siteHeader-tabletOnly {
+  display: block !important;
+}
+
+.ds-siteHeader[data-layout='minimal'] .ds-siteHeader-tabletOnly {
+  display: none !important;
+}
+
+.ds-siteHeader[data-layout='minimal'] .ds-siteHeader__mobileSearchPanel.ds-siteHeader-mobileOnly {
+  display: block !important;
+}
+
+.ds-siteHeader[data-layout='minimal'] .ds-buttonGroup.ds-siteHeader-mobileOnly {
+  display: flex !important;
+}
+
+.ds-siteFooter {
+  box-sizing: border-box;
+  width: 100%;
+}
+
+.ds-siteFooter__inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--spacing-padding-1) var(--spacing-padding-2);
+}
+
+.ds-siteFooter__copyright {
+  color: var(--color-main-tertiary);
+  white-space: nowrap;
+}
+
+.ds-siteFooter__social {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  gap: var(--spacing-gap-4);
+}
+
+.ds-siteFooter__socialLink {
+  display: inline-flex;
+  line-height: 0;
+  color: inherit;
+  opacity: 0.85;
+}
+
+.ds-siteFooter__socialLink:hover {
+  opacity: 1;
+}
+
+.ds-siteFooter__socialImg {
+  display: block;
+  width: 24px;
+  height: 24px;
+}
+
+.ds-siteFooter__socialMask {
+  display: block;
+  width: 24px;
+  height: 24px;
+}
+
+.ds-siteFooter__npmLink {
+  font-weight: 500;
+  text-decoration: none;
+  color: var(--color-main-tertiary);
+}
+
+.ds-siteFooter__npmLink:hover {
+  color: var(--color-main-secondary);
+}
+
+.ds-siteFooter--fixed {
+  position: fixed;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 4;
+  padding: var(--spacing-padding-6);
+  padding-top: var(--spacing-padding-4);
+  background: var(--color-background-base);
+}
+
+.ds-siteFooter--inScroll {
+  margin-top: var(--spacing-padding-6);
+  padding-top: var(--spacing-padding-4);
+  padding-bottom: var(--spacing-padding-2);
 }
 
 /* --- Icon grid (library) --- */

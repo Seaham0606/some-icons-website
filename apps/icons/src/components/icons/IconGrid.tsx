@@ -24,6 +24,7 @@ export function IconGrid({ gradientOverlayInsetPx = 0 }: IconGridProps) {
 
   return (
     <IconGridUI
+      className="homepage-iconGrid"
       isLoading={isLoading}
       hasError={!!error}
       isEmpty={!isLoading && !error && filteredIcons.length === 0}

@@ -6,7 +6,6 @@ import { SomeIcon } from 'design-system'
 import { useUIStore } from '@/stores/uiStore'
 import HomePage from '@/pages/HomePage'
 import ChangelogPage from '@/pages/ChangelogPage'
-import GeneratorPage from '@/pages/GeneratorPage'
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -95,7 +94,6 @@ export default function App() {
         <Routes>
           <Route path="/" element={<HomePage />} />
           <Route path="/changelog" element={<ChangelogPage />} />
-          <Route path="/generator" element={<GeneratorPage />} />
         </Routes>
         <Toaster position="bottom-center" />
         <Analytics />

@@ -31,12 +31,14 @@ export {
   DropdownLeadingSlotPlaceholder,
   DropdownMenu,
   DropdownMenuDivider,
+  DropdownOption,
   DropdownPanelSlotPlaceholder,
   dropdownMenuOptionClassName,
 } from "./components/dropdown"
 export type {
   DropdownMenuDividerProps,
   DropdownMenuProps,
+  DropdownOptionProps,
   DropdownProps,
   DropdownStatus,
 } from "./components/dropdown"
@@ -45,6 +47,8 @@ export type {
   SegmentedControlOption,
   SegmentedControlProps,
 } from "./components/segmented-control"
+export { Checkbox } from "./components/checkbox"
+export type { CheckboxProps } from "./components/checkbox"
 export { SomeIcon } from "./components/some-icon"
 export type {
   SomeIconIconSize,
@@ -61,3 +65,7 @@ export { IconGrid } from "./components/icon-grid"
 export type { IconGridProps } from "./components/icon-grid"
 export { BulkActionBar } from "./components/bulk-action-bar"
 export type { BulkActionBarProps } from "./components/bulk-action-bar"
+export { SiteHeader } from "./components/site-header"
+export type { SiteHeaderProps } from "./components/site-header"
+export { SiteFooter } from "./components/site-footer"
+export type { SiteFooterProps } from "./components/site-footer"

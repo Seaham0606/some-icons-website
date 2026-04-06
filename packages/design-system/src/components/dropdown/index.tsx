@@ -398,3 +398,5 @@ export type {
   DropdownMenuProps,
   DropdownMenuDividerProps,
 } from "./dropdown-menu"
+export { DropdownOption } from "./dropdown-option"
+export type { DropdownOptionProps } from "./dropdown-option"
