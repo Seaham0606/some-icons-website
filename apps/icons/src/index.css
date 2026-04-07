@@ -601,6 +601,69 @@ body {
   background: transparent;
 }
 
+/*
+ * Below laptop: top inset from the site header lives on the grid so the scrollable column flush-meets
+ * the header; laptop+ keeps uniform padding on `.homepage-pageContent` (sidebar layout).
+ * Scroll stays on the grid (flex-fill + overflow-y) so the column uses full height under the header.
+ */
+@media (max-width: 1023px) {
+  .homepage-pageContent {
+    padding-top: 0;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    overflow-x: hidden;
+    overflow-y: hidden;
+  }
+
+  .homepage-pageContent > .homepage-iconGrid.ds-iconGrid {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow-x: hidden;
+    overflow-y: auto;
+    padding-top: var(--spacing-padding-6);
+    padding-left: var(--spacing-padding-1);
+    padding-right: var(--spacing-padding-1);
+    border-top: var(--border-width-base) solid var(--color-border-weak);
+  }
+
+  .homepage-pageContent > .ds-siteFooter {
+    flex-shrink: 0;
+  }
+
+  /*
+   * Icon cards: disable pointer-hover-only affordances on touch / narrow widths.
+   * Keyboard `:focus-visible` paths stay intact (chip + select + card focus ring).
+   */
+  .homepage-iconGrid .ds-iconCard__shell:hover:not([data-selected="true"]) .ds-iconCard:not(:focus-visible) {
+    background: transparent;
+    border-color: var(--color-border-extra-weak);
+  }
+
+  .homepage-iconGrid
+    .ds-iconCard__shell[data-selected="true"]:hover
+    .ds-iconCard:not(:focus-visible) {
+    background: var(--color-blue-alpha-25);
+    border-color: var(--color-intent-accent);
+  }
+
+  .homepage-iconGrid
+    .ds-iconCard__shell:hover:not([data-selected="true"])
+    .ds-iconCard__select:not(:focus-visible) {
+    opacity: 0;
+  }
+
+  .homepage-iconGrid .ds-iconCard__shell[data-selected="true"] .ds-iconCard__select:hover {
+    opacity: 1;
+  }
+
+  .homepage-iconGrid
+    .ds-iconCard__block:hover:not(:has(.ds-iconCard:focus-visible)):not(:has(.ds-iconCard__select:focus-visible))
+    .ds-iconCard__hoverMeta {
+    opacity: 0;
+  }
+}
+
 /* Breakpoint scaffolding for HomePage responsive structure. */
 @media (min-width: 1024px) {
   .homepage-tablet-only,

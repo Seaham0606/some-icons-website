@@ -2066,7 +2066,6 @@ button.ds-inputSection__labelRow.ds-inputSection__labelRow--toggle {
   box-sizing: border-box;
   flex-shrink: 0;
   padding: var(--spacing-padding-6);
-  padding-bottom: var(--spacing-padding-4);
   background: var(--color-background-base);
 }
 
@@ -2106,7 +2105,7 @@ button.ds-inputSection__labelRow.ds-inputSection__labelRow--toggle {
 }
 
 .ds-siteHeader__title {
-  overflow: hidden;
+  overflow: visible;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
