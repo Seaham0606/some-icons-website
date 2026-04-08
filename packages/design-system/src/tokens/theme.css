@@ -139,7 +139,21 @@
     --radius-2xl: 20px;
     --radius-3xl: 24px;
     --radius-full: 9999px;
+
+    /* Global scrollbar (used by `scrollbar.css` + `initDesignSystemScrollbarVisibility`) */
+    --ds-scrollbar-opacity-duration: 420ms;
+    --ds-scrollbar-color-duration: 220ms;
+    --ds-scrollbar-hide-delay: 1400ms;
+    --ds-scrollbar-ease: cubic-bezier(0.33, 1, 0.68, 1);
   }
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --ds-scrollbar-opacity-duration: 1ms;
+    --ds-scrollbar-color-duration: 1ms;
+    --ds-scrollbar-hide-delay: 1ms;
+  }
+}
 
 :root {
   /* color Tokens */

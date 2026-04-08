@@ -1,5 +1,6 @@
 /* Utilities */
 export { cn } from "./utils"
+export { initDesignSystemScrollbarVisibility } from "./scrollbar-visibility"
 
 /* Components */
 export { Sidebar } from "./components/sidebar"
@@ -66,6 +67,9 @@ export type { IconGridProps } from "./components/icon-grid"
 export { BulkActionBar } from "./components/bulk-action-bar"
 export type { BulkActionBarProps } from "./components/bulk-action-bar"
 export { SiteHeader } from "./components/site-header"
-export type { SiteHeaderProps } from "./components/site-header"
+export type {
+  SiteHeaderChromeContext,
+  SiteHeaderProps,
+} from "./components/site-header"
 export { SiteFooter } from "./components/site-footer"
 export type { SiteFooterProps } from "./components/site-footer"

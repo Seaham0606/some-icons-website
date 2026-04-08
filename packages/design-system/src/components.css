@@ -84,7 +84,6 @@
   height: 100dvh;
   /* not hidden — that clips focus rings on header/footer controls; scroll lives on __contentSlot */
   overflow: visible;
-
   display: flex;
   flex-direction: column;
   gap: var(--spacing-gap-2);
@@ -668,6 +667,27 @@ button.ds-dropdown__trigger.ds-input {
 
   .ds-inputSection--collapsible[data-expanded="true"]
     .ds-inputSection__panelMotion {
+    opacity: 1;
+    transform: none;
+  }
+
+  .ds-siteHeader__collapsiblePanel + .ds-siteHeader__collapsiblePanel {
+    transition: none;
+  }
+
+  .ds-siteHeader__collapsiblePanel,
+  .ds-siteHeader__panelMotion {
+    transition: none;
+  }
+
+  .ds-siteHeader__collapsiblePanel:not([data-expanded='true'])
+    .ds-siteHeader__panelMotion {
+    opacity: 0;
+    transform: none;
+  }
+
+  .ds-siteHeader__collapsiblePanel[data-expanded='true']
+    .ds-siteHeader__panelMotion {
     opacity: 1;
     transform: none;
   }
@@ -2065,8 +2085,9 @@ button.ds-inputSection__labelRow.ds-inputSection__labelRow--toggle {
   z-index: 6;
   box-sizing: border-box;
   flex-shrink: 0;
-  padding: var(--spacing-padding-6);
+  padding: var(--spacing-padding-4) var(--spacing-padding-6) var(--spacing-padding-4) var(--spacing-padding-6);
   background: var(--color-background-base);
+  border-bottom: var(--border-width-base) solid var(--color-border-weak);
 }
 
 /* Content track: fluid = shell padding only; contained = centered max width at lg gutters (Figma). */
@@ -2081,14 +2102,14 @@ button.ds-inputSection__labelRow.ds-inputSection__labelRow--toggle {
   margin-inline: auto;
 }
 
-.ds-siteHeader__row {
+.ds-siteHeader__topSlot {
   display: flex;
   align-items: center;
   gap: var(--spacing-gap-2);
   min-width: 0;
 }
 
-.ds-siteHeader__brand {
+.ds-siteHeader__leftSlot {
   display: flex;
   min-width: 0;
   flex: 1 1 auto;
@@ -2096,18 +2117,25 @@ button.ds-inputSection__labelRow.ds-inputSection__labelRow--toggle {
   gap: var(--spacing-gap-3);
 }
 
-.ds-siteHeader__titleBlock {
-  display: inline-flex;
-  min-width: 0;
-  flex: 0 1 auto;
-  align-items: center;
-  gap: var(--spacing-gap-3);
-}
-
 .ds-siteHeader__title {
-  overflow: visible;
+  flex: 0 1 auto;
+  min-width: 0;
+  overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  font-size: 21px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: 100%;
+  color: var(--color-main-primary);
+}
+
+.ds-siteHeader__rightSlot {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  gap: var(--spacing-gap-2);
+  min-width: 0;
 }
 
 .ds-siteHeader__tabletSearch {
@@ -2126,11 +2154,119 @@ button.ds-inputSection__labelRow.ds-inputSection__labelRow--toggle {
   gap: var(--spacing-gap-1);
 }
 
-.ds-siteHeader__mobileSearchPanel {
+/*
+ * Site header bottom strip — same motion model as `.ds-inputSection--collapsible`:
+ * grid 0fr→1fr on the outer panel + opacity / translateY on `.ds-siteHeader__panelMotion`.
+ * Motion tokens match `.ds-inputSection--collapsible` / dropdown menus.
+ */
+.ds-siteHeader__bottomSlot {
+  --ds-dropdown-ease: ease-in-out;
+  --ds-dropdown-duration: 360ms;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  margin-top: 0;
+}
+
+/*
+ * Keep vertical spacing in sync with collapsible panels: animate `margin-top` on the first panel
+ * (combined with its `grid-template-rows`) instead of a separate `margin-top` on this slot, which
+ * doubled motion versus `.ds-inputSection--collapsible` (grid + inner motion on one element).
+ */
+.ds-siteHeader__bottomSlot[data-chrome-open='true']
+  .ds-siteHeader__collapsiblePanel:first-child {
   margin-top: var(--spacing-gap-3);
 }
 
+.ds-siteHeader__collapsiblePanel + .ds-siteHeader__collapsiblePanel {
+  margin-top: 0;
+  transition: margin-top var(--ds-dropdown-duration) var(--ds-dropdown-ease);
+}
+
+.ds-siteHeader__collapsiblePanel[data-expanded='true']
+  + .ds-siteHeader__collapsiblePanel[data-expanded='true'] {
+  margin-top: var(--spacing-gap-3);
+}
+
+.ds-siteHeader__collapsiblePanel {
+  box-sizing: border-box;
+  display: grid;
+  grid-template-rows: 0fr;
+  width: 100%;
+  min-width: 0;
+  min-height: 0;
+  margin-top: 0;
+  flex-shrink: 0;
+  pointer-events: none;
+  interpolate-size: allow-keywords;
+  transition:
+    grid-template-rows var(--ds-dropdown-duration) var(--ds-dropdown-ease),
+    margin-top var(--ds-dropdown-duration) var(--ds-dropdown-ease);
+}
+
+.ds-siteHeader__collapsiblePanel[data-expanded='true'] {
+  grid-template-rows: 1fr;
+  pointer-events: auto;
+}
+
+.ds-siteHeader__panelMotion {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+  opacity: 0;
+  transform: translateY(calc(-1 * var(--spacing-gap-2)));
+  transition:
+    opacity var(--ds-dropdown-duration) var(--ds-dropdown-ease),
+    transform var(--ds-dropdown-duration) var(--ds-dropdown-ease);
+}
+
+.ds-siteHeader__collapsiblePanel[data-expanded='true'] .ds-siteHeader__panelMotion {
+  opacity: 1;
+  transform: translateY(0);
+  overflow: visible;
+}
+
+/*
+ * Mobile expanded search: outer panel still animates height (`grid-template-rows`); inner content only
+ * fades. Slide + `transform` on the search field tended to look choppy (input/layout vs. grid).
+ */
+.ds-siteHeader__collapsiblePanel--search .ds-siteHeader__panelMotion {
+  transform: none;
+  transition: opacity var(--ds-dropdown-duration) var(--ds-dropdown-ease);
+}
+
+.ds-siteHeader__collapsiblePanel--search.ds-siteHeader__collapsiblePanel[data-expanded='true']
+  .ds-siteHeader__panelMotion {
+  transform: none;
+}
+
+.ds-siteHeader__panelMotion > .ds-siteHeader__settings,
+.ds-siteHeader__panelMotion > .ds-siteHeader__mobileSearchPanel {
+  min-height: 0;
+}
+
+.ds-siteHeader__settings {
+  min-width: 0;
+}
+
+/* Reserved row below laptop; replace by passing `settingsBottomSlot` on `SiteHeader`. */
+.ds-siteHeader__settingsPlaceholder {
+  min-height: var(--size-6);
+}
+
+.ds-siteHeader__mobileSearchPanel {
+  margin-top: 0;
+}
+
 @media (min-width: 1024px) {
+  .ds-siteHeader-belowLaptopOnly {
+    display: none !important;
+  }
+
   .ds-siteHeader-tabletOnly,
   .ds-siteHeader-mobileOnly {
     display: none !important;
@@ -2167,8 +2303,9 @@ button.ds-inputSection__labelRow.ds-inputSection__labelRow--toggle {
   display: none !important;
 }
 
-.ds-siteHeader[data-layout='minimal'] .ds-siteHeader__mobileSearchPanel.ds-siteHeader-mobileOnly {
-  display: block !important;
+.ds-siteHeader[data-layout='minimal']
+  .ds-siteHeader__collapsiblePanel--search.ds-siteHeader-mobileOnly {
+  display: grid !important;
 }
 
 .ds-siteHeader[data-layout='minimal'] .ds-buttonGroup.ds-siteHeader-mobileOnly {

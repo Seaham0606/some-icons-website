@@ -20,12 +20,16 @@ import {
   Button,
   type ButtonStateIcon,
   Chip,
+  cn,
+  Input,
+  InputField,
   Sidebar,
   SiteFooter,
   SiteHeader,
   SomeIcon,
 } from 'design-system'
 import { ThemeButton } from '@/components/ThemeButton'
+import { useBackdropPresence } from '@/hooks/useBackdropPresence'
 import { useBulkActionStripFeedback } from '@/hooks/useBulkActionStripFeedback'
 import { useFilteredGridIcons } from '@/hooks/useFilteredGridIcons'
 import { useIconExport } from '@/hooks/useIconExport'
@@ -112,7 +116,9 @@ export default function HomePage() {
   const version = getHighestVersion(entries)
   const [settingsSectionExpanded, setSettingsSectionExpanded] = useState(true)
   const [filtersSheetOpen, setFiltersSheetOpen] = useState(false)
+  const [headerSettingsRowOpen, setHeaderSettingsRowOpen] = useState(false)
   const [mobileSearchOverlayOpen, setMobileSearchOverlayOpen] = useState(false)
+  const filtersBackdrop = useBackdropPresence(filtersSheetOpen)
   const exportSize = useExportStore((s) => s.size)
   const gridPreviewPx = useExportStore((s) => s.gridPreviewPx)
   const setExportSize = useExportStore((s) => s.setSize)
@@ -220,14 +226,16 @@ export default function HomePage() {
     [setExportSize],
   )
 
+  const scrollLocked = filtersSheetOpen || filtersBackdrop.mounted
+
   useEffect(() => {
-    if (!filtersSheetOpen && !mobileSearchOverlayOpen) return
+    if (!scrollLocked) return
     const prev = document.body.style.overflow
     document.body.style.overflow = 'hidden'
     return () => {
       document.body.style.overflow = prev
     }
-  }, [filtersSheetOpen, mobileSearchOverlayOpen])
+  }, [scrollLocked])
 
   const openChromeSettings = useCallback(() => {
     if (
@@ -239,6 +247,23 @@ export default function HomePage() {
       setFiltersSheetOpen(true)
     }
   }, [setSettingsSectionExpanded, setFiltersSheetOpen])
+
+  /** Below laptop, expanded search row and settings row share one strip — only one open at a time. */
+  const toggleMobileHeaderSearch = useCallback(() => {
+    setMobileSearchOverlayOpen((open) => {
+      const next = !open
+      if (next) setHeaderSettingsRowOpen(false)
+      return next
+    })
+  }, [])
+
+  const toggleMobileHeaderSettingsRow = useCallback(() => {
+    setHeaderSettingsRowOpen((open) => {
+      const next = !open
+      if (next) setMobileSearchOverlayOpen(false)
+      return next
+    })
+  }, [])
 
   const handleCustomExportSizeKeyDown = useCallback(
     (e: KeyboardEvent<HTMLInputElement>) => {
@@ -370,64 +395,123 @@ export default function HomePage() {
         onSearchChange={setSearchQuery}
         searchPlaceholder="Search icons..."
         searchAriaLabel="Search icons"
-        settingsAriaLabel="Filters and settings"
-        onSettingsClick={() => setFiltersSheetOpen(true)}
         mobileSearchOpen={mobileSearchOverlayOpen}
-        onMobileSearchToggle={() => setMobileSearchOverlayOpen((o) => !o)}
-      />
-
-      {filtersSheetOpen ? (
-        <>
-          <button
-            type="button"
-            className="app-backdrop"
-            aria-label="Dismiss filters"
-            onClick={() => setFiltersSheetOpen(false)}
-          />
-          <div
-            className="app-sheet"
-            role="dialog"
-            aria-modal="true"
-            aria-label="Filters and settings"
-          >
-            <div className="app-sheet__header">
-              <span className="app-sheet__title text-aside-header">
-                Filters
-              </span>
+        settingsRowOpen={headerSettingsRowOpen}
+        rightSlot={({ mobileSearchPanelId, settingsRowPanelId }) => (
+          <>
+            <div className="ds-siteHeader__tabletSearch ds-siteHeader-tabletOnly">
+              <InputField
+                showLabel={false}
+                className="ds-siteHeader__searchField"
+                contentSlot={
+                  <Input
+                    type="text"
+                    placeholder="Search icons..."
+                    autoComplete="off"
+                    aria-label="Search icons"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    leadingSlot={
+                      <SomeIcon
+                        iconName="interface-search"
+                        iconStyle="outline"
+                        iconSize="md"
+                        padding="2"
+                      />
+                    }
+                  />
+                }
+              />
+            </div>
+            <div className="ds-siteHeader__actions">
+              <div className="ds-buttonGroup ds-siteHeader-mobileOnly">
+                <Button
+                  type="button"
+                  variant="transparent"
+                  size="md"
+                  radius="lg"
+                  aria-label="Search icons"
+                  aria-expanded={mobileSearchOverlayOpen}
+                  aria-controls={mobileSearchPanelId}
+                  onClick={toggleMobileHeaderSearch}
+                  leadingSlot={
+                    <SomeIcon
+                      iconName="interface-search"
+                      iconStyle="outline"
+                      iconSize="md"
+                      padding="050"
+                    />
+                  }
+                />
+              </div>
               <Button
                 type="button"
                 variant="transparent"
                 size="md"
-                radius="md"
-                onClick={() => setFiltersSheetOpen(false)}
-              >
-                Done
-              </Button>
-            </div>
-            <div className="app-sheet__body">
-              <div className="app-sheet__themeRow">
-                <HomeThemeButton />
-              </div>
-              <HomePageFilterStack
-                {...filterStackProps}
-                showSearch={false}
-                categoryListClassName="homepage-categoryList homepage-categoryList--sheet"
-                categorySectionClassName="homepage-sidebarCategorySection homepage-sidebarCategorySection--sheet"
+                radius="lg"
+                aria-label="Settings"
+                aria-expanded={headerSettingsRowOpen}
+                aria-controls={settingsRowPanelId}
+                onClick={toggleMobileHeaderSettingsRow}
+                leadingSlot={
+                  <SomeIcon
+                    iconName="interface-settings-nut"
+                    iconStyle="outline"
+                    iconSize="md"
+                    padding="050"
+                  />
+                }
               />
             </div>
-          </div>
-        </>
+          </>
+        )}
+      />
+
+      {filtersBackdrop.mounted ? (
+        <button
+          type="button"
+          className={cn(
+            'app-backdrop',
+            filtersBackdrop.visible && 'app-backdrop--visible',
+          )}
+          aria-label="Dismiss filters"
+          onClick={() => setFiltersSheetOpen(false)}
+        />
       ) : null}
 
-      {mobileSearchOverlayOpen ? (
-        <>
-          <button
-            type="button"
-            className="app-backdrop"
-            aria-label="Dismiss search"
-            onClick={() => setMobileSearchOverlayOpen(false)}
-          />
-        </>
+      {filtersSheetOpen ? (
+        <div
+          className="app-sheet"
+          role="dialog"
+          aria-modal="true"
+          aria-label="Filters and settings"
+        >
+          <div className="app-sheet__header">
+            <span className="app-sheet__title text-aside-header">
+              Filters
+            </span>
+            <Button
+              type="button"
+              variant="transparent"
+              size="md"
+              radius="md"
+              onClick={() => setFiltersSheetOpen(false)}
+            >
+              Done
+            </Button>
+          </div>
+          <div className="app-sheet__body">
+            <div className="app-sheet__themeRow">
+              <HomeThemeButton />
+            </div>
+            <HomePageFilterStack
+              {...filterStackProps}
+              showSearch={false}
+              categoryListClassName="homepage-categoryList homepage-categoryList--sheet"
+              categorySectionClassName="homepage-sidebarCategorySection homepage-sidebarCategorySection--sheet"
+            />
+          </div>
+        </div>
       ) : null}
 
       <main className="homepage-main">

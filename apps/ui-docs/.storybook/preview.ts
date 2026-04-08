@@ -1,5 +1,8 @@
 import type { Preview } from "@storybook/react-vite";
+import { initDesignSystemScrollbarVisibility } from "design-system";
 import "../src/storybook-preview.css";
+
+initDesignSystemScrollbarVisibility();
 
 const preview: Preview = {
   parameters: {
