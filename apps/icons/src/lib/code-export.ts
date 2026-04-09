@@ -9,12 +9,20 @@ const COPY_CTA_BY_FRAMEWORK: Record<CodeFrameworkId, string> = {
   react: 'Copy React code',
 }
 
+const COPY_SUCCESS_BY_FRAMEWORK: Record<CodeFrameworkId, string> = {
+  react: 'Copied React code',
+}
+
 export function getDefaultCodeFramework(): CodeFrameworkId {
   return 'react'
 }
 
 export function getCodeCopyCtaLabel(framework: CodeFrameworkId): string {
   return COPY_CTA_BY_FRAMEWORK[framework]
+}
+
+export function getCodeCopySuccessLabel(framework: CodeFrameworkId): string {
+  return COPY_SUCCESS_BY_FRAMEWORK[framework]
 }
 
 function kebabCaseToPascalCase(kebab: string): string {
@@ -76,17 +84,23 @@ export function buildReactImportStatement(
 export function buildReactJsxUsageLine(
   componentName: string,
   size: number,
+  colorHex: string | null = null,
 ): string {
-  return `<${componentName} size={${size}} />`
+  const sizeProp = `size={${size}}`
+  if (colorHex != null && colorHex !== '') {
+    return `<${componentName} ${sizeProp} color="${colorHex}" />`
+  }
+  return `<${componentName} ${sizeProp} />`
 }
 
 export function reactJsxUsageLinesForSelection(
   orderedIconIds: readonly string[],
   style: IconStyle,
   size: number,
+  colorHex: string | null = null,
 ): string[] {
   return orderedIconIds.map((id) =>
-    buildReactJsxUsageLine(iconIdToReactExportName(id, style), size),
+    buildReactJsxUsageLine(iconIdToReactExportName(id, style), size, colorHex),
   )
 }
 
@@ -97,6 +111,7 @@ export function generateReactSnippetForSelection(
   orderedIconIds: readonly string[],
   style: IconStyle,
   size: number,
+  colorHex: string | null = null,
 ): string {
   if (orderedIconIds.length === 0) return ''
 
@@ -107,11 +122,11 @@ export function generateReactSnippetForSelection(
   const importStmt = buildReactImportStatement(importNames)
 
   if (orderedIconIds.length === 1) {
-    return `${importStmt}\n\n${buildReactJsxUsageLine(usageNames[0], size)}`
+    return `${importStmt}\n\n${buildReactJsxUsageLine(usageNames[0], size, colorHex)}`
   }
 
   const inner = usageNames
-    .map((name) => `  ${buildReactJsxUsageLine(name, size)}`)
+    .map((name) => `  ${buildReactJsxUsageLine(name, size, colorHex)}`)
     .join('\n')
   return `${importStmt}\n\n<>\n${inner}\n</>`
 }
@@ -122,6 +137,10 @@ export interface FrameworkCodeSnippetContext {
   style: IconStyle
   /** Pixel size for generated component props (e.g. React `size`). */
   size: number
+  /**
+   * Custom `#RRGGBB` from the color field. When `null`, JSX omits `color` (package default / currentColor).
+   */
+  colorHex?: string | null
 }
 
 export function generateFrameworkCodeSnippet(
@@ -134,6 +153,7 @@ export function generateFrameworkCodeSnippet(
         ctx.orderedIconIds,
         ctx.style,
         ctx.size,
+        ctx.colorHex ?? null,
       )
     default: {
       const _never: never = framework

@@ -29,6 +29,7 @@ function processSvgForExport(
 
 /**
  * Export flow: **copy** (SVG markup or React code to clipboard) and **download** (SVG/PNG files).
+ * With multiple icons selected, copy is only supported for React code; SVG copy is single-icon only.
  * Bulk actions only mount when there is a selection, so handlers assume `count > 0` in normal UI use.
  * Returns whether the operation completed successfully (for in-UI feedback); errors still use `toast`.
  */
@@ -56,6 +57,13 @@ export function useIconExport() {
       return false
     }
 
+    if (format === 'svg' && count > 1) {
+      toast.error(
+        'Copy for multiple icons is only available as React code. Switch export format to Code.',
+      )
+      return false
+    }
+
     if (format === 'code') {
       if (!isValid() || !size) {
         setShowValidationErrors(true)
@@ -66,6 +74,7 @@ export function useIconExport() {
         orderedIconIds: orderedIds,
         style,
         size,
+        colorHex: selectedColor,
       })
       try {
         await navigator.clipboard.writeText(snippet)
@@ -97,9 +106,9 @@ export function useIconExport() {
           return { id: icon.id, svg }
         }),
       )
-      const parts = iconData.map(({ id, svg }) => {
+      const parts = iconData.map(({ svg }) => {
         const processed = processSvgForExport(svg, size, selectedColor)
-        return count > 1 ? `<!-- ${id}.svg -->\n${processed}` : processed
+        return processed
       })
       await navigator.clipboard.writeText(parts.join('\n\n'))
       return true

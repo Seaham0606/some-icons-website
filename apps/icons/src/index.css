@@ -312,108 +312,9 @@ body {
   flex-direction: column;
 }
 
-/*
- * Export panel: size + format stack; gap between rows (size reveal is always expanded).
- * Motion on `.homepage-export-sizeReveal` matches `.ds-inputSection__collapsiblePanel` /
- * `__panelMotion` (design-system components.css) if collapse is used again.
- */
-.homepage-export-metaFields {
-  box-sizing: border-box;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  width: 100%;
-  min-width: 0;
-  gap: var(--spacing-gap-3);
-  --ds-dropdown-ease: ease-in-out;
-  --ds-dropdown-duration: 360ms;
-}
-
-.homepage-export-sizeReveal {
-  box-sizing: border-box;
-  display: grid;
-  grid-template-rows: 0fr;
-  width: 100%;
-  min-width: 0;
-  min-height: 0;
-  margin-top: 0;
-  flex-shrink: 0;
-  pointer-events: none;
-  transition: grid-template-rows var(--ds-dropdown-duration)
-    var(--ds-dropdown-ease);
-}
-
-.homepage-export-sizeReveal[data-expanded="true"] {
-  grid-template-rows: 1fr;
-  pointer-events: auto;
-}
-
-.homepage-export-sizeReveal__motion {
-  box-sizing: border-box;
-  display: flex;
-  flex-direction: column;
-  width: 100%;
-  min-width: 0;
-  min-height: 0;
-  overflow: hidden;
-  opacity: 0;
-  transform: translateY(calc(-1 * var(--spacing-gap-2)));
-  transition:
-    opacity var(--ds-dropdown-duration) var(--ds-dropdown-ease),
-    transform var(--ds-dropdown-duration) var(--ds-dropdown-ease);
-}
-
-.homepage-export-sizeReveal[data-expanded="true"] .homepage-export-sizeReveal__motion {
-  opacity: 1;
-  transform: translateY(0);
-  overflow: visible;
-}
-
-.homepage-export-sizeReveal__motion > .homepage-size-export-field {
-  min-height: 0;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .homepage-export-sizeReveal,
-  .homepage-export-sizeReveal__motion {
-    transition: none;
-  }
-
-  .homepage-export-sizeReveal:not([data-expanded="true"]) .homepage-export-sizeReveal__motion {
-    opacity: 0;
-    transform: none;
-  }
-
-  .homepage-export-sizeReveal[data-expanded="true"] .homepage-export-sizeReveal__motion {
-    opacity: 1;
-    transform: none;
-  }
-}
-
-/* Export Size row: custom width input — centered text; secondary column grows to 80px when focused or filled so the segmented control fills the rest */
-.homepage-size-export-field .ds-inputField__col--secondary[data-col2-width="size-12"] {
-  transition:
-    flex-basis 200ms ease,
-    width 200ms ease,
-    max-width 200ms ease;
-}
-
-.homepage-size-export-field
-  .ds-inputField__col--secondary[data-col2-width="size-12"]:focus-within,
-.homepage-size-export-field.homepage-size-export-field--expanded
-  .ds-inputField__col--secondary[data-col2-width="size-12"] {
-  flex: 0 0 var(--size-20);
-  width: var(--size-20);
-  max-width: var(--size-20);
-}
-
-.homepage-size-custom-input .ds-input__input {
-  text-align: center;
-}
-
 /**
- * Grid icon previews: after the user sets export size in the sidebar, the app sets
- * `--icon-preview-user-px` on `.ds-iconGrid`; until then the var is unset and size is cap-only.
+ * Grid icon previews: when export size is set, the store exposes `gridPreviewPx` and
+ * `--icon-preview-user-px` on `.ds-iconGrid`; until then the var is unset (cap-only).
  * Still capped by `--ds-iconGrid-preview-cap`.
  */
 .icon-grid-preview {
@@ -577,8 +478,93 @@ body {
 .homepage-bulkAction-hoverWrap:not(:has(.ds-button:disabled)):not(:has(.ds-button[aria-disabled="true"])):hover
   .homepage-bulkAction-hoverMeta,
 .homepage-bulkAction-hoverWrap:has(.ds-button:focus-visible:not(:disabled):not([aria-disabled="true"]))
-  .homepage-bulkAction-hoverMeta {
+  .homepage-bulkAction-hoverMeta,
+.homepage-bulkAction-hoverWrap:has(.homepage-bulkBar-sizeInput):hover .homepage-bulkAction-hoverMeta {
   opacity: 1;
+}
+
+/* Eyedropper: visible base border on transparent (color pop-up opens via same path as settings). */
+.homepage-bulkAction-colorBtn.ds-button[data-variant="transparent"] {
+  border-color: var(--color-border-base);
+}
+
+/*
+ * Bulk bar: size control — matches Figma (node 1181:9469): frame padding 2, radius md,
+ * border/base, label px-2 only; 20px glyphs with p-050 in slots; hug width + height.
+ */
+.homepage-bulkBar-sizeInput.ds-input {
+  width: fit-content;
+  max-width: 100%;
+  min-width: 0;
+  min-height: 0;
+  height: auto;
+  align-items: center;
+  border-radius: var(--radius-md);
+  border-color: var(--color-border-base);
+  padding: calc(var(--spacing-padding-2) - var(--border-width-base));
+}
+
+/* Idle: no input fill; hover or focus shows standard input background (error keeps system fill). */
+.homepage-bulkBar-sizeInput.ds-input[data-status="default"] {
+  background: transparent;
+}
+
+.homepage-bulkBar-sizeInput.ds-input[data-status="default"]:hover,
+.homepage-bulkBar-sizeInput.ds-input[data-status="default"]:focus-within {
+  background: var(--ds-input-bg);
+}
+
+.homepage-bulkBar-sizeInput.ds-input .ds-input__slot {
+  flex: 0 0 auto;
+  width: auto;
+  min-width: 0;
+  align-self: center;
+}
+
+.homepage-bulkBar-sizeInput.ds-input .ds-input__field {
+  flex: 0 1 auto;
+  min-width: 0;
+  padding-block: 0;
+  padding-inline: var(--spacing-padding-2);
+}
+
+.homepage-bulkBar-sizeInput.ds-input .ds-input__input {
+  width: auto;
+  min-width: 2.75ch;
+  text-align: center;
+}
+
+@supports (field-sizing: content) {
+  .homepage-bulkBar-sizeInput.ds-input .ds-input__input {
+    field-sizing: content;
+  }
+}
+
+.homepage-bulkBar-sizeStep {
+  box-sizing: border-box;
+  display: flex;
+  width: var(--size-6);
+  height: var(--size-6);
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  margin: 0;
+  padding: 0;
+  border: none;
+  border-radius: var(--radius-md);
+  background: transparent;
+  cursor: pointer;
+  color: var(--color-main-quaternary);
+}
+
+.homepage-bulkBar-sizeStep:hover:not(:disabled),
+.homepage-bulkBar-sizeStep:focus-visible:not(:disabled),
+.homepage-bulkBar-sizeStep:active:not(:disabled) {
+  color: var(--color-main-primary);
+}
+
+.homepage-bulkBar-sizeStep:focus-visible {
+  outline: none;
 }
 
 /* Settings control: quaternary icon → primary on hover / focus / press */

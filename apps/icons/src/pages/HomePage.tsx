@@ -8,9 +8,8 @@ import {
 import { IconGrid } from '@/components/icons/IconGrid'
 import { HomePageFilterStack } from '@/components/home/HomePageFilters'
 import { PageContent } from '@/components/layout'
-import { SIZE_PRESETS } from '@/lib/constants'
+import { DEFAULT_ICON_SIZE } from '@/lib/constants'
 import { MEDIA_QUERIES } from '@/lib/breakpoints'
-import { useColorStore } from '@/stores/colorStore'
 import { useExportStore } from '@/stores/exportStore'
 import { useSelectionStore } from '@/stores/selectionStore'
 import { useFilterStore } from '@/stores/filterStore'
@@ -33,6 +32,11 @@ import { useBackdropPresence } from '@/hooks/useBackdropPresence'
 import { useBulkActionStripFeedback } from '@/hooks/useBulkActionStripFeedback'
 import { useFilteredGridIcons } from '@/hooks/useFilteredGridIcons'
 import { useIconExport } from '@/hooks/useIconExport'
+import {
+  getCodeCopyCtaLabel,
+  getCodeCopySuccessLabel,
+  getDefaultCodeFramework,
+} from '@/lib/code-export'
 import { getHighestVersion, useChangelog } from '@/hooks/useChangelog'
 import {
   useCallback,
@@ -110,8 +114,6 @@ export default function HomePage() {
   const setSearchQuery = useFilterStore((s) => s.setSearchQuery)
   const iconStyle = useFilterStore((s) => s.style)
   const setIconStyle = useFilterStore((s) => s.setStyle)
-  const selectedColor = useColorStore((s) => s.selectedColor)
-  const setIconColor = useColorStore((s) => s.setColor)
   const { data: entries } = useChangelog()
   const version = getHighestVersion(entries)
   const [settingsSectionExpanded, setSettingsSectionExpanded] = useState(true)
@@ -120,7 +122,6 @@ export default function HomePage() {
   const [mobileSearchOverlayOpen, setMobileSearchOverlayOpen] = useState(false)
   const filtersBackdrop = useBackdropPresence(filtersSheetOpen)
   const exportSize = useExportStore((s) => s.size)
-  const gridPreviewPx = useExportStore((s) => s.gridPreviewPx)
   const setExportSize = useExportStore((s) => s.setSize)
   const exportFormat = useExportStore((s) => s.format)
   const setExportFormat = useExportStore((s) => s.setFormat)
@@ -134,21 +135,10 @@ export default function HomePage() {
   }, [exportFormat])
   const validateExport = useExportStore((s) => s.validate)
   const [customExportSize, setCustomExportSize] = useState('')
-  const [customExportSizeFocused, setCustomExportSizeFocused] = useState(false)
-
-  const sizePresetValue = useMemo((): (typeof SIZE_PRESETS)[number] | null => {
-    if (gridPreviewPx === null) return null
-    if (exportSize == null) return null
-    return (SIZE_PRESETS as readonly number[]).includes(exportSize)
-      ? (exportSize as (typeof SIZE_PRESETS)[number])
-      : null
-  }, [exportSize, gridPreviewPx])
 
   const { sizeValid, formatValid } = validateExport()
   const sizeFieldError = showExportValidation && !sizeValid
   const formatFieldError = showExportValidation && !formatValid
-  const isExportSizeRowExpanded =
-    customExportSize.length > 0 || customExportSizeFocused
 
   const {
     handleCopy,
@@ -180,8 +170,19 @@ export default function HomePage() {
     }
   }, [clearSelection, flashDownloadSuccess, handleDownload])
 
-  const showCopyAction = exportFormat !== 'png'
+  const showCopyAction =
+    exportFormat !== 'png' &&
+    (selectionCount <= 1 || exportFormat === 'code')
   const showDownloadAction = exportFormat !== 'code'
+
+  const bulkCopyIdleLabel =
+    exportFormat === 'code'
+      ? getCodeCopyCtaLabel(getDefaultCodeFramework())
+      : `Copy ${exportFormatLabel}`
+  const bulkCopySuccessLabel =
+    exportFormat === 'code'
+      ? getCodeCopySuccessLabel(getDefaultCodeFramework())
+      : `Copied ${exportFormatLabel}`
   const visibleGridIcons = useFilteredGridIcons()
   const selectedIds = useSelectionStore((s) => s.selectedIds)
   const selectAllVisible = useSelectionStore((s) => s.selectAll)
@@ -203,14 +204,6 @@ export default function HomePage() {
       selectAllVisible(visibleIds)
     }
   }, [allVisibleSelected, deselectMany, selectAllVisible, visibleIds])
-
-  const handleExportPresetSize = useCallback(
-    (preset: (typeof SIZE_PRESETS)[number]) => {
-      setExportSize(preset)
-      setCustomExportSize('')
-    },
-    [setExportSize],
-  )
 
   const handleCustomExportSizeChange = useCallback(
     (raw: string) => {
@@ -290,6 +283,37 @@ export default function HomePage() {
     [exportSize, handleCustomExportSizeChange],
   )
 
+  const adjustBulkExportSize = useCallback(
+    (delta: number) => {
+      const fromField =
+        customExportSize !== ''
+          ? customExportSize
+          : exportSize != null && exportSize > 0
+            ? String(exportSize)
+            : String(DEFAULT_ICON_SIZE)
+      const digits = fromField.replace(/\D/g, '')
+      const parsed = parseInt(digits, 10)
+      const base =
+        digits !== '' && !isNaN(parsed) && parsed > 0
+          ? parsed
+          : DEFAULT_ICON_SIZE
+      const next = base + delta
+      if (next < 1) {
+        handleCustomExportSizeChange('')
+        return
+      }
+      handleCustomExportSizeChange(String(next))
+    },
+    [customExportSize, exportSize, handleCustomExportSizeChange],
+  )
+
+  const bulkBarSizeInputValue =
+    customExportSize !== ''
+      ? customExportSize
+      : exportSize != null
+        ? String(exportSize)
+        : ''
+
   const versionChip =
     version ? (
       <Chip variant="accent" aria-label={`Beta, version ${stripLeadingV(version)}`}>
@@ -314,20 +338,9 @@ export default function HomePage() {
     onIconStyleChange: setIconStyle,
     settingsSectionExpanded,
     onSettingsSectionExpandedChange: setSettingsSectionExpanded,
-    selectedColor,
-    onColorChange: setIconColor,
-    sizePresetValue,
-    onExportPresetSize: handleExportPresetSize,
-    customExportSize,
-    onCustomExportSizeFocus: () => setCustomExportSizeFocused(true),
-    onCustomExportSizeBlur: () => setCustomExportSizeFocused(false),
-    onCustomExportSizeChange: handleCustomExportSizeChange,
-    onCustomExportSizeKeyDown: handleCustomExportSizeKeyDown,
     exportFormat,
     onExportFormatChange: setExportFormat,
-    sizeFieldError,
     formatFieldError,
-    isExportSizeRowExpanded,
   }
 
   const copyrightNode = <>© {new Date().getFullYear()} Some UI</>
@@ -569,14 +582,79 @@ export default function HomePage() {
                 }
               >
                 <>
+                  <div className="flex items-center gap-2">
+                    <BulkActionHoverChip chipLabel="Icon color">
+                      <Button
+                        type="button"
+                        variant="transparent"
+                        size="md"
+                        radius="md"
+                        className="homepage-bulkAction-colorBtn"
+                        aria-label="Icon color"
+                        onClick={openChromeSettings}
+                        iconName="formatting-eyedropper"
+                        iconStyle="outline"
+                      />
+                    </BulkActionHoverChip>
+                    <BulkActionHoverChip chipLabel="Icon size">
+                      <Input
+                        className="homepage-bulkBar-sizeInput"
+                        aria-label="Icon size in pixels"
+                        inputMode="numeric"
+                        pattern="[0-9]*"
+                        autoComplete="off"
+                        status={sizeFieldError ? 'error' : 'default'}
+                        value={bulkBarSizeInputValue}
+                        onKeyDown={handleCustomExportSizeKeyDown}
+                        onChange={(e) =>
+                          handleCustomExportSizeChange(e.target.value)
+                        }
+                        leadingSlot={
+                          <button
+                            type="button"
+                            className="homepage-bulkBar-sizeStep"
+                            aria-label="Decrease icon size"
+                            onClick={() => adjustBulkExportSize(-1)}
+                          >
+                            <SomeIcon
+                              iconName="symbol-minus"
+                              iconStyle="outline"
+                              iconSize="sm"
+                              padding="050"
+                              color="currentColor"
+                            />
+                          </button>
+                        }
+                        trailingSlot={
+                          <button
+                            type="button"
+                            className="homepage-bulkBar-sizeStep"
+                            aria-label="Increase icon size"
+                            onClick={() => adjustBulkExportSize(1)}
+                          >
+                            <SomeIcon
+                              iconName="symbol-plus"
+                              iconStyle="outline"
+                              iconSize="sm"
+                              padding="050"
+                              color="currentColor"
+                            />
+                          </button>
+                        }
+                      />
+                    </BulkActionHoverChip>
+                  </div>
+                  <div className="ds-segmentedControl__dividerWrap" aria-hidden>
+                    <div className="ds-segmentedControl__divider" />
+                  </div>
                   {(showCopyAction || showDownloadAction) && (
                     <div className="ds-buttonGroup">
                       {showCopyAction ? (
                         <BulkActionHoverChip
                           chipLabel={
                             copySuccessStrip
-                              ? `Copied ${exportFormatLabel}`
-                              : `Copy ${exportFormatLabel}`
+                              ? bulkCopySuccessLabel
+                              : bulkCopyIdleLabel
                           }
                         >
                           <Button
@@ -589,8 +667,8 @@ export default function HomePage() {
                             onClick={() => void onBulkCopy()}
                             aria-label={
                               copySuccessStrip
-                                ? `Copied ${exportFormatLabel}`
-                                : `Copy ${exportFormatLabel}`
+                                ? bulkCopySuccessLabel
+                                : bulkCopyIdleLabel
                             }
                             stateIcons={BULK_COPY_STATE_ICONS}
                             stripActiveIndex={copySuccessStrip ? 1 : 0}
