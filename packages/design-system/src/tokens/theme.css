@@ -4,6 +4,9 @@
   --spacing-80: 320px;
   --font-size-input-section-label: 15px;
   --line-height-input-section-label: 16px;
+  /* Bulk bar settings / menu group caption (Figma label/xs on InputSection variant) */
+  --font-size-settings-group-label: 13px;
+  --line-height-settings-group-label: 1.1;
   /* Input field (Figma Input — value / placeholder) */
   --font-size-input: 16px;
   --line-height-input: 24px;

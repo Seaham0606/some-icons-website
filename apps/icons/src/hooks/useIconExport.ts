@@ -38,7 +38,8 @@ export function useIconExport() {
   const selectedIds = useSelectionStore((state) => state.selectedIds)
   const count = useSelectionStore((state) => state.count)
   const size = useExportStore((state) => state.size)
-  const format = useExportStore((state) => state.format)
+  const copyFormat = useExportStore((state) => state.copyFormat)
+  const downloadFormat = useExportStore((state) => state.downloadFormat)
   const isValid = useExportStore((state) => state.isValid)
   const setShowValidationErrors = useExportStore(
     (state) => state.setShowValidationErrors,
@@ -52,19 +53,14 @@ export function useIconExport() {
   const handleCopy = useCallback(async (): Promise<boolean> => {
     if (!count) return false
 
-    if (format === 'png') {
-      toast.error('Copy is only available for SVG and Code formats.')
-      return false
-    }
-
-    if (format === 'svg' && count > 1) {
+    if (copyFormat === 'svg' && count > 1) {
       toast.error(
-        'Copy for multiple icons is only available as React code. Switch export format to Code.',
+        'Copy for multiple icons is only available as React code. Choose React under Copy as.',
       )
       return false
     }
 
-    if (format === 'code') {
+    if (copyFormat === 'code') {
       if (!isValid() || !size) {
         setShowValidationErrors(true)
         return false
@@ -86,7 +82,7 @@ export function useIconExport() {
       }
     }
 
-    if (format !== 'svg') return false
+    if (copyFormat !== 'svg') return false
 
     if (!icons) return false
 
@@ -120,8 +116,8 @@ export function useIconExport() {
       setIsCopying(false)
     }
   }, [
+    copyFormat,
     count,
-    format,
     icons,
     isValid,
     selectedColor,
@@ -134,16 +130,11 @@ export function useIconExport() {
   const handleDownload = useCallback(async (): Promise<boolean> => {
     if (!count) return false
 
-    if (format === 'code') {
-      toast.error('Use Copy for Code format.')
-      return false
-    }
-
     if (!icons) {
       return false
     }
 
-    if (!isValid() || !size || !format) {
+    if (!isValid() || !size) {
       setShowValidationErrors(true)
       return false
     }
@@ -164,14 +155,14 @@ export function useIconExport() {
 
       const exportOpts = {
         size,
-        format,
+        format: downloadFormat,
         color: selectedColor,
       } as const
 
       if (count === 1) {
         const { id, svg } = iconData[0]
         const blob = await createExportBlobForIcon(svg, exportOpts)
-        const ext = format === 'svg' ? 'svg' : 'png'
+        const ext = downloadFormat === 'svg' ? 'svg' : 'png'
         downloadBlob(blob, `${id}.${ext}`)
       } else {
         const blob = await exportToZip(iconData, exportOpts)
@@ -188,7 +179,7 @@ export function useIconExport() {
     }
   }, [
     count,
-    format,
+    downloadFormat,
     icons,
     isValid,
     selectedColor,

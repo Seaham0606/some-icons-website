@@ -9,13 +9,13 @@ import { IconGrid } from '@/components/icons/IconGrid'
 import { HomePageFilterStack } from '@/components/home/HomePageFilters'
 import { PageContent } from '@/components/layout'
 import { DEFAULT_ICON_SIZE } from '@/lib/constants'
-import { MEDIA_QUERIES } from '@/lib/breakpoints'
 import { useExportStore } from '@/stores/exportStore'
 import { useSelectionStore } from '@/stores/selectionStore'
 import { useFilterStore } from '@/stores/filterStore'
 import { useUIStore } from '@/stores/uiStore'
 import {
   BulkActionBar,
+  BulkActionBarSettingsPanel,
   Button,
   type ButtonStateIcon,
   Chip,
@@ -42,6 +42,7 @@ import {
   useCallback,
   useEffect,
   useMemo,
+  useRef,
   useState,
   type KeyboardEvent,
   type ReactNode,
@@ -116,29 +117,34 @@ export default function HomePage() {
   const setIconStyle = useFilterStore((s) => s.setStyle)
   const { data: entries } = useChangelog()
   const version = getHighestVersion(entries)
-  const [settingsSectionExpanded, setSettingsSectionExpanded] = useState(true)
   const [filtersSheetOpen, setFiltersSheetOpen] = useState(false)
   const [headerSettingsRowOpen, setHeaderSettingsRowOpen] = useState(false)
   const [mobileSearchOverlayOpen, setMobileSearchOverlayOpen] = useState(false)
+  const [bulkBarSettingsOpen, setBulkBarSettingsOpen] = useState(false)
+  const bulkBarSettingsAnchorRef = useRef<HTMLDivElement>(null)
   const filtersBackdrop = useBackdropPresence(filtersSheetOpen)
   const exportSize = useExportStore((s) => s.size)
   const setExportSize = useExportStore((s) => s.setSize)
-  const exportFormat = useExportStore((s) => s.format)
-  const setExportFormat = useExportStore((s) => s.setFormat)
+  const copyFormat = useExportStore((s) => s.copyFormat)
+  const downloadFormat = useExportStore((s) => s.downloadFormat)
+  const setCopyFormat = useExportStore((s) => s.setCopyFormat)
+  const setDownloadFormat = useExportStore((s) => s.setDownloadFormat)
   const showExportValidation = useExportStore((s) => s.showValidationErrors)
-  const exportFormatLabel = useMemo(() => {
-    if (exportFormat == null) return 'SVG'
-    return (
-      EXPORT_FORMAT_OPTIONS.find((o) => o.value === exportFormat)?.label ??
-      exportFormat.toUpperCase()
-    )
-  }, [exportFormat])
+  const downloadAssetLabel = useMemo(
+    () =>
+      EXPORT_FORMAT_OPTIONS.find((o) => o.value === downloadFormat)?.label ??
+      downloadFormat.toUpperCase(),
+    [downloadFormat],
+  )
+  const copyAssetLabel =
+    copyFormat === 'code'
+      ? 'React'
+      : EXPORT_FORMAT_OPTIONS.find((o) => o.value === 'svg')?.label ?? 'SVG'
   const validateExport = useExportStore((s) => s.validate)
   const [customExportSize, setCustomExportSize] = useState('')
 
-  const { sizeValid, formatValid } = validateExport()
+  const { sizeValid } = validateExport()
   const sizeFieldError = showExportValidation && !sizeValid
-  const formatFieldError = showExportValidation && !formatValid
 
   const {
     handleCopy,
@@ -171,18 +177,17 @@ export default function HomePage() {
   }, [clearSelection, flashDownloadSuccess, handleDownload])
 
   const showCopyAction =
-    exportFormat !== 'png' &&
-    (selectionCount <= 1 || exportFormat === 'code')
-  const showDownloadAction = exportFormat !== 'code'
+    copyFormat === 'code' || selectionCount <= 1
+  const showDownloadAction = true
 
   const bulkCopyIdleLabel =
-    exportFormat === 'code'
+    copyFormat === 'code'
       ? getCodeCopyCtaLabel(getDefaultCodeFramework())
-      : `Copy ${exportFormatLabel}`
+      : `Copy ${copyAssetLabel}`
   const bulkCopySuccessLabel =
-    exportFormat === 'code'
+    copyFormat === 'code'
       ? getCodeCopySuccessLabel(getDefaultCodeFramework())
-      : `Copied ${exportFormatLabel}`
+      : `Copied ${copyAssetLabel}`
   const visibleGridIcons = useFilteredGridIcons()
   const selectedIds = useSelectionStore((s) => s.selectedIds)
   const selectAllVisible = useSelectionStore((s) => s.selectAll)
@@ -231,15 +236,27 @@ export default function HomePage() {
   }, [scrollLocked])
 
   const openChromeSettings = useCallback(() => {
-    if (
-      typeof window !== 'undefined' &&
-      window.matchMedia(MEDIA_QUERIES.laptopAndUp).matches
-    ) {
-      setSettingsSectionExpanded(true)
-    } else {
-      setFiltersSheetOpen(true)
+    setFiltersSheetOpen(true)
+  }, [])
+
+  useEffect(() => {
+    if (!bulkBarSettingsOpen) return
+    const onKeyDown = (e: globalThis.KeyboardEvent) => {
+      if (e.key === 'Escape') setBulkBarSettingsOpen(false)
     }
-  }, [setSettingsSectionExpanded, setFiltersSheetOpen])
+    const onPointerDown = (e: PointerEvent) => {
+      const node = e.target instanceof Node ? e.target : null
+      if (!node) return
+      if (bulkBarSettingsAnchorRef.current?.contains(node)) return
+      setBulkBarSettingsOpen(false)
+    }
+    document.addEventListener('keydown', onKeyDown)
+    document.addEventListener('pointerdown', onPointerDown, true)
+    return () => {
+      document.removeEventListener('keydown', onKeyDown)
+      document.removeEventListener('pointerdown', onPointerDown, true)
+    }
+  }, [bulkBarSettingsOpen])
 
   /** Below laptop, expanded search row and settings row share one strip — only one open at a time. */
   const toggleMobileHeaderSearch = useCallback(() => {
@@ -274,7 +291,7 @@ export default function HomePage() {
           : 0
 
       const next = base + delta
-      if (next < 1) {
+      if (next < 8) {
         handleCustomExportSizeChange('')
         return
       }
@@ -298,7 +315,7 @@ export default function HomePage() {
           ? parsed
           : DEFAULT_ICON_SIZE
       const next = base + delta
-      if (next < 1) {
+      if (next < 8) {
         handleCustomExportSizeChange('')
         return
       }
@@ -336,11 +353,6 @@ export default function HomePage() {
     onSearchChange: setSearchQuery,
     iconStyle,
     onIconStyleChange: setIconStyle,
-    settingsSectionExpanded,
-    onSettingsSectionExpandedChange: setSettingsSectionExpanded,
-    exportFormat,
-    onExportFormatChange: setExportFormat,
-    formatFieldError,
   }
 
   const copyrightNode = <>© {new Date().getFullYear()} Some UI</>
@@ -468,7 +480,7 @@ export default function HomePage() {
                 onClick={toggleMobileHeaderSettingsRow}
                 leadingSlot={
                   <SomeIcon
-                    iconName="interface-settings-nut"
+                    iconName="interface-menu-hamburger"
                     iconStyle="outline"
                     iconSize="md"
                     padding="050"
@@ -614,6 +626,7 @@ export default function HomePage() {
                             type="button"
                             className="homepage-bulkBar-sizeStep"
                             aria-label="Decrease icon size"
+                            disabled={parseInt(bulkBarSizeInputValue, 10) <= 8}
                             onClick={() => adjustBulkExportSize(-1)}
                           >
                             <SomeIcon
@@ -647,88 +660,101 @@ export default function HomePage() {
                   <div className="ds-segmentedControl__dividerWrap" aria-hidden>
                     <div className="ds-segmentedControl__divider" />
                   </div>
-                  {(showCopyAction || showDownloadAction) && (
-                    <div className="ds-buttonGroup">
-                      {showCopyAction ? (
-                        <BulkActionHoverChip
-                          chipLabel={
+                  <div className="ds-buttonGroup">
+                    {showCopyAction ? (
+                      <BulkActionHoverChip
+                        chipLabel={
+                          copySuccessStrip
+                            ? bulkCopySuccessLabel
+                            : bulkCopyIdleLabel
+                        }
+                      >
+                        <Button
+                          type="button"
+                          variant="transparent"
+                          size="md"
+                          radius="md"
+                          disabled={isCopying}
+                          aria-busy={isCopying}
+                          onClick={() => void onBulkCopy()}
+                          aria-label={
                             copySuccessStrip
                               ? bulkCopySuccessLabel
                               : bulkCopyIdleLabel
                           }
-                        >
-                          <Button
-                            type="button"
-                            variant="transparent"
-                            size="md"
-                            radius="md"
-                            disabled={isCopying}
-                            aria-busy={isCopying}
-                            onClick={() => void onBulkCopy()}
-                            aria-label={
-                              copySuccessStrip
-                                ? bulkCopySuccessLabel
-                                : bulkCopyIdleLabel
-                            }
-                            stateIcons={BULK_COPY_STATE_ICONS}
-                            stripActiveIndex={copySuccessStrip ? 1 : 0}
-                            stripActiveBackground="var(--color-overlay-success)"
-                          />
-                        </BulkActionHoverChip>
-                      ) : null}
-                      {showDownloadAction ? (
-                        <BulkActionHoverChip
-                          chipLabel={
-                            downloadSuccessStrip
-                              ? `Downloaded ${exportFormatLabel}`
-                              : `Download ${exportFormatLabel}`
-                          }
-                        >
-                          <Button
-                            type="button"
-                            variant="transparent"
-                            size="md"
-                            radius="md"
-                            disabled={isDownloading}
-                            aria-busy={isDownloading}
-                            onClick={() => void onBulkDownload()}
-                            aria-label={
-                              downloadSuccessStrip
-                                ? `Downloaded ${exportFormatLabel}`
-                                : `Download ${exportFormatLabel}`
-                            }
-                            stateIcons={BULK_DOWNLOAD_STATE_ICONS}
-                            stripActiveIndex={downloadSuccessStrip ? 1 : 0}
-                            stripActiveBackground="var(--color-overlay-success)"
-                          />
-                        </BulkActionHoverChip>
-                      ) : null}
-                    </div>
-                  )}
-                  {(showCopyAction || showDownloadAction) && (
-                    <div className="ds-segmentedControl__dividerWrap" aria-hidden>
-                      <div className="ds-segmentedControl__divider" />
-                    </div>
-                  )}
-                  <BulkActionHoverChip chipLabel="More options">
-                    <Button
-                      type="button"
-                      variant="transparent"
-                      size="md"
-                      radius="md"
-                      className="homepage-bulkAction-settingsBtn"
-                      aria-label="Settings"
-                      onClick={openChromeSettings}
-                      leadingSlot={
-                        <SomeIcon
-                          iconName="interface-ellipsis-horizontal"
-                          iconStyle="fill"
-                          iconSize="sm"
-                          padding="050"
+                          stateIcons={BULK_COPY_STATE_ICONS}
+                          stripActiveIndex={copySuccessStrip ? 1 : 0}
+                          stripActiveBackground="var(--color-overlay-success)"
                         />
-                      }
-                    />
-                  </BulkActionHoverChip>
+                      </BulkActionHoverChip>
+                    ) : null}
+                    {showDownloadAction ? (
+                      <BulkActionHoverChip
+                        chipLabel={
+                          downloadSuccessStrip
+                            ? `Downloaded ${downloadAssetLabel}`
+                            : `Download ${downloadAssetLabel}`
+                        }
+                      >
+                        <Button
+                          type="button"
+                          variant="transparent"
+                          size="md"
+                          radius="md"
+                          disabled={isDownloading}
+                          aria-busy={isDownloading}
+                          onClick={() => void onBulkDownload()}
+                          aria-label={
+                            downloadSuccessStrip
+                              ? `Downloaded ${downloadAssetLabel}`
+                              : `Download ${downloadAssetLabel}`
+                          }
+                          stateIcons={BULK_DOWNLOAD_STATE_ICONS}
+                          stripActiveIndex={downloadSuccessStrip ? 1 : 0}
+                          stripActiveBackground="var(--color-overlay-success)"
+                        />
+                      </BulkActionHoverChip>
+                    ) : null}
+                    <div
+                      ref={bulkBarSettingsAnchorRef}
+                      className="homepage-bulkBarSettingsAnchor"
+                    >
+                      {bulkBarSettingsOpen ? (
+                        <div className="homepage-bulkBarSettingsPop">
+                          <BulkActionBarSettingsPanel
+                            copyFormat={copyFormat}
+                            downloadFormat={downloadFormat}
+                            onCopyFormatChange={setCopyFormat}
+                            onDownloadFormatChange={setDownloadFormat}
+                            disableCopySvg={selectionCount > 1}
+                          />
+                        </div>
+                      ) : null}
+                      <BulkActionHoverChip chipLabel="More options">
+                        <Button
+                          type="button"
+                          variant="transparent"
+                          size="md"
+                          radius="md"
+                          className="homepage-bulkAction-settingsBtn"
+                          aria-label="Export format"
+                          aria-haspopup="dialog"
+                          aria-expanded={bulkBarSettingsOpen}
+                          onClick={() =>
+                            setBulkBarSettingsOpen((open) => !open)
+                          }
+                          leadingSlot={
+                            <SomeIcon
+                              iconName="interface-ellipsis-horizontal"
+                              iconStyle="fill"
+                              iconSize="sm"
+                              padding="050"
+                            />
+                          }
+                        />
+                      </BulkActionHoverChip>
+                    </div>
+                  </div>
                 </>
               </BulkActionBar>
               <div className="homepage-bulkBarAside">

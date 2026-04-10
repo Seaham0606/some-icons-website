@@ -430,6 +430,25 @@ body {
   pointer-events: auto;
 }
 
+/* Export format popover: centered on ellipsis trigger, gap-4 above button */
+.homepage-bulkBarSettingsAnchor {
+  position: relative;
+  display: inline-flex;
+  vertical-align: middle;
+}
+
+.homepage-bulkBarSettingsPop {
+  position: absolute;
+  left: 50%;
+  bottom: calc(100% + var(--spacing-gap-4));
+  z-index: 5;
+  box-sizing: border-box;
+  width: calc(2 * var(--size-20));
+  max-width: calc(100vw - 2 * var(--spacing-padding-4));
+  transform: translateX(-50%);
+  pointer-events: auto;
+}
+
 .homepage-bulkOverlay .ds-bulkActionBar {
   position: relative;
   flex: 0 1 auto;
@@ -567,15 +586,23 @@ body {
   outline: none;
 }
 
-/* Settings control: quaternary icon → primary on hover / focus / press */
+/* More options: quaternary idle → accent icon + accent overlay on hover / focus / press / popover open */
 .homepage-bulkAction-settingsBtn.ds-button[data-variant="transparent"] .ds-button__iconSlot {
   color: var(--color-main-quaternary);
 }
 
+.homepage-bulkAction-settingsBtn.ds-button[data-variant="transparent"]:hover:not(:disabled):not([aria-disabled="true"]),
+.homepage-bulkAction-settingsBtn.ds-button[data-variant="transparent"]:focus-visible:not(:disabled):not([aria-disabled="true"]),
+.homepage-bulkAction-settingsBtn.ds-button[data-variant="transparent"]:active:not(:disabled):not([aria-disabled="true"]),
+.homepage-bulkAction-settingsBtn.ds-button[data-variant="transparent"][aria-expanded="true"]:not(:disabled):not([aria-disabled="true"]) {
+  background-color: var(--color-overlay-accent);
+}
+
 .homepage-bulkAction-settingsBtn.ds-button[data-variant="transparent"]:hover:not(:disabled):not([aria-disabled="true"]) .ds-button__iconSlot,
 .homepage-bulkAction-settingsBtn.ds-button[data-variant="transparent"]:focus-visible:not(:disabled):not([aria-disabled="true"]) .ds-button__iconSlot,
-.homepage-bulkAction-settingsBtn.ds-button[data-variant="transparent"]:active:not(:disabled):not([aria-disabled="true"]) .ds-button__iconSlot {
-  color: var(--color-main-primary);
+.homepage-bulkAction-settingsBtn.ds-button[data-variant="transparent"]:active:not(:disabled):not([aria-disabled="true"]) .ds-button__iconSlot,
+.homepage-bulkAction-settingsBtn.ds-button[data-variant="transparent"][aria-expanded="true"]:not(:disabled):not([aria-disabled="true"]) .ds-button__iconSlot {
+  color: var(--color-intent-accent);
 }
 
 @media (prefers-reduced-motion: reduce) {

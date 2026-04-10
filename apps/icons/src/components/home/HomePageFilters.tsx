@@ -1,5 +1,4 @@
 import { getCategoryIcon, getCategoryLabel } from '@/lib/category-icons'
-import type { ExportFormat } from '@/lib/constants'
 import { getCategories, useIcons } from '@/hooks/useIcons'
 import { useFilterStore } from '@/stores/filterStore'
 import type { IconStyle } from '@/types/icon'
@@ -74,23 +73,12 @@ const STYLE_SEGMENT_OPTIONS = [
   { value: 'filled' as const, label: 'Filled' },
 ] satisfies ReadonlyArray<{ value: IconStyle; label: string }>
 
-const EXPORT_FORMAT_OPTIONS = [
-  { value: 'svg' as const, label: 'SVG' },
-  { value: 'png' as const, label: 'PNG' },
-  { value: 'code' as const, label: 'Code' },
-]
-
 export interface HomePageFilterStackProps {
   showSearch?: boolean
   searchQuery: string
   onSearchChange: (value: string) => void
   iconStyle: IconStyle
   onIconStyleChange: (style: IconStyle) => void
-  settingsSectionExpanded: boolean
-  onSettingsSectionExpandedChange: (expanded: boolean) => void
-  exportFormat: ExportFormat | null
-  onExportFormatChange: (format: ExportFormat) => void
-  formatFieldError: boolean
   categoryListClassName?: string
   categorySectionClassName?: string
 }
@@ -101,11 +89,6 @@ export function HomePageFilterStack({
   onSearchChange,
   iconStyle,
   onIconStyleChange,
-  settingsSectionExpanded,
-  onSettingsSectionExpandedChange,
-  exportFormat,
-  onExportFormatChange,
-  formatFieldError,
   categoryListClassName,
   categorySectionClassName,
 }: HomePageFilterStackProps) {
@@ -159,34 +142,6 @@ export function HomePageFilterStack({
         }
         contentSlot={
           <HomeCategoryList listClassName={categoryListClassName} />
-        }
-      />
-      <InputSection
-        className="homepage-sidebarSection--hug"
-        label="Settings"
-        collapsible
-        expanded={settingsSectionExpanded}
-        onExpandedChange={onSettingsSectionExpandedChange}
-        leadingSlot={
-          <SomeIcon
-            iconName="interface-settings-nut"
-            iconStyle="outline"
-            iconSize="sm"
-          />
-        }
-        leadingColor="var(--color-main-secondary)"
-        contentSlot={
-          <InputField
-            label="Format"
-            contentSlot={
-              <SegmentedControl<ExportFormat>
-                options={EXPORT_FORMAT_OPTIONS}
-                value={exportFormat}
-                onChange={onExportFormatChange}
-                hasError={formatFieldError}
-              />
-            }
-          />
         }
       />
     </>

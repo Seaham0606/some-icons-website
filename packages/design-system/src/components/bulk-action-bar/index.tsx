@@ -3,6 +3,13 @@
 import * as React from "react"
 import { cn } from "../../utils"
 
+export {
+  BulkActionBarSettingsPanel,
+  type BulkActionBarCopyFormat,
+  type BulkActionBarDownloadFormat,
+  type BulkActionBarSettingsPanelProps,
+} from "./settings-panel"
+
 export interface BulkActionBarProps
   extends Omit<React.ComponentPropsWithoutRef<"div">, "children"> {
   /** Number of items in context (e.g. icons selected in the grid). */
@@ -54,9 +61,6 @@ export function BulkActionBar({
         {summaryTrailingSlot != null ? (
           <div className="ds-bulkActionBar__summaryTrailing">{summaryTrailingSlot}</div>
         ) : null}
-      </div>
-      <div className="ds-segmentedControl__dividerWrap" aria-hidden>
-        <div className="ds-segmentedControl__divider" />
       </div>
       <div className="ds-bulkActionBar__actions">{children}</div>
     </div>

@@ -2056,6 +2056,88 @@ button.ds-inputSection__labelRow.ds-inputSection__labelRow--toggle {
   min-width: 0;
 }
 
+/* Bulk bar settings popover — InputSection shell (Figma 1199:8185) + --shadow-strong */
+.ds-bulkActionBarSettingsPanel {
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  padding: var(--spacing-padding-3);
+  border-radius: var(--radius-2xl);
+  border: var(--border-width-base) solid var(--color-border-weak);
+  background: var(--color-background-elevation);
+  box-shadow: var(--shadow-strong);
+  overflow: hidden;
+}
+
+.ds-bulkActionBarSettingsPanel__body {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: var(--spacing-gap-3);
+  width: 100%;
+  min-width: 0;
+}
+
+.ds-bulkActionBarSettingsPanel__section {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--spacing-gap-1);
+  width: 100%;
+  min-width: 0;
+}
+
+.ds-bulkActionBarSettingsPanel__sectionLabel {
+  box-sizing: border-box;
+  width: 100%;
+  margin: 0;
+  padding: var(--spacing-padding-050) var(--spacing-padding-050) var(--spacing-padding-2)
+    var(--spacing-padding-050);
+  font-family: var(--font-family-sans);
+  font-size: var(--font-size-settings-group-label);
+  font-weight: 500;
+  line-height: var(--line-height-settings-group-label);
+  color: var(--color-main-tertiary);
+}
+
+.ds-bulkActionBarSettingsPanel__optionList {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: var(--spacing-gap-1);
+  width: 100%;
+  min-width: 0;
+}
+
+.ds-bulkActionBarSettingsPanel__divider {
+  box-sizing: border-box;
+  width: 100%;
+  margin: 0;
+  padding: var(--spacing-padding-2) var(--spacing-padding-050);
+}
+
+.ds-bulkActionBarSettingsPanel__divider::after {
+  content: "";
+  display: block;
+  width: 100%;
+  height: var(--border-width-base);
+  border-radius: var(--radius-full);
+  background: var(--color-border-weak);
+}
+
+/* Figma: selected row uses overlay-accent; disabled row at ~10% opacity */
+.ds-bulkActionBarSettingsPanel .ds-dropdownOption[data-dropdown-option-selected="true"] {
+  background: var(--color-overlay-accent);
+}
+
+.ds-bulkActionBarSettingsPanel .ds-dropdownOption--disabled {
+  opacity: 0.1;
+}
+
 /* Dismiss: muted icon → error intent on hover / focus / press */
 .ds-button.ds-bulkActionBar__dismiss[data-variant="transparent"] {
   color: var(--color-main-quaternary);
@@ -2065,6 +2147,7 @@ button.ds-inputSection__labelRow.ds-inputSection__labelRow--toggle {
 .ds-button.ds-bulkActionBar__dismiss[data-variant="transparent"]:focus-visible:not(:disabled):not([aria-disabled="true"]),
 .ds-button.ds-bulkActionBar__dismiss[data-variant="transparent"]:active:not(:disabled):not([aria-disabled="true"]) {
   color: var(--color-intent-error);
+  background-color: var(--color-overlay-error);
 }
 
 @media (min-width: 480px) {
@@ -2126,7 +2209,8 @@ button.ds-inputSection__labelRow.ds-inputSection__labelRow--toggle {
   font-size: 21px;
   font-style: normal;
   font-weight: 600;
-  line-height: 100%;
+  /* >100% so descenders fit inside `overflow: hidden` (required for ellipsis). */
+  line-height: 1.2;
   color: var(--color-main-primary);
 }
 
