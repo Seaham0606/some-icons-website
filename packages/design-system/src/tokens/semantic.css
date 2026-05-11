@@ -1,350 +1,226 @@
-
-/* Light mode (default) - aligned with vanilla */
 :root {
-  /* Semantic color tokens (--color-* naming for compatibility with vanilla) */
-  --color-background: #ffffff;
-  --color-background-secondary: var(--background-secondary);
-  --color-background-weak: var(--background-weak);
-  --color-background-hover: var(--background-hover);
-  --color-background-hover-light: var(--background-hover-light);
-  --color-background-active: var(--background-active);
-  --color-background-active-dark: var(--background-active-dark);
-  --color-background-overlay: var(--background-overlay);
-  --color-background-footer: var(--background-footer);
-  --color-item-primary: var(--item-primary);
-  --color-item-secondary: var(--item-secondary);
-  --color-item-tertiary: var(--item-tertiary);
-  --color-item-quaternary: var(--item-quaternary);
-  --color-item-disabled: var(--item-disabled);
-  --color-item-grid: var(--item-grid);
-  --color-border: var(--border);
-  --color-border-subtle: var(--color-black-alpha-50);
-  --color-primary: var(--primary);
-  --color-primary-hover: var(--primary-hover);
-  --color-focus: var(--border-focus);
-  --color-warning: var(--destructive);
-  --color-selection-selected: var(--color-blue-400);
-  --color-selection-disabled: var(--color-gray-100);
-  --color-cta-button-bg: var(--color-gray-800);
-  --color-cta-button-bg-hover: var(--color-gray-700);
-  --color-cta-button-text: var(--color-white);
+  /* main */
+  --color-main-primary: var(--color-black-alpha-950);
+  --color-main-secondary: var(--color-black-alpha-600);
+  --color-main-tertiary: var(--color-black-alpha-200);
+  --color-main-quaternary: var(--color-black-alpha-100);
+  --color-main-disabled: var(--color-black-alpha-25);
 
-  /* Input colors */
-  --color-input-bg: var(--color-white);
-  --color-input-stroke: var(--color-gray-50);
-  --color-input-stroke-hover: var(--color-gray-100);
-  --color-input-stroke-typing: var(--color-blue-400);
-  --color-input-secondary-bg-hover: var(--color-gray-25);
-  --color-text-primary: var(--color-gray-800);
-  --color-text-secondary: var(--color-gray-700);
-  --color-text-tertiary: var(--color-gray-300);
-  --color-text-secondary-hover: var(--color-gray-600);
+  /* main / inverse (on inverse surfaces — light theme UI uses light tints) */
+  --color-main-inverse-primary: var(--color-gray-10);
+  --color-main-inverse-secondary: var(--color-white-alpha-600);
+  --color-main-inverse-tertiary: var(--color-white-alpha-300);
+  --color-main-inverse-quaternary: var(--color-white-alpha-150);
+  --color-main-inverse-disabled: var(--color-white-alpha-50);
 
-  /* Segmented button colors */
-  --color-seg-button-bg: var(--color-gray-100);
-  --color-text-primary-inverted: var(--color-gray-800);
-  --color-seg-button-bg-hover: var(--color-gray-200);
-  --color-seg-button-stroke: var(--color-black-alpha-25);
+  /* intent */
+  --color-intent-accent: var(--color-blue-400);
+  --color-intent-accent-strong: var(--color-blue-600);
+  --color-intent-success: var(--color-green-400); 
+  --color-intent-success-strong: var(--color-green-600);
+  --color-intent-warning: var(--color-yellow-400);
+  --color-intent-warning-strong: var(--color-yellow-600);
+  --color-intent-error: var(--color-red-400);
+  --color-intent-error-strong: var(--color-red-600);
 
-  /* Dropdown colors */
-  --color-dropdown-bg: var(--color-white-alpha-800);
-  --color-dropdown-bg-blur: blur(10px);
+  /* overlay */
+  --color-overlay-weak: var(--color-black-alpha-15);
+  --color-overlay-light-hover: var(--color-white-alpha-75);
+  --color-overlay-light-pressed: var(--color-black-alpha-75);
+  --color-overlay-dark-hover: var(--color-black-alpha-25);
+  --color-overlay-dark-pressed: var(--color-black-alpha-50);
+  --color-overlay-accent: var(--color-blue-alpha-50);
+  --color-overlay-success: var(--color-green-alpha-50);
+  --color-overlay-warning: var(--color-yellow-alpha-50);
+  --color-overlay-error: var(--color-purple-alpha-50);
 
-  /* Divider colors */
-  --color-divider-stroke: var(--color-black-alpha-100);
-  --color-category-divider: var(--color-black-alpha-100);
+  /* background */
+  --color-background-strong: var(--color-white);
+  --color-background-base: var(--color-gray-10);
+  --color-background-weak: var(--color-black-alpha-10);
+  --color-background-elevation: var(--color-white);
+  --color-background-input: var(--color-black-alpha-10);
+  --color-background-menu: var(--color-white);
+  --color-background-inverse: var(--color-black-alpha-800);
 
-  /* Toggle colors */
-  --color-toggle-bg: var(--color-gray-100);
-  --color-toggle-stroke: var(--color-black-alpha-25);
-  --color-toggle-stroke-hover: var(--color-gray-100);
-  --color-toggle-control-bg: var(--color-white);
+  /* border */
+  --color-border-extra-strong: var(--color-black-alpha-600);
+  --color-border-strong: var(--color-black-alpha-100);
+  --color-border-base: var(--color-black-alpha-50);
+  --color-border-weak: var(--color-black-alpha-25);
+  --color-border-extra-weak: var(--color-black-alpha-15);
+  --color-border-success: var(--color-green-alpha-400);
+  --color-border-warning: var(--color-yellow-alpha-400);
+  --color-border-error: var(--color-purple-alpha-400);
 
-  /* Background */
-  --background: #ffffff;
-  --background-secondary: var(--color-gray-25);
-  --background-weak: var(--color-black-alpha-50);
-  --background-hover: var(--color-black-alpha-50);
-  --background-hover-light: var(--color-black-alpha-25);
-  --background-active: var(--color-black-alpha-50);
-  --background-active-dark: var(--color-black-alpha-75);
-  --background-overlay: var(--color-white-alpha-950);
-  --background-footer: var(--color-white-alpha-700);
+  /* border / inverse */
+  --color-border-inverse-base: var(--color-white-alpha-50);
+  --color-border-inverse-weak: var(--color-white-alpha-15);
+  --color-border-inverse-extra-weak: var(--color-white-alpha-10);
 
-  /* Text/Foreground */
-  --foreground: var(--color-gray-900);
-  --foreground-secondary: var(--color-gray-600);
-  --foreground-tertiary: var(--color-gray-300);
-  --foreground-quaternary: var(--color-gray-300);
-  --foreground-disabled: var(--color-gray-200);
-  --foreground-inverse: #ffffff;
-  --foreground-inverted: var(--color-gray-100);
+  /* Button gradients */
+  --button-gradient-primary: linear-gradient(
+    180deg,
+    var(--color-gray-900) 0%,
+    var(--color-gray-950) 100%
+  );
+  --button-gradient-secondary: linear-gradient(
+    180deg,
+    var(--color-gray-600) 0%,
+    var(--color-gray-800) 100%
+  );
+  --button-gradient-tertiary: linear-gradient(
+    180deg,
+    var(--color-gray-25) 0%,
+    var(--color-gray-50) 100%
+  );
+  --button-gradient-inverse: linear-gradient(
+    180deg,
+    var(--color-white) 0%,
+    var(--color-gray-25) 100%
+  );
 
-  /* Item colors (icons, controls) */
-  --item-primary: var(--color-gray-900);
-  --item-secondary: var(--color-gray-600);
-  --item-tertiary: var(--color-gray-300);
-  --item-quaternary: var(--color-gray-100);
-  --item-disabled: var(--color-gray-100);
-  --item-grid: var(--color-gray-900);
+  /* focus — default (accent) + intent variants; ring = palette 400, gap matches design-system buttons */
+  --color-focus-accent: var(--color-intent-accent);
+  --shadow-focus-accent:
+    0 0 0 var(--spacing-050) var(--color-background-base),
+    0 0 0 var(--spacing-1) var(--color-focus-accent);
+  --color-focus-success: var(--color-green-400);
+  --color-focus-warning: var(--color-yellow-400);
+  --color-focus-error: var(--color-purple-400);
+  --shadow-focus-success:
+    0 0 0 var(--spacing-050) var(--color-background-base),
+    0 0 0 var(--spacing-1) var(--color-focus-success);
+  --shadow-focus-warning:
+    0 0 0 var(--spacing-050) var(--color-background-base),
+    0 0 0 var(--spacing-1) var(--color-focus-warning);
+  --shadow-focus-error:
+    0 0 0 var(--spacing-050) var(--color-background-base),
+    0 0 0 var(--spacing-1) var(--color-focus-error);
 
-  /* Border */
-  --border: var(--color-gray-800);
-  --border-subtle: var(--color-black-alpha-50);
-  --border-base: var(--color-black-alpha-50);
-  --border-focus: var(--color-black-alpha-100);
+  /*
+   * Strong elevation (popover / floating panel) — Figma InputSection shadow stack (node 1199:8185).
+   * Layer colors use palette + color-mix so light/dark themes stay correct.
+   */
+  --shadow-strong:
+    0 125px 50px 0 color-mix(in srgb, var(--color-black) 1%, transparent),
+    0 70px 42px 0 color-mix(in srgb, var(--color-black) 5%, transparent),
+    0 31px 31px 0 var(--color-black-alpha-50),
+    0 var(--spacing-2) calc(var(--spacing-padding-4) + var(--spacing-padding-025)) 0
+      color-mix(in srgb, var(--color-black) 10%, transparent);
 
-  /* Interactive */
-  --primary: var(--color-blue-400);
-  --primary-hover: var(--color-blue-500);
-  --primary-foreground: #ffffff;
-
-  --destructive: var(--color-red-400);
-  --destructive-foreground: #ffffff;
-
-  /* UI components */
-  --muted: var(--color-gray-100);
-  --muted-foreground: var(--color-gray-500);
-
-  --accent: var(--color-gray-100);
-  --accent-foreground: var(--color-gray-900);
-
-  --card: #ffffff;
-  --card-foreground: var(--color-gray-900);
-
-  --popover: #ffffff;
-  --popover-foreground: var(--color-gray-900);
-
-  --input: var(--color-black-alpha-50);
-  --ring: var(--color-black-alpha-100);
-
-
-  --icon-color: var(--color-gray-900);
-
-  --radius: 10px;
+  /* Icon card — “Copied” chip surface (theme-aware) */
+  --color-iconCard-feedback-bg: var(--color-black-alpha-100);
 }
 
-/* Dark mode - aligned with vanilla */
 [data-theme="dark"] {
-  /* Semantic color tokens (--color-* naming for compatibility with vanilla) */
-  --color-background: var(--color-gray-925);
-  --color-background-secondary: var(--background-secondary);
-  --color-background-weak: var(--background-weak);
-  --color-background-hover: var(--background-hover);
-  --color-background-hover-light: var(--background-hover-light);
-  --color-background-active: var(--background-active);
-  --color-background-active-dark: var(--background-active-dark);
-  --color-background-overlay: var(--background-overlay);
-  --color-background-footer: var(--background-footer);
-  --color-item-primary: var(--item-primary);
-  --color-item-secondary: var(--item-secondary);
-  --color-item-tertiary: var(--item-tertiary);
-  --color-item-quaternary: var(--item-quaternary);
-  --color-item-disabled: var(--item-disabled);
-  --color-item-grid: var(--item-grid);
-  --color-border: var(--border);
-  --color-border-subtle: var(--color-white-alpha-50);
-  --color-primary: var(--primary);
-  --color-primary-hover: var(--primary-hover);
-  --color-focus: var(--border-focus);
-  --color-warning: var(--destructive);
-  --color-selection-selected: var(--color-blue-400);
-  --color-selection-disabled: var(--color-gray-700);
-  --color-cta-button-bg: var(--color-gray-25);
-  --color-cta-button-bg-hover: var(--color-gray-75);
-  --color-cta-button-text: var(--color-gray-800);
+  /* main */
+  --color-main-primary: var(--color-white-alpha-999);
+  --color-main-secondary: var(--color-white-alpha-700);
+  --color-main-tertiary: var(--color-white-alpha-300);
+  --color-main-quaternary: var(--color-white-alpha-150);
+  --color-main-disabled: var(--color-white-alpha-50);
 
-  /* Input colors */
-  --color-input-bg: var(--color-gray-850);
-  --color-input-stroke: var(--color-gray-800);
-  --color-input-stroke-hover: var(--color-gray-700);
-  --color-input-stroke-typing: var(--color-blue-400);
-  --color-input-secondary-bg-hover: var(--color-gray-800);
-  --color-text-primary: var(--color-gray-50);
-  --color-text-secondary: var(--color-gray-200);
-  --color-text-tertiary: var(--color-gray-600);
-  --color-text-secondary-hover: var(--color-gray-500);
+  /* main / inverse (on inverse surfaces — dark theme UI uses dark tints) */
+  --color-main-inverse-primary: var(--color-gray-925);
+  --color-main-inverse-secondary: var(--color-black-alpha-600);
+  --color-main-inverse-tertiary: var(--color-black-alpha-200);
+  --color-main-inverse-quaternary: var(--color-black-alpha-100);
+  --color-main-inverse-disabled: var(--color-black-alpha-25);
 
-  /* Segmented button colors */
-  --color-seg-button-bg: var(--color-gray-700);
-  --color-text-primary-inverted: var(--color-gray-50);
-  --color-seg-button-bg-hover: var(--color-gray-600);
-  --color-seg-button-stroke: var(--color-white-alpha-25);
+  --color-main-warning: var(--color-intent-warning);
 
-  /* Divider colors */
-  --color-divider-stroke: var(--color-white-alpha-100);
-  --color-category-divider: var(--color-white-alpha-100);
+  /* intent */
+  --color-intent-accent: var(--color-blue-400);
+  --color-intent-accent-strong: var(--color-blue-300);
+  --color-intent-success: var(--color-green-400);
+  --color-intent-success-strong: var(--color-green-300);
+  --color-intent-warning: var(--color-yellow-400);
+  --color-intent-warning-strong: var(--color-yellow-300);
+  --color-intent-error: var(--color-red-400);
+  --color-intent-error-strong: var(--color-red-300);
 
-  /* Dropdown colors */
-  --color-dropdown-bg: var(--color-gray-850);
-  --color-dropdown-bg-blur: blur(10px);
+  /* overlay */
+  --color-overlay-weak: var(--color-white-alpha-15);
+  --color-overlay-light-hover: var(--color-black-alpha-75);
+  --color-overlay-light-pressed: var(--color-white-alpha-75);
+  --color-overlay-dark-hover: var(--color-white-alpha-25);
+  --color-overlay-dark-pressed: var(--color-white-alpha-50);
+  --color-overlay-accent: var(--color-blue-alpha-50);
+  --color-overlay-success: var(--color-green-alpha-50);
+  --color-overlay-warning: var(--color-yellow-alpha-50);
+  --color-overlay-error: var(--color-purple-alpha-50);
 
-  /* Toggle colors */
-  --color-toggle-bg: var(--color-gray-800);
-  --color-toggle-stroke: var(--color-white-alpha-25);
-  --color-toggle-stroke-hover: var(--color-gray-700);
-  --color-toggle-control-bg: var(--color-gray-600);
+  /* background */
+  --color-background-strong: var(--color-gray-990);
+  --color-background-base: var(--color-gray-975);
+  --color-background-weak: var(--color-white-alpha-10);
+  --color-background-elevation: var(--color-white-alpha-10);
+  --color-background-input: var(--color-white-alpha-10);
+  --color-background-menu: var(--color-gray-975);
+  --color-background-inverse: var(--color-white-alpha-800);
 
-  /* Background */
-  --background: #000000;
-  --background-secondary: var(--color-gray-900);
-  --background-weak: var(--color-white-alpha-50);
-  --background-hover: var(--color-white-alpha-200);
-  --background-hover-light: var(--color-white-alpha-75);
-  --background-active: var(--color-white-alpha-50);
-  --background-active-dark: var(--color-white-alpha-75);
-  --background-overlay: var(--color-black-alpha-950);
-  --background-footer: var(--color-black-alpha-700);
+  /* border */
+  --color-border-extra-strong: var(--color-white-alpha-600);
+  --color-border-strong: var(--color-white-alpha-150);
+  --color-border-base: var(--color-white-alpha-50);
+  --color-border-weak: var(--color-white-alpha-15);
+  --color-border-extra-weak: var(--color-white-alpha-15);
+  --color-border-success: var(--color-green-alpha-400);
+  --color-border-warning: var(--color-yellow-alpha-400);
+  --color-border-error: var(--color-purple-alpha-400);
 
-  /* Text/Foreground */
-  --foreground: #ffffff;
-  --foreground-secondary: var(--color-gray-400);
-  --foreground-tertiary: var(--color-gray-500);
-  --foreground-quaternary: var(--color-gray-600);
-  --foreground-disabled: var(--color-gray-600);
-  --foreground-inverse: #000000;
-  --foreground-inverted: var(--color-gray-900);
+  /* border / inverse */
+  --color-border-inverse-base: var(--color-black-alpha-50);
+  --color-border-inverse-weak: var(--color-black-alpha-25);
+  --color-border-inverse-extra-weak: var(--color-black-alpha-10);
 
-  /* Item colors (icons, controls) */
-  --item-primary: #ffffff;
-  --item-secondary: var(--color-gray-400);
-  --item-tertiary: var(--color-gray-500);
-  --item-quaternary: var(--color-gray-900);
-  --item-disabled: var(--color-gray-600);
-  --item-grid: var(--color-gray-300);
+  /* Button gradients */
+  --button-gradient-primary: linear-gradient(
+    180deg,
+    var(--color-gray-10) 0%,
+    var(--color-gray-75) 100%
+  );
+  --button-gradient-secondary: linear-gradient(
+    180deg,
+    var(--color-gray-150) 0%,
+    var(--color-gray-300) 100%
+  );
+  --button-gradient-tertiary: linear-gradient(
+    180deg,
+    var(--color-gray-900) 0%,
+    var(--color-gray-925) 100%
+  );
+  --button-gradient-inverse: linear-gradient(
+    180deg,
+    var(--color-gray-925) 0%,
+    var(--color-gray-950) 100%
+  );
 
-  /* Border */
-  --border: var(--color-gray-200);
-  --border-subtle: var(--color-white-alpha-50);
-  --border-base: var(--color-white-alpha-50);
-  --border-focus: var(--color-white-alpha-100);
+  /* focus — default (accent) + intent variants; ring = palette 400, gap matches design-system buttons */
+  --color-focus-accent: var(--color-intent-accent);
+  --shadow-focus-accent:
+    0 0 0 var(--spacing-050) var(--color-background-base),
+    0 0 0 var(--spacing-1) var(--color-focus-accent);
+  --color-focus-success: var(--color-green-400);
+  --color-focus-warning: var(--color-yellow-400);
+  --color-focus-error: var(--color-purple-400);
+  --shadow-focus-success:
+    0 0 0 var(--spacing-050) var(--color-background-base),
+    0 0 0 var(--spacing-1) var(--color-focus-success);
+  --shadow-focus-warning:
+    0 0 0 var(--spacing-050) var(--color-background-base),
+    0 0 0 var(--spacing-1) var(--color-focus-warning);
+  --shadow-focus-error:
+    0 0 0 var(--spacing-050) var(--color-background-base),
+    0 0 0 var(--spacing-1) var(--color-focus-error);
 
-  /* Interactive */
-  --primary: var(--color-blue-400);
-  --primary-hover: var(--color-blue-300);
-  --primary-foreground: #000000;
+  --shadow-strong:
+    0 125px 50px 0 color-mix(in srgb, var(--color-black) 45%, transparent),
+    0 70px 42px 0 color-mix(in srgb, var(--color-black) 28%, transparent),
+    0 31px 31px 0 color-mix(in srgb, var(--color-black) 18%, transparent),
+    0 var(--spacing-2) calc(var(--spacing-padding-4) + var(--spacing-padding-025)) 0
+      color-mix(in srgb, var(--color-black) 55%, transparent);
 
-  --destructive: var(--color-red-500);
-  --destructive-foreground: #ffffff;
-
-  /* UI components */
-  --muted: var(--color-gray-800);
-  --muted-foreground: var(--color-gray-400);
-
-  --accent: var(--color-gray-800);
-  --accent-foreground: #ffffff;
-
-  --card: #000000;
-  --card-foreground: #ffffff;
-
-  --popover: var(--color-gray-900);
-  --popover-foreground: #ffffff;
-
-  --input: var(--color-white-alpha-50);
-  --ring: var(--color-white-alpha-100);
-
-
-  --icon-color: var(--color-gray-300);
-}
-
-/* System preference dark mode */
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme]) {
-    /* Semantic color tokens (--color-* naming for compatibility with vanilla) */
-    --color-background: var(--color-gray-925);
-    --color-item-primary: var(--item-primary);
-    --color-item-secondary: var(--item-secondary);
-    --color-item-tertiary: var(--item-tertiary);
-    --color-item-quaternary: var(--item-quaternary);
-    --color-item-disabled: var(--item-disabled);
-    --color-item-grid: var(--item-grid);
-    --color-border: var(--border);
-    --color-border-subtle: var(--color-white-alpha-50);
-    --color-primary-hover: var(--primary-hover);
-    --color-warning: var(--destructive);
-    --color-selection-selected: var(--color-blue-400);
-    --color-selection-disabled: var(--color-gray-800);
-    --color-cta-button-bg: var(--color-gray-25);
-    --color-cta-button-bg-hover: var(--color-gray-75);
-    --color-cta-button-text: var(--color-gray-800);
-
-    /* Input colors */
-    --color-input-bg: var(--color-gray-850);
-    --color-input-stroke: var(--color-gray-800);
-    --color-input-stroke-hover: var(--color-gray-700);
-    --color-input-stroke-typing: var(--color-blue-400);
-    --color-input-secondary-bg-hover: var(--color-gray-850);
-    --color-text-primary: var(--color-gray-50);
-    --color-text-tertiary: var(--color-gray-600);
-
-    /* Divider colors */
-    --color-divider-stroke: var(--color-white-alpha-100);
-
-    /* Toggle colors */
-    --color-toggle-bg: var(--color-gray-800);
-    --color-toggle-stroke: var(--color-white-alpha-25);
-    --color-toggle-stroke-hover: var(--color-gray-700);
-    --color-toggle-control-bg: var(--color-gray-600);
-
-    /* Background */
-    --background: #000000;
-    --background-secondary: var(--color-gray-900);
-    --background-weak: var(--color-white-alpha-50);
-    --background-hover: var(--color-white-alpha-200);
-    --background-hover-light: var(--color-white-alpha-50);
-    --background-active: var(--color-white-alpha-50);
-    --background-active-dark: var(--color-white-alpha-75);
-    --background-overlay: var(--color-black-alpha-950);
-    --background-footer: var(--color-black-alpha-700);
-
-    /* Text/Foreground */
-    --foreground: #ffffff;
-    --foreground-secondary: var(--color-gray-400);
-    --foreground-tertiary: var(--color-gray-500);
-    --foreground-quaternary: var(--color-gray-600);
-    --foreground-disabled: var(--color-gray-600);
-    --foreground-inverse: #000000;
-    --foreground-inverted: var(--color-gray-900);
-
-    /* Item colors (icons, controls) */
-    --item-primary: #ffffff;
-    --item-secondary: var(--color-gray-400);
-    --item-tertiary: var(--color-gray-500);
-    --item-quaternary: var(--color-gray-900);
-    --item-disabled: var(--color-gray-600);
-    --item-grid: var(--color-gray-300);
-
-    /* Border */
-    --border: var(--color-gray-200);
-    --border-subtle: var(--color-white-alpha-50);
-    --border-base: var(--color-white-alpha-50);
-    --border-focus: var(--color-white-alpha-100);
-
-    /* Interactive */
-    --primary: var(--color-blue-400);
-    --primary-hover: var(--color-blue-300);
-    --primary-foreground: #000000;
-
-    --destructive: var(--color-red-500);
-    --destructive-foreground: #ffffff;
-
-    /* UI components */
-    --muted: var(--color-gray-800);
-    --muted-foreground: var(--color-gray-400);
-
-    --accent: var(--color-gray-800);
-    --accent-foreground: #ffffff;
-
-    --card: #000000;
-    --card-foreground: #ffffff;
-
-    --popover: var(--color-gray-900);
-    --popover-foreground: #ffffff;
-
-    --input: var(--color-white-alpha-50);
-    --ring: var(--color-white-alpha-100);
-
-
-    --icon-color: var(--color-gray-300);
-  }
+  --color-iconCard-feedback-bg: var(--color-white-alpha-100);
 }

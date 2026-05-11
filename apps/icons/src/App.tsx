@@ -1,10 +1,11 @@
 import { Analytics } from '@vercel/analytics/react'
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { Toaster } from '@/components/ui/sonner'
+import { Toaster as Sonner, type ToasterProps } from 'sonner'
+import { SomeIcon } from 'design-system'
+import { useUIStore } from '@/stores/uiStore'
 import HomePage from '@/pages/HomePage'
 import ChangelogPage from '@/pages/ChangelogPage'
-import GeneratorPage from '@/pages/GeneratorPage'
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -15,6 +16,77 @@ const queryClient = new QueryClient({
   },
 })
 
+function Toaster(props: ToasterProps) {
+  const theme = useUIStore((s) => s.getEffectiveTheme())
+
+  return (
+    <Sonner
+      theme={theme}
+      className="toaster group"
+      icons={{
+        success: (
+          <SomeIcon
+            iconName="symbol-check-circle"
+            iconStyle="fill"
+            iconSize="lg"
+            padding="0"
+          />
+        ),
+        info: (
+          <SomeIcon
+            iconName="symbol-information-circle"
+            iconStyle="outline"
+            iconSize="lg"
+            padding="0"
+          />
+        ),
+        warning: (
+          <SomeIcon
+            iconName="symbol-check-circle"
+            iconStyle="fill"
+            iconSize="lg"
+            padding="0"
+          />
+        ),
+        error: (
+          <SomeIcon
+            iconName="symbol-warning-octagon"
+            iconStyle="outline"
+            iconSize="lg"
+            padding="0"
+          />
+        ),
+        loading: (
+          <SomeIcon
+            iconName="interface-loading"
+            iconStyle="outline"
+            iconSize="lg"
+            padding="0"
+            className="animate-spin"
+          />
+        ),
+      }}
+      toastOptions={{
+        classNames: {
+          toast:
+            '!rounded-[999px] !border-0 !backdrop-blur-[10px] !pl-3 !pr-4 !py-2 !text-[16px] !font-semibold !w-fit !gap-3',
+          success:
+            '!bg-[var(--color-black-alpha-200)] dark:!bg-[var(--color-white-alpha-200)] !text-black dark:!text-white',
+        },
+      }}
+      style={
+        {
+          '--normal-bg': 'var(--popover)',
+          '--normal-text': 'var(--popover-foreground)',
+          '--normal-border': 'var(--border)',
+          '--border-radius': 'var(--radius)',
+        } as React.CSSProperties
+      }
+      {...props}
+    />
+  )
+}
+
 export default function App() {
   return (
     <QueryClientProvider client={queryClient}>
@@ -22,7 +94,6 @@ export default function App() {
         <Routes>
           <Route path="/" element={<HomePage />} />
           <Route path="/changelog" element={<ChangelogPage />} />
-          <Route path="/generator" element={<GeneratorPage />} />
         </Routes>
         <Toaster position="bottom-center" />
         <Analytics />

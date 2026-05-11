@@ -13,13 +13,18 @@ export function IconPreview({ path, className }: IconPreviewProps) {
 
   if (isLoading) {
     return (
-      <div className={cn('animate-pulse bg-muted rounded', className)} />
+      <div
+        // Use the same grid color as real icon previews so the UI isn't "white on white".
+        className={cn('animate-pulse bg-[var(--item-grid)] rounded', className)}
+      />
     )
   }
 
   if (error || !svg) {
     return (
-      <div className={cn('flex items-center justify-center text-foreground-tertiary', className)}>
+      <div
+        className={cn('flex items-center justify-center text-[var(--color-main-tertiary)]', className)}
+      >
         ?
       </div>
     )
@@ -41,7 +46,7 @@ export function IconPreview({ path, className }: IconPreviewProps) {
     <div
       className={cn('transition-colors', className)}
       style={{
-        backgroundColor: selectedColor ?? 'var(--item-grid)',
+        backgroundColor: selectedColor ?? 'var(--color-main-secondary)',
         WebkitMaskImage: maskUrl,
         WebkitMaskSize: 'contain',
         WebkitMaskRepeat: 'no-repeat',

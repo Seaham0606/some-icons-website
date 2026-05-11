@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Tech Stack
 
-React 19, TypeScript, Vite 7, Tailwind CSS v4, TanStack Query, Zustand, React Router v7, Radix UI primitives, JSZip
+React 19, TypeScript, Vite 7, Tailwind CSS v4, TanStack Query, Zustand, React Router v7, workspace `design-system` package, JSZip
 
 ## Project Overview
 
@@ -37,9 +37,9 @@ Uses Zustand stores in `src/stores/`:
 
 ### Key Directories
 - `src/pages/` - Route components (HomePage, ChangelogPage, GeneratorPage)
-- `src/components/controls/` - Sidebar filter/export controls
-- `src/components/icons/` - IconGrid and IconCard components
-- `src/components/ui/` - Radix-based shadcn/ui primitives
+- `src/components/icons/` - IconGrid and IconCard (app wiring around design-system)
+- `src/components/layout/` - `PageContent`, `MainContent`
+- `src/components/generator/` - Changelog generator form
 - `src/hooks/` - TanStack Query hooks for data fetching
 - `src/lib/` - Utilities (API, SVG manipulation, export logic)
 - `src/types/` - TypeScript interfaces

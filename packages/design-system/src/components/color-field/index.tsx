@@ -1,12 +1,11 @@
 "use client"
 
 /**
- * ColorField — two-column row: hex entry (always-visible leading ColorSwatch) + optional picker slot (eyedropper opens HexColorPicker popover).
+ * ColorField — two-column row: hex entry (leading ColorSwatch when committed, drafting, or focused) + read-only picker slot (eyedropper).
  * Canonical value: `null` means default / `currentColor`. Live commits use **6-digit** hex only; `#rgb` shorthand applies on **blur**.
  */
 
 import * as React from "react"
-import { HexColorPicker } from "react-colorful"
 import { cn } from "../../utils"
 import { InputField } from "../input-field"
 import { ColorSwatch } from "../color-swatch"
@@ -55,9 +54,7 @@ export interface ColorFieldProps {
   /** Canonical `#RRGGBB`, or `null` for default (`currentColor`). */
   color: string | null
   onColorChange: (color: string | null) => void
-  col2Width?: "equal" | "size-10" | "size-12"
-  /** When false, the eyedropper picker column is hidden. @default true */
-  showPicker?: boolean
+  col2Width?: "equal" | "size-12"
 }
 
 export function ColorField({
@@ -66,17 +63,15 @@ export function ColorField({
   label = "Color",
   color,
   onColorChange,
-  col2Width = "size-10",
-  showPicker = true,
+  col2Width = "size-12",
 }: ColorFieldProps) {
   const [hexText, setHexText] = React.useState(() =>
     color != null
       ? normalizeHexColorInput(color, { allowShorthand: true }) ?? color
       : "",
   )
+  const [hexFocused, setHexFocused] = React.useState(false)
   const prevColorRef = React.useRef(color)
-  const [pickerOpen, setPickerOpen] = React.useState(false)
-  const pickerAnchorRef = React.useRef<HTMLDivElement>(null)
 
   React.useEffect(() => {
     if (color !== prevColorRef.current) {
@@ -85,45 +80,23 @@ export function ColorField({
         setHexText(
           normalizeHexColorInput(color, { allowShorthand: true }) ?? color,
         )
-      } else {
-        setHexText("")
       }
     }
   }, [color])
-
-  React.useEffect(() => {
-    if (!pickerOpen) return
-    const onKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Escape") setPickerOpen(false)
-    }
-    const onPointerDown = (e: PointerEvent) => {
-      const node = e.target instanceof Node ? e.target : null
-      if (!node) return
-      if (pickerAnchorRef.current?.contains(node)) return
-      setPickerOpen(false)
-    }
-    document.addEventListener("keydown", onKeyDown)
-    document.addEventListener("pointerdown", onPointerDown, true)
-    return () => {
-      document.removeEventListener("keydown", onKeyDown)
-      document.removeEventListener("pointerdown", onPointerDown, true)
-    }
-  }, [pickerOpen])
 
   const hexTrimmed = hexText.trim()
   const hasUserHexInput =
     hexTrimmed !== "" && hexTrimmed !== "#"
   const canReset = hasUserHexInput || color !== null
-
-  /** Value fed to HexColorPicker — falls back to black when unset. */
-  const pickerValue = color ?? "#000000"
+  const showLeadingSwatch =
+    color !== null || hexFocused || hasUserHexInput
 
   return (
     <div className={cn("ds-colorField", className)} data-component="color-field">
       <InputField
         showLabel={showLabel}
         label={label}
-        showCol2={showPicker}
+        showCol2
         col2Width={col2Width}
         contentSlot={
           <Input
@@ -147,9 +120,11 @@ export function ColorField({
               }
             }}
             onFocus={(e) => {
+              setHexFocused(true)
               if (e.target.value === "") setHexText("#")
             }}
             onBlur={(e) => {
+              setHexFocused(false)
               const v = e.target.value.trim()
               if (v === "" || v === "#") {
                 setHexText("")
@@ -168,31 +143,12 @@ export function ColorField({
             autoCapitalize="none"
             autoCorrect="off"
             spellCheck={false}
-            showLeading
             leadingSlot={
-              <div ref={pickerAnchorRef} className="ds-colorField__swatchWrap">
-                {pickerOpen && (
-                  <div className="ds-colorField__pickerPop" role="dialog" aria-label="Color picker">
-                    <HexColorPicker
-                      color={pickerValue}
-                      onChange={(hex) => {
-                        const normalized = normalizeHexColorInput(hex, { allowShorthand: false })
-                        if (normalized) onColorChange(normalized)
-                      }}
-                    />
-                  </div>
-                )}
-                <button
-                  type="button"
-                  className="ds-colorField__swatchBtn"
-                  aria-label="Open color picker"
-                  aria-expanded={pickerOpen}
-                  aria-haspopup="dialog"
-                  onClick={() => setPickerOpen((o) => !o)}
-                >
+              showLeadingSwatch ? (
+                <div className="ds-colorField__swatchReveal">
                   <ColorSwatch color={color} />
-                </button>
-              </div>
+                </div>
+              ) : undefined
             }
             trailingSlot={
               <button
@@ -216,19 +172,28 @@ export function ColorField({
           />
         }
         secondarySlot={
-          <button
-            type="button"
-            className="ds-colorField__pickerBtn"
-            aria-label="Color picker (coming soon)"
-            disabled
+          <div
+            className="ds-colorField__pickerSlot"
+            onMouseDownCapture={(e) => e.preventDefault()}
           >
-            <SomeIcon
-              iconName="formatting-eyedropper"
-              iconStyle="outline"
-              iconSize="md"
-              padding="0"
+            <Input
+              readOnly
+              tabIndex={-1}
+              aria-label="Color picker (coming soon)"
+              value=""
+              placeholder=""
+              leadingSlot={
+                <SomeIcon
+                  iconName="formatting-eyedropper"
+                  iconStyle="fill"
+                  iconSize="md"
+                  padding="2"
+                />
+              }
+              showLeading
+              showTrailing={false}
             />
-          </button>
+          </div>
         }
       />
     </div>

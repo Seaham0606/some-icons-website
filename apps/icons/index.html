@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Some Icons</title>
+    <title>Some Icons - Icon Library</title>
     
     <!-- Meta Description -->
     <meta name="description" content="Browse, customize, and download icons from the Some Icons library. Search by category, apply custom colors, and export as SVG or PNG." />
@@ -35,18 +35,38 @@
       gtag('config', 'G-JNWWFMCPD8');
     </script>
     
-    <!-- Initialize theme immediately to prevent flash -->
+    <!--
+      Match Zustand persist key `some-icons-ui`: default / `system` → OS appearance;
+      saved `light` | `dark` → manual override. Prevents flash before JS loads.
+    -->
     <script>
-      (function() {
+      (function () {
         try {
-          const savedTheme = localStorage.getItem('theme');
-          if (savedTheme === 'dark' || savedTheme === 'light') {
-            document.documentElement.setAttribute('data-theme', savedTheme);
+          var raw = localStorage.getItem('some-icons-ui');
+          var preference = 'system';
+          if (raw) {
+            var parsed = JSON.parse(raw);
+            if (parsed.state && (parsed.state.theme === 'light' || parsed.state.theme === 'dark' || parsed.state.theme === 'system')) {
+              preference = parsed.state.theme;
+            }
           } else {
-            document.documentElement.removeAttribute('data-theme');
+            var legacy = localStorage.getItem('theme');
+            if (legacy === 'light' || legacy === 'dark') {
+              preference = legacy;
+            }
           }
+          var effective =
+            preference === 'system'
+              ? window.matchMedia('(prefers-color-scheme: dark)').matches
+                ? 'dark'
+                : 'light'
+              : preference;
+          document.documentElement.setAttribute('data-theme', effective);
         } catch (e) {
-          document.documentElement.removeAttribute('data-theme');
+          document.documentElement.setAttribute(
+            'data-theme',
+            window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
+          );
         }
       })();
     </script>

@@ -1,9 +1,10 @@
 import { getCategoryIcon, getCategoryLabel } from '@/lib/category-icons'
-import { getCategories, getCategoryCounts, useIcons } from '@/hooks/useIcons'
+import { getCategories, useIcons } from '@/hooks/useIcons'
 import { useFilterStore } from '@/stores/filterStore'
 import type { IconStyle } from '@/types/icon'
 import {
   DropdownMenu,
+  DropdownMenuDivider,
   DropdownOption,
   Input,
   InputField,
@@ -11,7 +12,7 @@ import {
   SegmentedControl,
   SomeIcon,
 } from 'design-system'
-import { useEffect, useRef } from 'react'
+import { Fragment, useEffect, useRef } from 'react'
 
 export function HomeCategoryList({
   listClassName,
@@ -20,7 +21,6 @@ export function HomeCategoryList({
 }) {
   const { data: icons } = useIcons()
   const categories = getCategories(icons)
-  const categoryCounts = getCategoryCounts(icons)
   const category = useFilterStore((s) => s.category)
   const setCategory = useFilterStore((s) => s.setCategory)
   const selectedRowRef = useRef<HTMLDivElement>(null)
@@ -42,25 +42,27 @@ export function HomeCategoryList({
       role="listbox"
       aria-label="Categories"
     >
-      {allCategories.map((cat) => (
-        <div key={cat} ref={category === cat ? selectedRowRef : null}>
-          <DropdownOption
-            role="option"
-            selected={category === cat}
-            leadingSlot={
-              <SomeIcon
-                iconName={getCategoryIcon(cat)}
-                iconStyle="outline"
-                iconSize="sm"
-                padding="050"
-              />
-            }
-            iconCount={categoryCounts[cat]}
-            onClick={() => setCategory(cat)}
-          >
-            {getCategoryLabel(cat)}
-          </DropdownOption>
-        </div>
+      {allCategories.map((cat, index) => (
+        <Fragment key={cat}>
+          <div ref={category === cat ? selectedRowRef : null}>
+            <DropdownOption
+              role="option"
+              selected={category === cat}
+              leadingSlot={
+                <SomeIcon
+                  iconName={getCategoryIcon(cat)}
+                  iconStyle="outline"
+                  iconSize="sm"
+                  padding="050"
+                />
+              }
+              onClick={() => setCategory(cat)}
+            >
+              {getCategoryLabel(cat)}
+            </DropdownOption>
+          </div>
+          {index === 0 ? <DropdownMenuDivider /> : null}
+        </Fragment>
       ))}
     </DropdownMenu>
   )

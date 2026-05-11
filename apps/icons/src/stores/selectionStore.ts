@@ -5,6 +5,7 @@ interface SelectionState {
   toggle: (id: string) => void
   select: (id: string) => void
   deselect: (id: string) => void
+  deselectMany: (ids: string[]) => void
   selectAll: (ids: string[]) => void
   clear: () => void
   isSelected: (id: string) => boolean
@@ -22,25 +23,52 @@ export const useSelectionStore = create<SelectionState>((set, get) => ({
       } else {
         next.add(id)
       }
-      return { selectedIds: next, count: next.size }
+      return {
+        selectedIds: next,
+        count: next.size,
+      }
     }),
   select: (id) =>
     set((state) => {
       const next = new Set(state.selectedIds)
       next.add(id)
-      return { selectedIds: next, count: next.size }
+      return {
+        selectedIds: next,
+        count: next.size,
+      }
     }),
   deselect: (id) =>
     set((state) => {
       const next = new Set(state.selectedIds)
       next.delete(id)
-      return { selectedIds: next, count: next.size }
+      return {
+        selectedIds: next,
+        count: next.size,
+      }
+    }),
+  deselectMany: (ids) =>
+    set((state) => {
+      const next = new Set(state.selectedIds)
+      for (const id of ids) {
+        next.delete(id)
+      }
+      return {
+        selectedIds: next,
+        count: next.size,
+      }
     }),
   selectAll: (ids) =>
     set(() => {
       const next = new Set(ids)
-      return { selectedIds: next, count: next.size }
+      return {
+        selectedIds: next,
+        count: next.size,
+      }
     }),
-  clear: () => set({ selectedIds: new Set(), count: 0 }),
+  clear: () =>
+    set({
+      selectedIds: new Set(),
+      count: 0,
+    }),
   isSelected: (id) => get().selectedIds.has(id),
 }))

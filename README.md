@@ -88,7 +88,7 @@ Semantic tokens automatically adapt to light/dark mode:
 **Text:**
 - `--color-text-primary` - Primary text
 - `--color-text-secondary` - Secondary text
-- `--color-text-tertiary` - Tertiary text
+- `--color-main-tertiary` - Tertiary / muted text (design system)
 
 **Interactive:**
 - `--color-primary` - Primary action color (blue)

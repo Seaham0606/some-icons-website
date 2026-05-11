@@ -1,31 +1,11 @@
+import logoSymbol from '../../assets/images/logo-some-icons-symbol.svg'
+import figmaIcon from '../../assets/images/logo-figma-icon.svg'
+import githubIcon from '../../assets/images/logo-github-icon.svg'
 import {
-  Sidebar,
-  SidebarHeader,
-  SidebarContent,
-  SidebarFooter,
-} from '@/components/layout/Sidebar'
-import { MainContent, ScrollArea } from '@/components/layout/MainContent'
-import { MobileHeader } from '@/components/layout/MobileHeader'
-import { Footer } from '@/components/layout/Footer'
-import { ThemeToggle } from '@/components/layout/ThemeToggle'
-import { SearchInput } from '@/components/controls/SearchInput'
-import { StyleToggle } from '@/components/controls/StyleToggle'
-import { CategorySelect } from '@/components/controls/CategorySelect'
-import { ColorPicker } from '@/components/controls/ColorPicker'
-import { SizeSelector } from '@/components/controls/SizeSelector'
-import { FormatSelector } from '@/components/controls/FormatSelector'
-import { ExportButton } from '@/components/controls/ExportButton'
-import { SegmentedButton } from '@/components/ui/segmented-control'
+  GradientOverlay,
+  GRADIENT_OVERLAY_HOME_HEIGHT_PX,
+} from '@/components/overlay/GradientOverlay'
 import { IconGrid } from '@/components/icons/IconGrid'
-<<<<<<< Updated upstream
-import { useChangelog, getLatestVersion } from '@/hooks/useChangelog'
-import { useIcons } from '@/hooks/useIcons'
-import { useSelectionStore } from '@/stores/selectionStore'
-import { useFilterStore } from '@/stores/filterStore'
-import { useMemo } from 'react'
-import type { Icon } from '@/types/icon'
-import { Link } from 'react-router-dom'
-=======
 import { HomePageFilterStack } from '@/components/home/HomePageFilters'
 import { BulkColorPickerPanel } from '@/components/home/BulkColorPickerPanel'
 import { PageContent } from '@/components/layout'
@@ -59,7 +39,7 @@ import {
   getCodeCopySuccessLabel,
   getDefaultCodeFramework,
 } from '@/lib/code-export'
-import { getHighestVersion, useChangelog } from '@/hooks/useChangelog'
+import { useChangelog } from '@/hooks/useChangelog'
 import {
   useCallback,
   useEffect,
@@ -69,48 +49,71 @@ import {
   type KeyboardEvent,
   type ReactNode,
 } from 'react'
->>>>>>> Stashed changes
 
-function normalizeQuery(s: string): string {
-  return s.trim().toLowerCase()
+const BULK_COPY_STATE_ICONS = [
+  { iconName: 'interface-copy', iconStyle: 'outline' },
+  {
+    iconName: 'symbol-check-mark',
+    iconStyle: 'outline',
+    color: 'var(--color-intent-success-strong)',
+  },
+] as const satisfies [ButtonStateIcon, ButtonStateIcon]
+
+const BULK_DOWNLOAD_STATE_ICONS = [
+  { iconName: 'arrow-down', iconStyle: 'outline' },
+  {
+    iconName: 'symbol-check-mark',
+    iconStyle: 'outline',
+    color: 'var(--color-intent-success)',
+  },
+] as const satisfies [ButtonStateIcon, ButtonStateIcon]
+
+
+/** Inverse chip on hover/focus — below the control (IconCard filename pattern). */
+function BulkActionHoverChip({
+  chipLabel,
+  children,
+}: {
+  chipLabel: string
+  children: ReactNode
+}) {
+  return (
+    <div className="homepage-bulkAction-hoverWrap">
+      {children}
+      <div className="homepage-bulkAction-hoverMeta" aria-hidden>
+        <Chip variant="inverse" backdropBlur>
+          {chipLabel}
+        </Chip>
+      </div>
+    </div>
+  )
 }
 
-function matches(icon: Icon, query: string): boolean {
-  const q = normalizeQuery(query)
-  if (!q) return true
-
-  const searchableText = [
-    icon.id,
-    icon.category,
-    ...(icon.tags ?? []),
-  ]
-    .join(' ')
-    .toLowerCase()
-
-  return q.split(/\s+/).every((term) => searchableText.includes(term))
+function HomeThemeButton() {
+  const setTheme = useUIStore((s) => s.setTheme)
+  const mode = useUIStore((s) => s.getEffectiveTheme())
+  return (
+    <ThemeButton
+      mode={mode}
+      onToggle={() =>
+        setTheme(useUIStore.getState().getEffectiveTheme() === 'dark' ? 'light' : 'dark')
+      }
+    />
+  )
 }
 
-function getDerivedSortKey(iconId: string): string {
-  const parts = iconId.split('-')
-  if (parts.length > 1) {
-    return parts.slice(1).join('-')
-  }
-  return iconId
-}
+const EXPORT_FORMAT_OPTIONS = [
+  { value: 'svg' as const, label: 'SVG' },
+  { value: 'png' as const, label: 'PNG' },
+  { value: 'code' as const, label: 'Code' },
+]
 
 export default function HomePage() {
-  const { data: entries } = useChangelog()
-<<<<<<< Updated upstream
-  const version = getLatestVersion(entries)
-  const { data: icons } = useIcons()
-  const count = useSelectionStore((state) => state.count)
-  const selectAll = useSelectionStore((state) => state.selectAll)
-  const clear = useSelectionStore((state) => state.clear)
-  const searchQuery = useFilterStore((state) => state.searchQuery)
-  const category = useFilterStore((state) => state.category)
-  const style = useFilterStore((state) => state.style)
-=======
-  const version = getHighestVersion(entries)
+  const searchQuery = useFilterStore((s) => s.searchQuery)
+  const setSearchQuery = useFilterStore((s) => s.setSearchQuery)
+  const iconStyle = useFilterStore((s) => s.style)
+  const setIconStyle = useFilterStore((s) => s.setStyle)
+  useChangelog()
   const [filtersSheetOpen, setFiltersSheetOpen] = useState(false)
   const [headerSettingsRowOpen, setHeaderSettingsRowOpen] = useState(false)
   const [mobileSearchOverlayOpen, setMobileSearchOverlayOpen] = useState(false)
@@ -140,40 +143,88 @@ export default function HomePage() {
       : EXPORT_FORMAT_OPTIONS.find((o) => o.value === 'svg')?.label ?? 'SVG'
   const validateExport = useExportStore((s) => s.validate)
   const [customExportSize, setCustomExportSize] = useState('')
->>>>>>> Stashed changes
 
-  // Get filtered icons for select all functionality
-  const filteredIcons = useMemo(() => {
-    if (!icons) return []
+  const { sizeValid } = validateExport()
+  const sizeFieldError = showExportValidation && !sizeValid
 
-    let result = icons
+  const {
+    handleCopy,
+    handleDownload,
+    isCopying,
+    isDownloading,
+    selectionCount,
+  } = useIconExport()
+  const clearSelection = useSelectionStore((s) => s.clear)
 
-    if (category !== 'all') {
-      result = result.filter((icon) => icon.category === category)
+  const {
+    copySuccessStrip,
+    downloadSuccessStrip,
+    flashCopySuccess,
+    flashDownloadSuccess,
+  } = useBulkActionStripFeedback()
+
+  const onBulkCopy = useCallback(async () => {
+    const ok = await handleCopy()
+    if (ok) flashCopySuccess()
+  }, [handleCopy, flashCopySuccess])
+
+  const onBulkDownload = useCallback(async () => {
+    const ok = await handleDownload()
+    if (ok) {
+      flashDownloadSuccess(() => {
+        clearSelection()
+      })
     }
+  }, [clearSelection, flashDownloadSuccess, handleDownload])
 
-    if (searchQuery) {
-      result = result.filter((icon) => matches(icon, searchQuery))
-    }
+  const showCopyAction =
+    copyFormat === 'code' || selectionCount <= 1
+  const showDownloadAction = true
 
-    result = result.filter((icon) => icon.files[style])
+  const bulkCopyIdleLabel =
+    copyFormat === 'code'
+      ? getCodeCopyCtaLabel(getDefaultCodeFramework())
+      : `Copy ${copyAssetLabel}`
+  const bulkCopySuccessLabel =
+    copyFormat === 'code'
+      ? getCodeCopySuccessLabel(getDefaultCodeFramework())
+      : `Copied ${copyAssetLabel}`
+  const visibleGridIcons = useFilteredGridIcons()
+  const selectedIds = useSelectionStore((s) => s.selectedIds)
+  const selectAllVisible = useSelectionStore((s) => s.selectAll)
+  const deselectMany = useSelectionStore((s) => s.deselectMany)
 
-    if (category === 'all') {
-      result = [...result].sort((a, b) =>
-        getDerivedSortKey(a.id).localeCompare(getDerivedSortKey(b.id))
-      )
+  const visibleIds = useMemo(
+    () => visibleGridIcons.map((icon) => icon.id),
+    [visibleGridIcons],
+  )
+
+  const allVisibleSelected =
+    visibleIds.length > 0 && visibleIds.every((id) => selectedIds.has(id))
+
+  const handleToggleSelectAllVisible = useCallback(() => {
+    if (visibleIds.length === 0) return
+    if (allVisibleSelected) {
+      deselectMany(visibleIds)
     } else {
-      result = [...result].sort((a, b) => a.id.localeCompare(b.id))
+      selectAllVisible(visibleIds)
     }
+  }, [allVisibleSelected, deselectMany, selectAllVisible, visibleIds])
 
-    return result
-  }, [icons, searchQuery, category, style])
+  const handleCustomExportSizeChange = useCallback(
+    (raw: string) => {
+      const digits = raw.replace(/\D/g, '')
+      setCustomExportSize(digits)
+      const num = parseInt(digits, 10)
+      if (!isNaN(num) && num > 0) {
+        setExportSize(num)
+      } else if (digits === '') {
+        setExportSize(null)
+      }
+    },
+    [setExportSize],
+  )
 
-<<<<<<< Updated upstream
-  const handleSelectAll = () => {
-    const iconIds = filteredIcons.map((icon) => icon.id)
-    selectAll(iconIds)
-=======
   const scrollLocked = filtersSheetOpen || filtersBackdrop.mounted
 
   useEffect(() => {
@@ -318,128 +369,192 @@ export default function HomePage() {
     onSearchChange: setSearchQuery,
     iconStyle,
     onIconStyleChange: setIconStyle,
->>>>>>> Stashed changes
   }
 
-  const handleDeselect = () => {
-    clear()
-  }
+  const copyrightNode = <>© {new Date().getFullYear()} Some UI</>
 
   return (
-    <div className="flex flex-col h-dvh md:flex-row">
-      {/* Mobile header with hamburger menu */}
-      <MobileHeader />
-
-      <Sidebar>
-        {/* Logo section - centered like vanilla */}
-        <SidebarHeader className="flex justify-center">
-          <img
-            src="/logo.svg"
-            alt="Some Icons"
-            className="h-6 w-auto"
-          />
-        </SidebarHeader>
-
-        <SidebarContent className="space-y-6">
-          {/* Search */}
-          <div>
-            <SearchInput />
-          </div>
-
-          {/* Style control */}
-          <div>
-            <label className="text-[13px] font-semibold text-[var(--item-tertiary)] pl-0.5 mb-2 block">
-              Style
-            </label>
-            <StyleToggle />
-          </div>
-
-          {/* Category control */}
-          <div>
-            <label className="text-[13px] font-semibold text-[var(--item-tertiary)] pl-0.5 mb-2 block">
-              Category
-            </label>
-            <CategorySelect />
-          </div>
-
-          {/* Customize section */}
-          <div className="space-y-5">
-            <h3 className="text-lg font-semibold text-[var(--color-text-secondary)] pt-2 mb-4">
-              Customize
-            </h3>
-            <div>
-              <label className="text-[13px] font-semibold text-[var(--item-tertiary)] pl-0.5 mb-2 block">
-                Color
-              </label>
-              <ColorPicker />
+    <div className="homepage-shell">
+      <div className="homepage-laptop-only">
+        <Sidebar
+          pageName="Icon library"
+          chipSlot={versionChip}
+          logo={logoImg}
+          themeButton={<HomeThemeButton />}
+          socialButtons={
+            <div className="ds-sidebar__social">
+              <a
+                href="https://www.figma.com/community/plugin/1581870303104890341/some-icons"
+                target="_blank"
+                rel="noreferrer"
+                className="ds-sidebar__socialLink"
+                aria-label="Figma community plugin"
+              >
+                <img
+                  src={figmaIcon}
+                  alt="Figma"
+                  className="ds-sidebar__socialIconImg"
+                />
+              </a>
+              <a
+                href="https://github.com/Seaham0606/some-icons-cdn"
+                target="_blank"
+                rel="noreferrer"
+                className="ds-sidebar__socialLink"
+                aria-label="GitHub repository"
+              >
+                <span
+                  aria-hidden="true"
+                  className="ds-sidebar__socialIconMask"
+                  style={{
+                    backgroundColor: 'var(--color-main-primary)',
+                    WebkitMaskImage: `url("${githubIcon}")`,
+                    maskImage: `url("${githubIcon}")`,
+                    maskMode: 'alpha',
+                    WebkitMaskRepeat: 'no-repeat',
+                    maskRepeat: 'no-repeat',
+                    WebkitMaskSize: 'contain',
+                    maskSize: 'contain',
+                    WebkitMaskPosition: 'center',
+                    maskPosition: 'center',
+                  }}
+                />
+              </a>
             </div>
-          </div>
+          }
+        >
+          <HomePageFilterStack {...filterStackProps} showSearch />
+        </Sidebar>
+      </div>
 
-          {/* Download section */}
-          <div className="space-y-5">
-            <h3 className="text-lg font-semibold text-[var(--color-text-secondary)] pt-2 mb-4">
-              Download
-            </h3>
-            <div>
-              <label className="text-[13px] font-semibold text-[var(--item-tertiary)] pl-0.5 mb-2 block">
-                Size
-              </label>
-              <SizeSelector />
-            </div>
-            <div>
-              <label className="text-[13px] font-semibold text-[var(--item-tertiary)] pl-0.5 mb-2 block">
-                Format
-              </label>
-              <FormatSelector />
-            </div>
-            <div className="space-y-2">
-              <ExportButton />
-              {count > 0 && (
-                <div className="flex gap-2 items-center mt-0">
-                  <SegmentedButton
-                    onClick={handleSelectAll}
-                    isActive={false}
-                    variant="secondary"
-                    tint="blue"
-                    textString="Select all"
-                    className="text-base font-semibold !rounded-[10px]"
+      <SiteHeader
+        className="app-hide-from-laptop"
+        logo={logoImg}
+        title="Icon library"
+        chipSlot={versionChip}
+        searchQuery={searchQuery}
+        onSearchChange={setSearchQuery}
+        searchPlaceholder="Search icons..."
+        searchAriaLabel="Search icons"
+        mobileSearchOpen={mobileSearchOverlayOpen}
+        settingsRowOpen={headerSettingsRowOpen}
+        rightSlot={({ mobileSearchPanelId, settingsRowPanelId }) => (
+          <>
+            <div className="ds-siteHeader__tabletSearch ds-siteHeader-tabletOnly">
+              <InputField
+                showLabel={false}
+                className="ds-siteHeader__searchField"
+                contentSlot={
+                  <Input
+                    type="text"
+                    placeholder="Search icons..."
+                    autoComplete="off"
+                    aria-label="Search icons"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    leadingSlot={
+                      <SomeIcon
+                        iconName="interface-search"
+                        iconStyle="outline"
+                        iconSize="md"
+                        padding="2"
+                      />
+                    }
                   />
-                  <SegmentedButton
-                    onClick={handleDeselect}
-                    isActive={false}
-                    variant="secondary"
-                    tint="red"
-                    textString="Deselect"
-                    className="text-base font-semibold !rounded-[10px]"
-                  />
-                </div>
-              )}
+                }
+              />
             </div>
-          </div>
-        </SidebarContent>
+            <div className="ds-siteHeader__actions">
+              <div className="ds-buttonGroup ds-siteHeader-mobileOnly">
+                <Button
+                  type="button"
+                  variant="transparent"
+                  size="md"
+                  radius="lg"
+                  aria-label="Search icons"
+                  aria-expanded={mobileSearchOverlayOpen}
+                  aria-controls={mobileSearchPanelId}
+                  onClick={toggleMobileHeaderSearch}
+                  leadingSlot={
+                    <SomeIcon
+                      iconName="interface-search"
+                      iconStyle="outline"
+                      iconSize="md"
+                      padding="050"
+                    />
+                  }
+                />
+              </div>
+              <Button
+                type="button"
+                variant="transparent"
+                size="md"
+                radius="lg"
+                aria-label="Settings"
+                aria-expanded={headerSettingsRowOpen}
+                aria-controls={settingsRowPanelId}
+                onClick={toggleMobileHeaderSettingsRow}
+                leadingSlot={
+                  <SomeIcon
+                    iconName="interface-menu-hamburger"
+                    iconStyle="outline"
+                    iconSize="md"
+                    padding="050"
+                  />
+                }
+              />
+            </div>
+          </>
+        )}
+      />
 
-        {/* Footer with theme toggle and version */}
-        <SidebarFooter>
-          <ThemeToggle />
-          {version && (
-            <Link
-              to="/changelog"
-              className="text-[var(--foreground-quaternary)] hover:text-foreground transition-colors"
-            >
-              v{version}
-            </Link>
+      {filtersBackdrop.mounted ? (
+        <button
+          type="button"
+          className={cn(
+            'app-backdrop',
+            filtersBackdrop.visible && 'app-backdrop--visible',
           )}
-        </SidebarFooter>
-      </Sidebar>
+          aria-label="Dismiss filters"
+          onClick={() => setFiltersSheetOpen(false)}
+        />
+      ) : null}
 
-<<<<<<< Updated upstream
-      <MainContent>
-        <ScrollArea>
-          <IconGrid />
-        </ScrollArea>
-        <Footer />
-      </MainContent>
-=======
+      {filtersSheetOpen ? (
+        <div
+          className="app-sheet"
+          role="dialog"
+          aria-modal="true"
+          aria-label="Filters and settings"
+        >
+          <div className="app-sheet__header">
+            <span className="app-sheet__title text-aside-header">
+              Filters
+            </span>
+            <Button
+              type="button"
+              variant="transparent"
+              size="md"
+              radius="md"
+              onClick={() => setFiltersSheetOpen(false)}
+            >
+              Done
+            </Button>
+          </div>
+          <div className="app-sheet__body">
+            <div className="app-sheet__themeRow">
+              <HomeThemeButton />
+            </div>
+            <HomePageFilterStack
+              {...filterStackProps}
+              showSearch={false}
+              categoryListClassName="homepage-categoryList homepage-categoryList--sheet"
+              categorySectionClassName="homepage-sidebarCategorySection homepage-sidebarCategorySection--sheet"
+            />
+          </div>
+        </div>
+      ) : null}
+
       <main className="homepage-main">
         <div className="homepage-pageContentWrap">
           <PageContent>
@@ -722,7 +837,6 @@ export default function HomePage() {
         className="ds-siteFooter--fixed homepage-tablet-only"
         copyright={copyrightNode}
       />
->>>>>>> Stashed changes
     </div>
   )
 }

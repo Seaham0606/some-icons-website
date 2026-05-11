@@ -10,7 +10,6 @@
 import * as React from "react"
 import { cn } from "../../utils"
 import { DropdownOption } from "../dropdown/dropdown-option"
-import { SomeIcon } from "../some-icon"
 
 export type BulkActionBarCopyFormat = "svg" | "code"
 
@@ -39,15 +38,6 @@ export function BulkActionBarSettingsPanel({
   "aria-label": ariaLabel = "Bulk export format",
   ...props
 }: BulkActionBarSettingsPanelProps) {
-  const icon = (name: string) => (
-    <SomeIcon
-      iconName={name}
-      iconStyle="outline"
-      iconSize="md"
-      padding="050"
-    />
-  )
-
   return (
     <div
       className={cn("ds-bulkActionBarSettingsPanel", className)}

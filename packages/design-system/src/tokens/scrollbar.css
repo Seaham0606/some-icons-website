@@ -1,0 +1,84 @@
+/*
+ * Global scrollbar appearance + motion.
+ * `data-scrollbar-active` on `<html>` is toggled by `initDesignSystemScrollbarVisibility()`:
+ * capture-phase `scroll`, pointer position over scrollbar gutter (track), and hide delay after idle.
+ *
+ * Firefox: `scrollbar-width` / `scrollbar-color` only — no exact thickness match or thumb hover color.
+ */
+
+:root {
+  scrollbar-width: thin;
+  scrollbar-color: transparent transparent;
+}
+
+:root[data-scrollbar-active] {
+  scrollbar-color: var(--color-main-quaternary) transparent;
+}
+
+/*
+ * Reset native scrollbar chrome (macOS / WebKit) so width and colors stay stable on hover.
+ */
+*::-webkit-scrollbar {
+  -webkit-appearance: none;
+  appearance: none;
+  width: var(--size-2);
+  height: var(--size-2);
+}
+
+*::-webkit-scrollbar-track,
+*::-webkit-scrollbar-track-piece {
+  -webkit-appearance: none;
+  appearance: none;
+  background: transparent;
+}
+
+*::-webkit-scrollbar-corner {
+  -webkit-appearance: none;
+  appearance: none;
+  background: transparent;
+}
+
+*::-webkit-scrollbar-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  border-radius: var(--radius-full);
+  background-color: var(--color-main-quaternary);
+  border: var(--border-width-none);
+  box-shadow: none;
+  opacity: 0;
+  transition:
+    opacity var(--ds-scrollbar-opacity-duration) var(--ds-scrollbar-ease),
+    background-color var(--ds-scrollbar-color-duration) var(--ds-scrollbar-ease);
+}
+
+/* Re-assert thickness when WebKit widens the bar on hover. */
+*::-webkit-scrollbar:vertical:hover {
+  width: var(--size-2);
+}
+
+*::-webkit-scrollbar:horizontal:hover {
+  height: var(--size-2);
+}
+
+/* Lock thumb cross-axis so it does not grow with the UA hover state. */
+*::-webkit-scrollbar-thumb:vertical {
+  min-width: var(--size-2);
+  max-width: var(--size-2);
+}
+
+*::-webkit-scrollbar-thumb:horizontal {
+  min-height: var(--size-2);
+  max-height: var(--size-2);
+}
+
+:root[data-scrollbar-active] *::-webkit-scrollbar-thumb {
+  opacity: 1;
+}
+
+/*
+ * Must beat `*::-webkit-scrollbar-thumb` and override themed hover paint.
+ * `:hover` on the thumb is unreliable without `-webkit-appearance: none` above.
+ */
+:root[data-scrollbar-active] *::-webkit-scrollbar-thumb:hover {
+  background-color: var(--color-main-secondary);
+}

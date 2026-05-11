@@ -20,8 +20,6 @@ export interface DropdownOptionProps
   disabled?: boolean
   /** Highlights the row (e.g. current value in an exposed list). */
   selected?: boolean
-  /** Optional count badge shown on the right (e.g. number of icons in a category). */
-  iconCount?: number
 }
 
 /**
@@ -37,7 +35,6 @@ export const DropdownOption = React.forwardRef<HTMLDivElement, DropdownOptionPro
       leadingSlot,
       children,
       trailingSlot,
-      iconCount,
       disabled = false,
       selected = false,
       onClick,
@@ -71,9 +68,6 @@ export const DropdownOption = React.forwardRef<HTMLDivElement, DropdownOptionPro
             <span className="ds-dropdownOption__leading">{leadingSlot}</span>
           ) : null}
           <span className="ds-dropdownOption__label">{children}</span>
-          {iconCount != null ? (
-            <span className="ds-dropdownOption__iconCount">{iconCount}</span>
-          ) : null}
         </button>
         {trailingSlot != null ? (
           <div className="ds-dropdownOption__trailing">{trailingSlot}</div>

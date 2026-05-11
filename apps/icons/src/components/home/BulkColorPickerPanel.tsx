@@ -1,89 +1,83 @@
-import { ColorField, SomeIcon } from 'design-system'
+import { ColorField } from 'design-system'
 
-/** Returns true if the hex color is perceptually light (checkmark should be dark). */
-function isLightColor(hex: string): boolean {
-  const r = parseInt(hex.slice(1, 3), 16) / 255
-  const g = parseInt(hex.slice(3, 5), 16) / 255
-  const b = parseInt(hex.slice(5, 7), 16) / 255
-  return 0.299 * r + 0.587 * g + 0.114 * b > 0.7
-}
-
-export const BULK_COLOR_PRESETS = [
-  // Grayscale row (4 stops: near-black → white)
-  { label: 'Near black', value: '#292929' },
-  { label: 'Mid gray', value: '#707070' },
-  { label: 'Light gray', value: '#DADADA' },
-  { label: 'White', value: '#FFFFFF' },
-  // Color row (400-level tokens)
-  { label: 'Red', value: '#FF7575' },
-  { label: 'Orange', value: '#FF8F66' },
-  { label: 'Yellow', value: '#FFC94D' },
-  { label: 'Green', value: '#9EE55C' },
-  { label: 'Teal', value: '#67EAF5' },
-  { label: 'Blue', value: '#66B6FF' },
-  { label: 'Purple', value: '#B785FB' },
-  { label: 'Pink', value: '#FF8FEC' },
-] as const
-
-interface BulkColorPickerPanelProps {
-  /** Current active color (`#RRGGBB`) or `null` for default. */
+export interface BulkColorPickerPanelProps {
+  /** Canonical `#RRGGBB`, or `null` for default (`currentColor`). */
   color: string | null
   onColorChange: (color: string | null) => void
 }
 
-export function BulkColorPickerPanel({ color, onColorChange }: BulkColorPickerPanelProps) {
-  return (
-    <div
-      className="homepage-bulkColorPicker"
-      role="dialog"
-      aria-label="Icon color"
-      data-component="bulk-color-picker"
-    >
-      <ColorField
-        className="homepage-bulkColorPicker__colorField"
-        showLabel={false}
-        showPicker={false}
-        color={color}
-        onColorChange={onColorChange}
-      />
+/** Preset palette — 6×4 grid, aligned with `.homepage-bulkColorPicker__grid` width in CSS. */
+const PRESET_COLORS = [
+  '#000000',
+  '#FFFFFF',
+  '#64748B',
+  '#475569',
+  '#334155',
+  '#0F172A',
+  '#DC2626',
+  '#EA580C',
+  '#CA8A04',
+  '#16A34A',
+  '#0891B2',
+  '#2563EB',
+  '#7C3AED',
+  '#9333EA',
+  '#DB2777',
+  '#E11D48',
+  '#F97316',
+  '#84CC16',
+  '#14B8A6',
+  '#06B6D4',
+  '#8B5CF6',
+  '#6366F1',
+  '#A855F7',
+  '#EC4899',
+] as const
 
-      <div
-        className="homepage-bulkColorPicker__grid"
-        role="radiogroup"
-        aria-label="Color presets"
-      >
-        {BULK_COLOR_PRESETS.map((preset) => {
-          const isSelected = color === preset.value
-          const checkColor = isLightColor(preset.value) ? 'var(--color-black)' : 'var(--color-white)'
+function colorsMatch(a: string | null, b: string): boolean {
+  if (a == null) return false
+  return a.replace(/\s/g, '').toUpperCase() === b.toUpperCase()
+}
+
+export function BulkColorPickerPanel({
+  color,
+  onColorChange,
+}: BulkColorPickerPanelProps) {
+  return (
+    <div className="homepage-bulkColorPicker" role="dialog" aria-label="Icon color">
+      <div className="homepage-bulkColorPicker__grid">
+        {PRESET_COLORS.map((hex) => {
+          const selected = colorsMatch(color, hex)
           return (
             <button
-              key={preset.value}
+              key={hex}
               type="button"
-              role="radio"
-              aria-checked={isSelected}
-              aria-label={preset.label}
               className="homepage-bulkColorPicker__swatch"
-              onClick={() => onColorChange(isSelected ? null : preset.value)}
+              aria-label={`Set icon color to ${hex}`}
+              aria-pressed={selected}
+              onClick={() => onColorChange(hex)}
+              style={
+                selected
+                  ? { boxShadow: 'var(--shadow-focus-accent)' }
+                  : undefined
+              }
             >
               <span
                 className="homepage-bulkColorPicker__swatchFill"
-                style={{ backgroundColor: preset.value }}
-                aria-hidden
-              >
-                {isSelected && (
-                  <SomeIcon
-                    iconName="symbol-check-mark"
-                    iconStyle="outline"
-                    iconSize="sm"
-                    padding="0"
-                    color={checkColor}
-                  />
-                )}
-              </span>
+                style={{ backgroundColor: hex }}
+              />
             </button>
           )
         })}
       </div>
+      <ColorField
+        className="homepage-bulkColorPicker__colorField"
+        showLabel={false}
+        label="Hex"
+        color={color}
+        onColorChange={onColorChange}
+        col2Width="size-12"
+      />
     </div>
   )
 }

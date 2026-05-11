@@ -35,7 +35,7 @@ export interface InputFieldProps {
    * When `showCol2`, how wide column 2 is. `equal` splits the row with column 1; `size-12` fixes column 2 to `var(--size-12)` (48px) so column 1 takes the rest.
    * @default "equal"
    */
-  col2Width?: "equal" | "size-10" | "size-12"
+  col2Width?: "equal" | "size-12"
 }
 
 export function InputField({

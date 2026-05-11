@@ -48,10 +48,12 @@ npm run preview   # Preview production build
 ```
 src/
 ├── components/   # React components
-│   ├── controls/ # Sidebar controls (search, filters, export)
-│   ├── icons/    # Icon grid and card components
-│   ├── layout/   # Page layout components
-│   └── ui/       # Base UI primitives (Radix-based)
+│   ├── changelog/
+│   ├── export/
+│   ├── generator/
+│   ├── icons/    # Icon grid and card (wraps design-system)
+│   ├── layout/
+│   └── overlay/
 ├── hooks/        # Custom React hooks
 ├── lib/          # Utilities and API functions
 ├── pages/        # Route page components
@@ -69,7 +71,6 @@ src/
 | [React Router](https://reactrouter.com)      | Client-side routing                       |
 | [TanStack Query](https://tanstack.com/query) | Server state management and data fetching |
 | [Zustand](https://zustand.docs.pmnd.rs)      | Client state management                   |
-| [Tailwind CSS](https://tailwindcss.com)      | Utility-first CSS with theming            |
-| [Radix UI](https://www.radix-ui.com)         | Accessible UI primitives                  |
-| [Lucide React](https://lucide.dev)           | Icons                                     |
-| [JSZip](https://stuk.github.io/jszip)        | ZIP generation for exports                |
+| [Tailwind CSS](https://tailwindcss.com) v4   | Utility classes on app routes (`@tailwindcss/vite`)                     |
+| `design-system` (workspace)                  | Shared UI, tokens, `SomeIcon`; most sidebar/chrome                      |
+| [JSZip](https://stuk.github.io/jszip)        | Multi-file exports as ZIP (`src/lib/export-utils.ts`)                    |
