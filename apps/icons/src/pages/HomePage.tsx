@@ -7,6 +7,7 @@ import {
 } from '@/components/overlay/GradientOverlay'
 import { IconGrid } from '@/components/icons/IconGrid'
 import { HomePageFilterStack } from '@/components/home/HomePageFilters'
+import { BulkColorPickerPanel } from '@/components/home/BulkColorPickerPanel'
 import { PageContent } from '@/components/layout'
 import { DEFAULT_ICON_SIZE } from '@/lib/constants'
 import { useExportStore } from '@/stores/exportStore'
@@ -28,6 +29,7 @@ import {
   SomeIcon,
 } from 'design-system'
 import { ThemeButton } from '@/components/ThemeButton'
+import { useColorStore } from '@/stores/colorStore'
 import { useBackdropPresence } from '@/hooks/useBackdropPresence'
 import { useBulkActionStripFeedback } from '@/hooks/useBulkActionStripFeedback'
 import { useFilteredGridIcons } from '@/hooks/useFilteredGridIcons'
@@ -37,7 +39,7 @@ import {
   getCodeCopySuccessLabel,
   getDefaultCodeFramework,
 } from '@/lib/code-export'
-import { getHighestVersion, useChangelog } from '@/hooks/useChangelog'
+import { useChangelog } from '@/hooks/useChangelog'
 import {
   useCallback,
   useEffect,
@@ -66,10 +68,6 @@ const BULK_DOWNLOAD_STATE_ICONS = [
   },
 ] as const satisfies [ButtonStateIcon, ButtonStateIcon]
 
-/** Strips a conventional semver `v` prefix for accessible version phrases (display is customized via `Chip`). */
-function stripLeadingV(version: string): string {
-  return version.trim().replace(/^v(?=\d)/i, '')
-}
 
 /** Inverse chip on hover/focus — below the control (IconCard filename pattern). */
 function BulkActionHoverChip({
@@ -115,13 +113,16 @@ export default function HomePage() {
   const setSearchQuery = useFilterStore((s) => s.setSearchQuery)
   const iconStyle = useFilterStore((s) => s.style)
   const setIconStyle = useFilterStore((s) => s.setStyle)
-  const { data: entries } = useChangelog()
-  const version = getHighestVersion(entries)
+  useChangelog()
   const [filtersSheetOpen, setFiltersSheetOpen] = useState(false)
   const [headerSettingsRowOpen, setHeaderSettingsRowOpen] = useState(false)
   const [mobileSearchOverlayOpen, setMobileSearchOverlayOpen] = useState(false)
   const [bulkBarSettingsOpen, setBulkBarSettingsOpen] = useState(false)
   const bulkBarSettingsAnchorRef = useRef<HTMLDivElement>(null)
+  const [bulkColorPickerOpen, setBulkColorPickerOpen] = useState(false)
+  const bulkColorPickerAnchorRef = useRef<HTMLDivElement>(null)
+  const selectedColor = useColorStore((s) => s.selectedColor)
+  const setSelectedColor = useColorStore((s) => s.setColor)
   const filtersBackdrop = useBackdropPresence(filtersSheetOpen)
   const exportSize = useExportStore((s) => s.size)
   const setExportSize = useExportStore((s) => s.setSize)
@@ -235,9 +236,6 @@ export default function HomePage() {
     }
   }, [scrollLocked])
 
-  const openChromeSettings = useCallback(() => {
-    setFiltersSheetOpen(true)
-  }, [])
 
   useEffect(() => {
     if (!bulkBarSettingsOpen) return
@@ -257,6 +255,25 @@ export default function HomePage() {
       document.removeEventListener('pointerdown', onPointerDown, true)
     }
   }, [bulkBarSettingsOpen])
+
+  useEffect(() => {
+    if (!bulkColorPickerOpen) return
+    const onKeyDown = (e: globalThis.KeyboardEvent) => {
+      if (e.key === 'Escape') setBulkColorPickerOpen(false)
+    }
+    const onPointerDown = (e: PointerEvent) => {
+      const node = e.target instanceof Node ? e.target : null
+      if (!node) return
+      if (bulkColorPickerAnchorRef.current?.contains(node)) return
+      setBulkColorPickerOpen(false)
+    }
+    document.addEventListener('keydown', onKeyDown)
+    document.addEventListener('pointerdown', onPointerDown, true)
+    return () => {
+      document.removeEventListener('keydown', onKeyDown)
+      document.removeEventListener('pointerdown', onPointerDown, true)
+    }
+  }, [bulkColorPickerOpen])
 
   /** Below laptop, expanded search row and settings row share one strip — only one open at a time. */
   const toggleMobileHeaderSearch = useCallback(() => {
@@ -331,12 +348,11 @@ export default function HomePage() {
         ? String(exportSize)
         : ''
 
-  const versionChip =
-    version ? (
-      <Chip variant="accent" aria-label={`Beta, version ${stripLeadingV(version)}`}>
-        Beta
-      </Chip>
-    ) : null
+  const versionChip = (
+    <Chip variant="accent" aria-label="Version 1.0.0">
+      v1.0.0
+    </Chip>
+  )
 
   const logoImg = (
     <img
@@ -594,20 +610,53 @@ export default function HomePage() {
                 }
               >
                 <>
+                  <div className="ds-segmentedControl__dividerWrap" aria-hidden>
+                    <div className="ds-segmentedControl__divider" />
+                  </div>
                   <div className="flex items-center gap-2">
-                    <BulkActionHoverChip chipLabel="Icon color">
-                      <Button
-                        type="button"
-                        variant="transparent"
-                        size="md"
-                        radius="md"
-                        className="homepage-bulkAction-colorBtn"
-                        aria-label="Icon color"
-                        onClick={openChromeSettings}
-                        iconName="formatting-eyedropper"
-                        iconStyle="outline"
-                      />
-                    </BulkActionHoverChip>
+                    <div
+                      ref={bulkColorPickerAnchorRef}
+                      className="homepage-bulkColorPickerAnchor"
+                    >
+                      {bulkColorPickerOpen ? (
+                        <div className="homepage-bulkColorPickerPop">
+                          <BulkColorPickerPanel
+                            color={selectedColor}
+                            onColorChange={setSelectedColor}
+                          />
+                        </div>
+                      ) : null}
+                      <BulkActionHoverChip chipLabel="Icon color">
+                        <Button
+                          type="button"
+                          variant="transparent"
+                          size="md"
+                          radius="md"
+                          className="homepage-bulkAction-colorBtn"
+                          aria-label="Icon color"
+                          aria-haspopup="dialog"
+                          aria-expanded={bulkColorPickerOpen}
+                          data-color-active={selectedColor != null ? 'true' : undefined}
+                          onClick={() => setBulkColorPickerOpen((o) => !o)}
+                          leadingSlot={
+                            selectedColor != null ? (
+                              <span
+                                className="homepage-bulkAction-colorDot"
+                                style={{ backgroundColor: selectedColor }}
+                                aria-hidden
+                              />
+                            ) : (
+                              <SomeIcon
+                                iconName="formatting-eyedropper"
+                                iconStyle="outline"
+                                iconSize="md"
+                                padding="0"
+                              />
+                            )
+                          }
+                        />
+                      </BulkActionHoverChip>
+                    </div>
                     <BulkActionHoverChip chipLabel="Icon size">
                       <Input
                         className="homepage-bulkBar-sizeInput"
@@ -769,7 +818,7 @@ export default function HomePage() {
                     onClick={() => clearSelection()}
                     leadingSlot={
                       <SomeIcon
-                        iconName="arrow-up-out-alt"
+                        iconName="symbol-multiply"
                         iconStyle="outline"
                         iconSize="md"
                         padding="0"

@@ -10,7 +10,6 @@
 import * as React from "react"
 import { cn } from "../../utils"
 import { DropdownOption } from "../dropdown/dropdown-option"
-import { SomeIcon } from "../some-icon"
 
 export type BulkActionBarCopyFormat = "svg" | "code"
 
@@ -39,15 +38,6 @@ export function BulkActionBarSettingsPanel({
   "aria-label": ariaLabel = "Bulk export format",
   ...props
 }: BulkActionBarSettingsPanelProps) {
-  const icon = (name: string) => (
-    <SomeIcon
-      iconName={name}
-      iconStyle="outline"
-      iconSize="md"
-      padding="050"
-    />
-  )
-
   return (
     <div
       className={cn("ds-bulkActionBarSettingsPanel", className)}
@@ -65,7 +55,6 @@ export function BulkActionBarSettingsPanel({
           <div className="ds-bulkActionBarSettingsPanel__sectionLabel">Copy as:</div>
           <div className="ds-bulkActionBarSettingsPanel__optionList">
             <DropdownOption
-              leadingSlot={icon("interface-vector")}
               selected={copyFormat === "svg"}
               disabled={disableCopySvg}
               onClick={() => onCopyFormatChange("svg")}
@@ -73,7 +62,6 @@ export function BulkActionBarSettingsPanel({
               SVG
             </DropdownOption>
             <DropdownOption
-              leadingSlot={icon("file-file-code")}
               selected={copyFormat === "code"}
               onClick={() => onCopyFormatChange("code")}
             >
@@ -92,14 +80,12 @@ export function BulkActionBarSettingsPanel({
           <div className="ds-bulkActionBarSettingsPanel__sectionLabel">Download as:</div>
           <div className="ds-bulkActionBarSettingsPanel__optionList">
             <DropdownOption
-              leadingSlot={icon("interface-vector")}
               selected={downloadFormat === "svg"}
               onClick={() => onDownloadFormatChange("svg")}
             >
               SVG
             </DropdownOption>
             <DropdownOption
-              leadingSlot={icon("media-image-landscape")}
               selected={downloadFormat === "png"}
               onClick={() => onDownloadFormatChange("png")}
             >

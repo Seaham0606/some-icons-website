@@ -921,6 +921,27 @@ button.ds-nativeInput {
   justify-content: center;
 }
 
+.ds-dropdownOption__iconCount {
+  flex-shrink: 0;
+  margin-left: auto;
+  font-family: var(--font-family-sans);
+  font-size: var(--font-size-settings-group-label);
+  font-weight: 500;
+  line-height: 1.1;
+  color: var(--color-main-quaternary);
+}
+
+@media (hover: hover) {
+  .ds-dropdownOption:not(.ds-dropdownOption--disabled):hover .ds-dropdownOption__iconCount {
+    color: var(--color-main-tertiary);
+  }
+}
+
+.ds-dropdownOption[data-dropdown-option-selected="true"] .ds-dropdownOption__iconCount,
+.ds-dropdownOption[data-dropdown-option-selected="true"]:hover .ds-dropdownOption__iconCount {
+  color: var(--color-main-secondary);
+}
+
 /* Leading glyph: muted like `.ds-input__slot`. */
 .ds-dropdownMenu__option.ds-button .ds-button__iconSlot[data-part="leading-slot"] {
   color: var(--color-main-tertiary);
@@ -1258,6 +1279,12 @@ button.ds-inputSection__labelRow.ds-inputSection__labelRow--toggle {
   min-width: 0;
 }
 
+.ds-inputField__col--secondary[data-col2-width="size-10"] {
+  flex: 0 0 var(--size-10);
+  width: var(--size-10);
+  max-width: var(--size-10);
+}
+
 .ds-inputField__col--secondary[data-col2-width="size-12"] {
   flex: 0 0 var(--size-12);
   width: var(--size-12);
@@ -1297,35 +1324,127 @@ button.ds-inputSection__labelRow.ds-inputSection__labelRow--toggle {
   min-width: 0;
 }
 
-/* Swatch mount: fade in (slot only exists when not default / or while typing) */
-@keyframes ds-colorFieldSwatchIn {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
+
+.ds-colorField__hexInput.ds-input {
+  padding: 0;
+  min-height: var(--size-10);
+  height: var(--size-10);
+  border-radius: var(--radius-md);
 }
 
-.ds-colorField__swatchReveal {
-  animation: ds-colorFieldSwatchIn 0.22s ease;
+.ds-colorField__hexInput .ds-input__field {
+  padding-left: 0;
+  padding-right: 0;
 }
 
 .ds-colorField__hexInput .ds-input__input {
   transition: color 0.2s ease;
 }
 
-.ds-colorField__pickerSlot {
-  width: 100%;
-  min-width: 0;
+.ds-colorField__pickerBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: var(--size-10);
+  height: var(--size-10);
+  margin: 0;
+  padding: 0;
+  border: var(--border-width-base) solid var(--color-border-base);
+  border-radius: var(--radius-md);
+  background: transparent;
+  color: var(--color-main-primary);
+  cursor: pointer;
+  line-height: 0;
+  transition: border-color 0.1s ease, color 0.1s ease;
 }
 
-/*
- * Read-only pickers skip default input hover; align border treatment with the editable hex field.
- */
-.ds-colorField__pickerSlot
-  .ds-input[data-status="default"]:not([data-disabled="true"]):not(:focus-within):hover {
+.ds-colorField__pickerBtn:disabled {
+  opacity: 0.38;
+  cursor: default;
+}
+
+.ds-colorField__pickerBtn:not(:disabled):hover,
+.ds-colorField__pickerBtn--active {
   border-color: var(--color-border-strong);
+  color: var(--color-main-primary);
+}
+
+.ds-colorField__pickerBtn--active {
+  background: var(--color-overlay-neutral);
+}
+
+.ds-colorField__pickerBtn:focus-visible {
+  outline: none;
+  box-shadow: var(--shadow-focus-accent);
+}
+
+.ds-colorField__pickerWrap {
+  position: relative;
+  display: inline-flex;
+  flex-shrink: 0;
+}
+
+.ds-colorField__swatchWrap {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+}
+
+.ds-colorField__swatchBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  background: none;
+  border: none;
+  padding: 0;
+  margin: 0;
+  cursor: pointer;
+}
+
+.ds-colorField__swatchBtn:focus-visible {
+  outline: none;
+}
+
+.ds-colorField__swatchBtn:focus-visible .ds-colorSwatch__fill {
+  box-shadow: var(--shadow-focus-accent);
+}
+
+.ds-colorField__pickerPop {
+  position: absolute;
+  bottom: calc(100% + var(--spacing-gap-2, 8px));
+  left: 0;
+  z-index: 100;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-popover, 0 8px 32px rgba(0,0,0,.18));
+  overflow: hidden;
+}
+
+/* react-colorful overrides — match design-system radius & sizing */
+.ds-colorField__pickerPop .react-colorful {
+  width: 200px;
+  height: 200px;
+  border-radius: var(--radius-lg);
+}
+
+.ds-colorField__pickerPop .react-colorful__saturation {
+  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+}
+
+.ds-colorField__pickerPop .react-colorful__hue {
+  height: 14px;
+  border-radius: 0 0 var(--radius-lg) var(--radius-lg);
+}
+
+.ds-colorField__pickerPop .react-colorful__pointer {
+  width: 18px;
+  height: 18px;
+  border-width: 2px;
 }
 
 .ds-colorField__reset {
@@ -2065,7 +2184,9 @@ button.ds-inputSection__labelRow.ds-inputSection__labelRow--toggle {
   padding: var(--spacing-padding-3);
   border-radius: var(--radius-2xl);
   border: var(--border-width-base) solid var(--color-border-weak);
-  background: var(--color-background-elevation);
+  background:
+    linear-gradient(var(--color-background-elevation), var(--color-background-elevation)),
+    var(--color-background-base);
   box-shadow: var(--shadow-strong);
   overflow: hidden;
 }
@@ -2075,7 +2196,7 @@ button.ds-inputSection__labelRow.ds-inputSection__labelRow--toggle {
   display: flex;
   flex-direction: column;
   align-items: stretch;
-  gap: var(--spacing-gap-3);
+  gap: var(--spacing-gap-1);
   width: 100%;
   min-width: 0;
 }

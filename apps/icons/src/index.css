@@ -281,10 +281,14 @@ body {
   flex: 0 0 auto;
 }
 
-/* Category: grows between hug sections; list scrolls inside */
+/* Category: hugs content height; shrinks (not grows) when space is tight so the list
+   scrolls internally rather than the whole sidebar content slot scrolling.
+   padding:0 moves the breathing room onto the content div so the scroll container
+   starts at the card's inner border — card's overflow:hidden clips there, not at padding. */
 .homepage-sidebarCategorySection {
-  flex: 1 1 auto;
+  flex: 0 1 auto;
   min-height: 0;
+  padding: 0;
 }
 
 .homepage-sidebarCategorySection .ds-inputSection__content {
@@ -293,15 +297,23 @@ body {
   min-height: 0;
   display: flex;
   flex-direction: column;
+  overflow-y: auto;
+  overflow-x: hidden;
+  scrollbar-gutter: stable;
+  padding: var(--spacing-padding-3);
 }
 
 .homepage-categoryList.ds-dropdownMenu {
   width: 100%;
   min-width: 0;
-  flex: 1 1 auto;
-  min-height: 0;
-  overflow-x: hidden;
-  overflow-y: auto;
+  overflow-y: visible;
+  flex: 0 0 auto;
+}
+
+
+/* Selected category row: same surface as hover (overlay-accent), not background-weak */
+.homepage-categoryList .ds-dropdownOption[data-dropdown-option-selected='true'] {
+  background: var(--color-overlay-accent);
 }
 
 .homepage-main {
@@ -347,6 +359,27 @@ body {
 
 .gradient-overlay--visible {
   opacity: 1;
+}
+
+/* Bulk action overlay — no opacity change, blur is always painted at position. */
+.homepage-bulkOverlay {
+  transition: none;
+}
+
+/* Bars slide up independently on mount via a keyframe animation. */
+@keyframes bulk-bars-enter {
+  from { transform: translateY(40%); }
+  to   { transform: translateY(0); }
+}
+
+.homepage-bulkBarsWrap {
+  animation: bulk-bars-enter 0.45s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .homepage-bulkBarsWrap {
+    animation: none;
+  }
 }
 
 .gradient-overlay--fullWidth {
@@ -503,8 +536,104 @@ body {
 }
 
 /* Eyedropper: visible base border on transparent (color pop-up opens via same path as settings). */
-.homepage-bulkAction-colorBtn.ds-button[data-variant="transparent"] {
-  border-color: var(--color-border-base);
+
+/* Color dot shown on the button when an active color is selected */
+.homepage-bulkAction-colorDot {
+  display: block;
+  width: var(--size-icon-md);
+  height: var(--size-icon-md);
+  border-radius: var(--radius-full);
+  box-shadow: inset 0 0 0 1px var(--color-border-weak);
+  flex-shrink: 0;
+}
+
+/* Color picker anchor + popover (mirrors settings panel pattern) */
+.homepage-bulkColorPickerAnchor {
+  position: relative;
+  display: inline-flex;
+  vertical-align: middle;
+}
+
+.homepage-bulkColorPickerPop {
+  position: absolute;
+  left: 50%;
+  bottom: calc(100% + var(--spacing-gap-4));
+  z-index: 5;
+  box-sizing: border-box;
+  width: max-content;
+  max-width: calc(100vw - 2 * var(--spacing-padding-4));
+  transform: translateX(-50%);
+  pointer-events: auto;
+}
+
+/* Panel chrome — same as ds-bulkActionBarSettingsPanel */
+.homepage-bulkColorPicker {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-gap-3);
+  /* Width anchored to the 6-column swatch grid */
+  width: calc(6 * var(--size-6) + 5 * var(--spacing-gap-2) + 2 * var(--spacing-padding-3) + 2 * var(--border-width-base));
+  padding: var(--spacing-padding-3);
+  border-radius: var(--radius-2xl);
+  border: var(--border-width-base) solid var(--color-border-weak);
+  background:
+    linear-gradient(var(--color-background-elevation), var(--color-background-elevation)),
+    var(--color-background-base);
+  box-shadow: var(--shadow-strong);
+}
+
+/* 6-column swatch grid */
+.homepage-bulkColorPicker__grid {
+  display: grid;
+  grid-template-columns: repeat(6, var(--size-6));
+  gap: var(--spacing-gap-2);
+}
+
+.homepage-bulkColorPicker__swatch {
+  box-sizing: border-box;
+  display: block;
+  width: var(--size-6);
+  height: var(--size-6);
+  padding: 0;
+  margin: 0;
+  border: none;
+  border-radius: var(--radius-md);
+  background: transparent;
+  cursor: pointer;
+}
+
+.homepage-bulkColorPicker__swatch:focus-visible {
+  outline: none;
+  box-shadow: var(--shadow-focus-accent);
+}
+
+.homepage-bulkColorPicker__swatchFill {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  border-radius: calc(var(--radius-md) - 1px);
+  box-shadow: inset 0 0 0 var(--border-width-thin) var(--color-border-weak);
+}
+
+/* ColorField inside the picker — stretch via flex alignment (not width:100%) to avoid
+   circular max-content dependency with the fit-content panel */
+.homepage-bulkColorPicker__colorField.ds-colorField {
+  width: auto;
+  align-self: stretch;
+}
+
+.homepage-bulkColorPicker__colorField.ds-colorField .ds-inputField {
+  margin: 0;
+}
+
+
+@media (prefers-reduced-motion: reduce) {
+  .homepage-bulkColorPicker__swatch {
+    transition-duration: 0.01ms;
+  }
 }
 
 /*
@@ -594,14 +723,22 @@ body {
 .homepage-bulkAction-settingsBtn.ds-button[data-variant="transparent"]:hover:not(:disabled):not([aria-disabled="true"]),
 .homepage-bulkAction-settingsBtn.ds-button[data-variant="transparent"]:focus-visible:not(:disabled):not([aria-disabled="true"]),
 .homepage-bulkAction-settingsBtn.ds-button[data-variant="transparent"]:active:not(:disabled):not([aria-disabled="true"]),
-.homepage-bulkAction-settingsBtn.ds-button[data-variant="transparent"][aria-expanded="true"]:not(:disabled):not([aria-disabled="true"]) {
+.homepage-bulkAction-settingsBtn.ds-button[data-variant="transparent"][aria-expanded="true"]:not(:disabled):not([aria-disabled="true"]),
+.homepage-bulkAction-colorBtn.ds-button[data-variant="transparent"]:hover:not(:disabled):not([aria-disabled="true"]),
+.homepage-bulkAction-colorBtn.ds-button[data-variant="transparent"]:focus-visible:not(:disabled):not([aria-disabled="true"]),
+.homepage-bulkAction-colorBtn.ds-button[data-variant="transparent"]:active:not(:disabled):not([aria-disabled="true"]),
+.homepage-bulkAction-colorBtn.ds-button[data-variant="transparent"][aria-expanded="true"]:not(:disabled):not([aria-disabled="true"]) {
   background-color: var(--color-overlay-accent);
 }
 
 .homepage-bulkAction-settingsBtn.ds-button[data-variant="transparent"]:hover:not(:disabled):not([aria-disabled="true"]) .ds-button__iconSlot,
 .homepage-bulkAction-settingsBtn.ds-button[data-variant="transparent"]:focus-visible:not(:disabled):not([aria-disabled="true"]) .ds-button__iconSlot,
 .homepage-bulkAction-settingsBtn.ds-button[data-variant="transparent"]:active:not(:disabled):not([aria-disabled="true"]) .ds-button__iconSlot,
-.homepage-bulkAction-settingsBtn.ds-button[data-variant="transparent"][aria-expanded="true"]:not(:disabled):not([aria-disabled="true"]) .ds-button__iconSlot {
+.homepage-bulkAction-settingsBtn.ds-button[data-variant="transparent"][aria-expanded="true"]:not(:disabled):not([aria-disabled="true"]) .ds-button__iconSlot,
+.homepage-bulkAction-colorBtn.ds-button[data-variant="transparent"]:hover:not(:disabled):not([aria-disabled="true"]) .ds-button__iconSlot,
+.homepage-bulkAction-colorBtn.ds-button[data-variant="transparent"]:focus-visible:not(:disabled):not([aria-disabled="true"]) .ds-button__iconSlot,
+.homepage-bulkAction-colorBtn.ds-button[data-variant="transparent"]:active:not(:disabled):not([aria-disabled="true"]) .ds-button__iconSlot,
+.homepage-bulkAction-colorBtn.ds-button[data-variant="transparent"][aria-expanded="true"]:not(:disabled):not([aria-disabled="true"]) .ds-button__iconSlot {
   color: var(--color-intent-accent);
 }
 
