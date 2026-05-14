@@ -14,6 +14,7 @@ import {
   getDefaultCodeFramework,
 } from '@/lib/code-export'
 import { applyColorToSvg, ensureViewBox, setSvgDimensions } from '@/lib/svg-utils'
+import { trackDownload, trackCopy } from '@/lib/analytics'
 import { useCallback, useState } from 'react'
 import { toast } from 'sonner'
 
@@ -74,6 +75,7 @@ export function useIconExport() {
       })
       try {
         await navigator.clipboard.writeText(snippet)
+        trackCopy({ format: 'react', style, size, count })
         return true
       } catch (error) {
         console.error('Clipboard copy failed:', error)
@@ -107,6 +109,7 @@ export function useIconExport() {
         return processed
       })
       await navigator.clipboard.writeText(parts.join('\n\n'))
+      trackCopy({ format: 'svg', style, size, count })
       return true
     } catch (error) {
       console.error('Copy failed:', error)
@@ -169,6 +172,7 @@ export function useIconExport() {
         const filename = `some-icons-${style}-${size}px.zip`
         downloadBlob(blob, filename)
       }
+      trackDownload({ format: downloadFormat, style, size, count, is_zip: count > 1 })
       return true
     } catch (error) {
       console.error('Download failed:', error)
