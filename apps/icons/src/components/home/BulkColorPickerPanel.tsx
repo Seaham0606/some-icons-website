@@ -1,4 +1,6 @@
-import { ColorField } from 'design-system'
+import * as React from 'react'
+import { HexColorPicker } from 'react-colorful'
+import { Input, ColorSwatch, SomeIcon } from 'design-system'
 
 export interface BulkColorPickerPanelProps {
   /** Canonical `#RRGGBB`, or `null` for default (`currentColor`). */
@@ -6,33 +8,49 @@ export interface BulkColorPickerPanelProps {
   onColorChange: (color: string | null) => void
 }
 
-/** Preset palette — 6×4 grid, aligned with `.homepage-bulkColorPicker__grid` width in CSS. */
+/** Preset palette — 6×2 grid (4 grayscale + 8 colors at 400-level tokens). */
 const PRESET_COLORS = [
-  '#000000',
+  // Grayscale row (4 stops: near-black → white)
+  '#292929',
+  '#707070',
+  '#DADADA',
   '#FFFFFF',
-  '#64748B',
-  '#475569',
-  '#334155',
-  '#0F172A',
-  '#DC2626',
-  '#EA580C',
-  '#CA8A04',
-  '#16A34A',
-  '#0891B2',
-  '#2563EB',
-  '#7C3AED',
-  '#9333EA',
-  '#DB2777',
-  '#E11D48',
-  '#F97316',
-  '#84CC16',
-  '#14B8A6',
-  '#06B6D4',
-  '#8B5CF6',
-  '#6366F1',
-  '#A855F7',
-  '#EC4899',
+  // Color row (400-level tokens)
+  '#FF7575',
+  '#FF8F66',
+  '#FFC94D',
+  '#9EE55C',
+  '#67EAF5',
+  '#66B6FF',
+  '#B785FB',
+  '#FF8FEC',
 ] as const
+
+interface NormalizeOptions {
+  allowShorthand?: boolean
+}
+
+function normalizeHexColorInput(value: string, options?: NormalizeOptions): string | null {
+  const allowShorthand = options?.allowShorthand !== false
+  const t = value.trim()
+  if (t === '' || t === '#') return null
+  const pattern = allowShorthand
+    ? /^#([0-9a-f]{3}|[0-9a-f]{6})$/i
+    : /^#([0-9a-f]{6})$/i
+  const m = t.match(pattern)
+  if (!m) return null
+  let h = m[1]
+  if (allowShorthand && h.length === 3) {
+    h = [...h].map((c) => c + c).join('')
+  }
+  return `#${h.toUpperCase()}`
+}
+
+function sanitizePartialHex(raw: string): string {
+  const hex = raw.replace(/[^0-9a-fA-F]/g, '').slice(0, 6).toUpperCase()
+  if (hex.length === 0) return raw.includes('#') ? '#' : ''
+  return `#${hex}`
+}
 
 function colorsMatch(a: string | null, b: string): boolean {
   if (a == null) return false
@@ -43,8 +61,119 @@ export function BulkColorPickerPanel({
   color,
   onColorChange,
 }: BulkColorPickerPanelProps) {
+  const [hexText, setHexText] = React.useState(() =>
+    color != null ? (normalizeHexColorInput(color, { allowShorthand: true }) ?? color) : '',
+  )
+  const [pickerOpen, setPickerOpen] = React.useState(false)
+  const prevColorRef = React.useRef(color)
+  const hexRowRef = React.useRef<HTMLDivElement>(null)
+
+  // Sync hex text when color prop changes externally (e.g. preset swatch click)
+  React.useEffect(() => {
+    if (color !== prevColorRef.current) {
+      prevColorRef.current = color
+      if (color != null) {
+        setHexText(normalizeHexColorInput(color, { allowShorthand: true }) ?? color)
+      }
+    }
+  }, [color])
+
+  // Close picker on outside pointer-down
+  React.useEffect(() => {
+    if (!pickerOpen) return
+    const handler = (e: PointerEvent) => {
+      if (hexRowRef.current && !hexRowRef.current.contains(e.target as Node)) {
+        setPickerOpen(false)
+      }
+    }
+    document.addEventListener('pointerdown', handler)
+    return () => document.removeEventListener('pointerdown', handler)
+  }, [pickerOpen])
+
+  const hexTrimmed = hexText.trim()
+  const hasUserHexInput = hexTrimmed !== '' && hexTrimmed !== '#'
+  const canReset = hasUserHexInput || color !== null
+  const pickerValue = color ?? '#000000'
+
   return (
     <div className="homepage-bulkColorPicker" role="dialog" aria-label="Icon color">
+      {/* Hex input — full width, above swatches */}
+      <div ref={hexRowRef} className="homepage-bulkColorPicker__hexRow">
+        <Input
+          value={hexText}
+          onChange={(e) => {
+            const next = sanitizePartialHex(e.target.value)
+            setHexText(next)
+            const trimmed = next.trim()
+            if (trimmed === '' || trimmed === '#') {
+              onColorChange(null)
+              return
+            }
+            const strict = normalizeHexColorInput(next, { allowShorthand: false })
+            if (strict) onColorChange(strict)
+            else onColorChange(null)
+          }}
+          onFocus={(e) => {
+            if (e.target.value === '') setHexText('#')
+          }}
+          onBlur={(e) => {
+            const v = e.target.value.trim()
+            if (v === '' || v === '#') {
+              setHexText('')
+              onColorChange(null)
+              return
+            }
+            const normalized = normalizeHexColorInput(v, { allowShorthand: true })
+            if (normalized) {
+              setHexText(normalized)
+              onColorChange(normalized)
+            }
+          }}
+          placeholder="default"
+          autoCapitalize="none"
+          autoCorrect="off"
+          spellCheck={false}
+          leadingSlot={
+            <button
+              type="button"
+              className="ds-colorField__swatchBtn"
+              aria-label="Open color picker"
+              aria-expanded={pickerOpen}
+              onClick={() => setPickerOpen((p) => !p)}
+            >
+              <ColorSwatch color={color} />
+            </button>
+          }
+          trailingSlot={
+            <button
+              type="button"
+              className="ds-colorField__reset"
+              aria-label="Reset icon color to default"
+              disabled={!canReset}
+              onClick={() => {
+                setHexText('')
+                onColorChange(null)
+              }}
+            >
+              <SomeIcon iconName="arrow-undo" iconStyle="outline" iconSize="md" padding="2" />
+            </button>
+          }
+        />
+        {pickerOpen && (
+          <div className="ds-colorField__pickerPop">
+            <HexColorPicker
+              color={pickerValue}
+              onChange={(hex) => {
+                const upper = hex.toUpperCase()
+                setHexText(upper)
+                onColorChange(upper)
+              }}
+            />
+          </div>
+        )}
+      </div>
+
+      {/* Preset swatches */}
       <div className="homepage-bulkColorPicker__grid">
         {PRESET_COLORS.map((hex) => {
           const selected = colorsMatch(color, hex)
@@ -56,11 +185,7 @@ export function BulkColorPickerPanel({
               aria-label={`Set icon color to ${hex}`}
               aria-pressed={selected}
               onClick={() => onColorChange(hex)}
-              style={
-                selected
-                  ? { boxShadow: 'var(--shadow-focus-accent)' }
-                  : undefined
-              }
+              style={selected ? { boxShadow: 'var(--shadow-focus-accent)' } : undefined}
             >
               <span
                 className="homepage-bulkColorPicker__swatchFill"
@@ -70,14 +195,6 @@ export function BulkColorPickerPanel({
           )
         })}
       </div>
-      <ColorField
-        className="homepage-bulkColorPicker__colorField"
-        showLabel={false}
-        label="Hex"
-        color={color}
-        onColorChange={onColorChange}
-        col2Width="size-12"
-      />
     </div>
   )
 }
