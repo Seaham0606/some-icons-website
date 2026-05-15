@@ -31,6 +31,8 @@ export interface IconCardProps
    */
   hoverFilenameLabel?: string
   selected?: boolean
+  /** Highlights the card (e.g. row opened an adjacent info panel). */
+  infoActive?: boolean
   showSelectionControl?: boolean
   previewSlot: React.ReactNode
   onPrimaryClick?: React.MouseEventHandler<HTMLButtonElement>
@@ -55,6 +57,7 @@ export const IconCard = React.forwardRef<HTMLButtonElement, IconCardProps>(
       title,
       hoverFilenameLabel,
       selected = false,
+      infoActive = false,
       showSelectionControl = true,
       previewSlot,
       onPrimaryClick,
@@ -94,6 +97,7 @@ export const IconCard = React.forwardRef<HTMLButtonElement, IconCardProps>(
           <div
             className="ds-iconCard__shell"
             data-selected={selected ? "true" : undefined}
+            data-info-active={infoActive ? "true" : undefined}
           >
             <button
               ref={ref}
@@ -116,7 +120,7 @@ export const IconCard = React.forwardRef<HTMLButtonElement, IconCardProps>(
               >
                 {selected ? (
                   <SomeIcon
-                    iconName="symbol-check-circle"
+                    iconName="interface-checkbox-checked"
                     iconStyle="fill"
                     cdnBaseUrl={cdnBaseUrl}
                     iconSize="sm"
@@ -124,7 +128,7 @@ export const IconCard = React.forwardRef<HTMLButtonElement, IconCardProps>(
                   />
                 ) : (
                   <SomeIcon
-                    iconName="interface-button-radio"
+                    iconName="interface-checkbox-unchecked"
                     iconStyle="outline"
                     cdnBaseUrl={cdnBaseUrl}
                     iconSize="sm"

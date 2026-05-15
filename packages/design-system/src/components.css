@@ -209,6 +209,126 @@
   background: var(--color-black-alpha-0);
 }
 
+/*
+ * InfoPanel — matches Sidebar content width (320px).
+ * Laptop+ (1024px): in-flow width transition; pushes main column so icon grid reflows.
+ * Below: fixed overlay (does not shrink grid to unusable width on narrow viewports).
+ */
+.ds-infoPanel {
+  --ds-infoPanel-ease: ease-in-out;
+  --ds-infoPanel-duration: 360ms;
+  /* narrow: overlay drawer */
+  position: fixed;
+  top: 0;
+  right: 0;
+  height: 100vh;
+  height: 100dvh;
+  z-index: 40;
+  box-sizing: border-box;
+  width: 320px;
+  transform: translateX(100%);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  background: transparent;
+  border: none;
+  padding: 0;
+  margin: 0;
+  transition: transform var(--ds-infoPanel-duration) var(--ds-infoPanel-ease);
+  pointer-events: none;
+}
+
+.ds-infoPanel[data-open="true"] {
+  transform: translateX(0);
+  pointer-events: auto;
+}
+
+/* Fixed 320px inner column (padding on rail); outer clips width on laptop when closed */
+.ds-infoPanel__rail {
+  box-sizing: border-box;
+  width: 320px;
+  flex: 1 1 auto;
+  min-height: 0;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  padding-top: var(--spacing-padding-6);
+  padding-right: var(--spacing-padding-6);
+  padding-bottom: var(--spacing-padding-6);
+  padding-left: 0;
+  background: transparent;
+  border: none;
+}
+
+.ds-infoPanel__rail:has(.ds-infoPanel__header) {
+  gap: var(--spacing-gap-2);
+}
+
+/* Match `.ds-sidebar__asideHeader` padding (inspector: 2 / 0 / 16 / 8). Column shell so the top row spans full width. */
+.ds-infoPanel__header {
+  flex: 0 0 auto;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  width: 100%;
+  min-width: 0;
+  padding-top: var(--spacing-padding-050);
+  padding-left: var(--spacing-padding-2);
+  padding-bottom: var(--spacing-padding-4);
+  /* Bleed through rail `--spacing-padding-6` so the stripe spans the panel; keep symmetric inset for the close control. */
+  margin-right: calc(-1 * var(--spacing-padding-6));
+  padding-right: var(--spacing-padding-6);
+}
+
+.ds-infoPanel__header .ds-siteHeader__topSlot {
+  width: 100%;
+  min-width: 0;
+}
+
+.ds-infoPanel__contentSlot {
+  flex: 1 1 auto;
+  min-height: 0;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-gap-3);
+  padding: 0;
+}
+
+@media (min-width: 1024px) {
+  .ds-infoPanel {
+    position: relative;
+    top: auto;
+    right: auto;
+    height: auto;
+    align-self: stretch;
+    flex: 0 0 auto;
+    width: 0;
+    min-width: 0;
+    max-width: 320px;
+    transform: none;
+    transition: width var(--ds-infoPanel-duration) var(--ds-infoPanel-ease);
+    z-index: auto;
+  }
+
+  .ds-infoPanel[data-open="true"] {
+    width: 320px;
+    transform: none;
+  }
+
+  /* Inner rail fills animated aside width (fixed px was for overlay-only). */
+  .ds-infoPanel__rail {
+    width: 100%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ds-infoPanel {
+    transition: none;
+  }
+}
+
 /* SomeIcon — outer = 2×padding + glyph; tokens via --ds-some-icon-pad / --ds-some-icon-glyph */
 .ds-someIcon {
   box-sizing: border-box;
@@ -609,7 +729,7 @@ button.ds-dropdown__trigger.ds-input {
 
 [data-theme="dark"] .ds-dropdown__menuOverlay {
   border-color: var(--color-border-weak);
-  box-shadow: 0 8px 24px color-mix(in srgb, var(--color-black) 40%, transparent);
+  box-shadow: none;
 }
 
 .ds-dropdown__menuOverlayInner {
@@ -1425,6 +1545,10 @@ button.ds-inputSection__labelRow.ds-inputSection__labelRow--toggle {
   overflow: hidden;
 }
 
+[data-theme="dark"] .ds-colorField__pickerPop {
+  box-shadow: none;
+}
+
 /* react-colorful overrides — match design-system radius & sizing */
 .ds-colorField__pickerPop .react-colorful {
   width: 200px;
@@ -1972,7 +2096,8 @@ button.ds-inputSection__labelRow.ds-inputSection__labelRow--toggle {
     border-color 0.2s ease;
 }
 
-.ds-iconCard__shell:hover:not([data-selected="true"]) .ds-iconCard {
+.ds-iconCard__shell:hover:not([data-selected="true"]):not([data-info-active="true"])
+  .ds-iconCard {
   background: var(--color-background-elevation);
   border-color: var(--color-border-base);
 }
@@ -1983,6 +2108,16 @@ button.ds-inputSection__labelRow.ds-inputSection__labelRow--toggle {
 }
 
 .ds-iconCard__shell[data-selected="true"]:hover .ds-iconCard {
+  background: var(--color-overlay-accent);
+}
+
+/* Info panel target — same accent treatment as selection when not multi-selected */
+.ds-iconCard__shell[data-info-active="true"]:not([data-selected="true"]) .ds-iconCard {
+  border-color: var(--color-intent-accent);
+  background: var(--color-blue-alpha-25);
+}
+
+.ds-iconCard__shell[data-info-active="true"]:not([data-selected="true"]):hover .ds-iconCard {
   background: var(--color-overlay-accent);
 }
 
@@ -2019,8 +2154,8 @@ button.ds-inputSection__labelRow.ds-inputSection__labelRow--toggle {
 
 .ds-iconCard__select {
   position: absolute;
-  top: var(--spacing-1);
-  right: var(--spacing-1);
+  top: calc(var(--spacing-1) + var(--spacing-050));
+  right: calc(var(--spacing-1) + var(--spacing-050));
   z-index: 1;
   display: flex;
   align-items: center;
@@ -2132,6 +2267,10 @@ button.ds-inputSection__labelRow.ds-inputSection__labelRow--toggle {
   background: var(--color-background-strong);
   box-shadow:
     0 var(--spacing-padding-050) var(--spacing-padding-3) var(--color-overlay-weak);
+}
+
+[data-theme="dark"] .ds-bulkActionBar {
+  box-shadow: none;
 }
 
 .ds-bulkActionBar__textWrapper {

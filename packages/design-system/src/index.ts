@@ -4,6 +4,8 @@ export { initDesignSystemScrollbarVisibility } from "./scrollbar-visibility"
 
 /* Components */
 export { Sidebar } from "./components/sidebar"
+export { InfoPanel } from "./components/info-panel"
+export type { InfoPanelProps } from "./components/info-panel"
 export { Chip } from "./components/chip"
 export type { ChipProps, ChipVariant } from "./components/chip"
 export { InputSection, InputSectionSlotPlaceholder } from "./components/input-section"

@@ -21,6 +21,7 @@ import {
   type ButtonStateIcon,
   Chip,
   cn,
+  InfoPanel,
   Input,
   InputField,
   Sidebar,
@@ -28,6 +29,8 @@ import {
   SiteHeader,
   SomeIcon,
 } from 'design-system'
+import { IconInfoPanelContent } from '@/components/info/IconInfoPanelContent'
+import { IconInfoPanelHeader } from '@/components/info/IconInfoPanelHeader'
 import { ThemeButton } from '@/components/ThemeButton'
 import { useColorStore } from '@/stores/colorStore'
 import { useBackdropPresence } from '@/hooks/useBackdropPresence'
@@ -40,6 +43,7 @@ import {
   getDefaultCodeFramework,
 } from '@/lib/code-export'
 import { useChangelog } from '@/hooks/useChangelog'
+import type { Icon } from '@/types/icon'
 import {
   useCallback,
   useEffect,
@@ -121,6 +125,8 @@ export default function HomePage() {
   const bulkBarSettingsAnchorRef = useRef<HTMLDivElement>(null)
   const [bulkColorPickerOpen, setBulkColorPickerOpen] = useState(false)
   const bulkColorPickerAnchorRef = useRef<HTMLDivElement>(null)
+  const [infoPanelOpen, setInfoPanelOpen] = useState(false)
+  const [infoPanelIcon, setInfoPanelIcon] = useState<Icon | null>(null)
   const selectedColor = useColorStore((s) => s.selectedColor)
   const setSelectedColor = useColorStore((s) => s.setColor)
   const filtersBackdrop = useBackdropPresence(filtersSheetOpen)
@@ -274,6 +280,46 @@ export default function HomePage() {
       document.removeEventListener('pointerdown', onPointerDown, true)
     }
   }, [bulkColorPickerOpen])
+
+  const handleInfoPanelClose = useCallback(() => {
+    setInfoPanelOpen(false)
+    setInfoPanelIcon(null)
+  }, [])
+
+  const handleInfoOpen = useCallback((icon: Icon, anchor: HTMLButtonElement) => {
+    setInfoPanelIcon(icon)
+    setInfoPanelOpen(true)
+
+    const scrollCardIntoView = () => {
+      const instant = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+      anchor.scrollIntoView({
+        block: 'center',
+        /* `nearest` avoids horizontal scroll nudges that read as the grid hugging the sidebar. */
+        inline: 'nearest',
+        behavior: instant ? 'auto' : 'smooth',
+      })
+    }
+
+    const isLaptopPlus = window.matchMedia('(min-width: 1024px)').matches
+    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+
+    if (isLaptopPlus && !reducedMotion) {
+      window.setTimeout(scrollCardIntoView, 370)
+    } else {
+      requestAnimationFrame(() => {
+        requestAnimationFrame(scrollCardIntoView)
+      })
+    }
+  }, [])
+
+  useEffect(() => {
+    if (!infoPanelOpen) return
+    const onKeyDown = (e: globalThis.KeyboardEvent) => {
+      if (e.key === 'Escape') handleInfoPanelClose()
+    }
+    document.addEventListener('keydown', onKeyDown)
+    return () => document.removeEventListener('keydown', onKeyDown)
+  }, [infoPanelOpen, handleInfoPanelClose])
 
   /** Below laptop, expanded search row and settings row share one strip — only one open at a time. */
   const toggleMobileHeaderSearch = useCallback(() => {
@@ -556,50 +602,274 @@ export default function HomePage() {
       ) : null}
 
       <main className="homepage-main">
-        <div className="homepage-pageContentWrap">
-          <PageContent>
-            <IconGrid
-              gradientOverlayInsetPx={
-                selectionCount > 0 ? GRADIENT_OVERLAY_HOME_HEIGHT_PX : 0
-              }
-            />
-            <SiteFooter
-              className="ds-siteFooter--inScroll homepage-mobile-only"
-              copyright={copyrightNode}
-            />
-          </PageContent>
-          <GradientOverlay
-            visible={selectionCount > 0}
-            fullWidth
-            className="homepage-bulkOverlay"
-            style={{ height: GRADIENT_OVERLAY_HOME_HEIGHT_PX }}
-            progressiveBlur
-            progressiveBlurIntensity={80}
-            progressiveBlurPosition="bottom"
-            backdropBlur={false}
-          >
-            {selectionCount > 0 ? (
-            <div className="homepage-bulkBarsWrap">
-              <BulkActionBar
-                selectedCount={selectionCount}
-                summaryTrailingSlot={
-                  <BulkActionHoverChip
-                    chipLabel={allVisibleSelected ? 'Deselect all' : 'Select all'}
-                  >
+        <div className="homepage-mainRow">
+          <div className="homepage-pageContentWrap">
+            <PageContent>
+              <IconGrid
+                gradientOverlayInsetPx={
+                  selectionCount > 0 ? GRADIENT_OVERLAY_HOME_HEIGHT_PX : 0
+                }
+                onInfoOpen={handleInfoOpen}
+                onInfoPanelClose={handleInfoPanelClose}
+                infoPanelOpen={infoPanelOpen}
+                infoPanelTargetId={infoPanelIcon?.id ?? null}
+              />
+              <SiteFooter
+                className="ds-siteFooter--inScroll homepage-mobile-only"
+                copyright={copyrightNode}
+              />
+            </PageContent>
+            <GradientOverlay
+              visible={selectionCount > 0}
+              fullWidth
+              className="homepage-bulkOverlay"
+              style={{ height: GRADIENT_OVERLAY_HOME_HEIGHT_PX }}
+              progressiveBlur
+              progressiveBlurIntensity={80}
+              progressiveBlurPosition="bottom"
+              backdropBlur={false}
+            >
+              {selectionCount > 0 ? (
+              <div className="homepage-bulkBarsWrap">
+                <BulkActionBar
+                  selectedCount={selectionCount}
+                  summaryTrailingSlot={
+                    <BulkActionHoverChip
+                      chipLabel={allVisibleSelected ? 'Deselect all' : 'Select all'}
+                    >
+                      <Button
+                        type="button"
+                        variant="transparent"
+                        size="md"
+                        radius="md"
+                        disabled={visibleGridIcons.length === 0}
+                        aria-label={
+                          allVisibleSelected ? 'Deselect all' : 'Select all'
+                        }
+                        aria-pressed={allVisibleSelected}
+                        onClick={handleToggleSelectAllVisible}
+                        leadingSlot={
+                          <SomeIcon
+                            iconName="symbol-check-multiple"
+                            iconStyle="outline"
+                            iconSize="md"
+                            padding="0"
+                          />
+                        }
+                      />
+                    </BulkActionHoverChip>
+                  }
+                >
+                  <>
+                    <div className="ds-segmentedControl__dividerWrap" aria-hidden>
+                      <div className="ds-segmentedControl__divider" />
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <div
+                        ref={bulkColorPickerAnchorRef}
+                        className="homepage-bulkColorPickerAnchor"
+                      >
+                        {bulkColorPickerOpen ? (
+                          <div className="homepage-bulkColorPickerPop">
+                            <BulkColorPickerPanel
+                              color={selectedColor}
+                              onColorChange={setSelectedColor}
+                            />
+                          </div>
+                        ) : null}
+                        <BulkActionHoverChip chipLabel="Icon color">
+                          <Button
+                            type="button"
+                            variant="transparent"
+                            size="md"
+                            radius="md"
+                            className="homepage-bulkAction-colorBtn"
+                            aria-label="Icon color"
+                            aria-haspopup="dialog"
+                            aria-expanded={bulkColorPickerOpen}
+                            data-color-active={selectedColor != null ? 'true' : undefined}
+                            onClick={() => setBulkColorPickerOpen((o) => !o)}
+                            leadingSlot={
+                              selectedColor != null ? (
+                                <span
+                                  className="homepage-bulkAction-colorDot"
+                                  style={{ backgroundColor: selectedColor }}
+                                  aria-hidden
+                                />
+                              ) : (
+                                <SomeIcon
+                                  iconName="formatting-eyedropper"
+                                  iconStyle="outline"
+                                  iconSize="md"
+                                  padding="0"
+                                />
+                              )
+                            }
+                          />
+                        </BulkActionHoverChip>
+                      </div>
+                      <BulkActionHoverChip chipLabel="Icon size">
+                        <Input
+                          className="homepage-bulkBar-sizeInput"
+                          aria-label="Icon size in pixels"
+                          inputMode="numeric"
+                          pattern="[0-9]*"
+                          autoComplete="off"
+                          status={sizeFieldError ? 'error' : 'default'}
+                          value={bulkBarSizeInputValue}
+                          onKeyDown={handleCustomExportSizeKeyDown}
+                          onChange={(e) =>
+                            handleCustomExportSizeChange(e.target.value)
+                          }
+                          leadingSlot={
+                            <button
+                              type="button"
+                              className="homepage-bulkBar-sizeStep"
+                              aria-label="Decrease icon size"
+                              disabled={parseInt(bulkBarSizeInputValue, 10) <= 8}
+                              onClick={() => adjustBulkExportSize(-1)}
+                            >
+                              <SomeIcon
+                                iconName="symbol-minus"
+                                iconStyle="outline"
+                                iconSize="sm"
+                                padding="050"
+                                color="currentColor"
+                              />
+                            </button>
+                          }
+                          trailingSlot={
+                            <button
+                              type="button"
+                              className="homepage-bulkBar-sizeStep"
+                              aria-label="Increase icon size"
+                              onClick={() => adjustBulkExportSize(1)}
+                            >
+                              <SomeIcon
+                                iconName="symbol-plus"
+                                iconStyle="outline"
+                                iconSize="sm"
+                                padding="050"
+                                color="currentColor"
+                              />
+                            </button>
+                          }
+                        />
+                      </BulkActionHoverChip>
+                    </div>
+                    <div className="ds-segmentedControl__dividerWrap" aria-hidden>
+                      <div className="ds-segmentedControl__divider" />
+                    </div>
+                    <div className="ds-buttonGroup">
+                      {showCopyAction ? (
+                        <BulkActionHoverChip
+                          chipLabel={
+                            copySuccessStrip
+                              ? bulkCopySuccessLabel
+                              : bulkCopyIdleLabel
+                          }
+                        >
+                          <Button
+                            type="button"
+                            variant="transparent"
+                            size="md"
+                            radius="md"
+                            disabled={isCopying}
+                            aria-busy={isCopying}
+                            onClick={() => void onBulkCopy()}
+                            aria-label={
+                              copySuccessStrip
+                                ? bulkCopySuccessLabel
+                                : bulkCopyIdleLabel
+                            }
+                            stateIcons={BULK_COPY_STATE_ICONS}
+                            stripActiveIndex={copySuccessStrip ? 1 : 0}
+                            stripActiveBackground="var(--color-overlay-success)"
+                          />
+                        </BulkActionHoverChip>
+                      ) : null}
+                      {showDownloadAction ? (
+                        <BulkActionHoverChip
+                          chipLabel={
+                            downloadSuccessStrip
+                              ? `Downloaded ${downloadAssetLabel}`
+                              : `Download ${downloadAssetLabel}`
+                          }
+                        >
+                          <Button
+                            type="button"
+                            variant="transparent"
+                            size="md"
+                            radius="md"
+                            disabled={isDownloading}
+                            aria-busy={isDownloading}
+                            onClick={() => void onBulkDownload()}
+                            aria-label={
+                              downloadSuccessStrip
+                                ? `Downloaded ${downloadAssetLabel}`
+                                : `Download ${downloadAssetLabel}`
+                            }
+                            stateIcons={BULK_DOWNLOAD_STATE_ICONS}
+                            stripActiveIndex={downloadSuccessStrip ? 1 : 0}
+                            stripActiveBackground="var(--color-overlay-success)"
+                          />
+                        </BulkActionHoverChip>
+                      ) : null}
+                      <div
+                        ref={bulkBarSettingsAnchorRef}
+                        className="homepage-bulkBarSettingsAnchor"
+                      >
+                        {bulkBarSettingsOpen ? (
+                          <div className="homepage-bulkBarSettingsPop">
+                            <BulkActionBarSettingsPanel
+                              copyFormat={copyFormat}
+                              downloadFormat={downloadFormat}
+                              onCopyFormatChange={setCopyFormat}
+                              onDownloadFormatChange={setDownloadFormat}
+                              disableCopySvg={selectionCount > 1}
+                            />
+                          </div>
+                        ) : null}
+                        <BulkActionHoverChip chipLabel="More options">
+                          <Button
+                            type="button"
+                            variant="transparent"
+                            size="md"
+                            radius="md"
+                            className="homepage-bulkAction-settingsBtn"
+                            aria-label="Export format"
+                            aria-haspopup="dialog"
+                            aria-expanded={bulkBarSettingsOpen}
+                            onClick={() =>
+                              setBulkBarSettingsOpen((open) => !open)
+                            }
+                            leadingSlot={
+                              <SomeIcon
+                                iconName="interface-ellipsis-horizontal"
+                                iconStyle="fill"
+                                iconSize="sm"
+                                padding="050"
+                              />
+                            }
+                          />
+                        </BulkActionHoverChip>
+                      </div>
+                    </div>
+                  </>
+                </BulkActionBar>
+                <div className="homepage-bulkBarAside">
+                  <BulkActionHoverChip chipLabel="Clear">
                     <Button
                       type="button"
                       variant="transparent"
                       size="md"
                       radius="md"
-                      disabled={visibleGridIcons.length === 0}
-                      aria-label={
-                        allVisibleSelected ? 'Deselect all' : 'Select all'
-                      }
-                      aria-pressed={allVisibleSelected}
-                      onClick={handleToggleSelectAllVisible}
+                      className="ds-bulkActionBar__dismiss"
+                      aria-label="Clear"
+                      onClick={() => clearSelection()}
                       leadingSlot={
                         <SomeIcon
-                          iconName="symbol-check-multiple"
+                          iconName="symbol-multiply"
                           iconStyle="outline"
                           iconSize="md"
                           padding="0"
@@ -607,229 +877,25 @@ export default function HomePage() {
                       }
                     />
                   </BulkActionHoverChip>
-                }
-              >
-                <>
-                  <div className="ds-segmentedControl__dividerWrap" aria-hidden>
-                    <div className="ds-segmentedControl__divider" />
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <div
-                      ref={bulkColorPickerAnchorRef}
-                      className="homepage-bulkColorPickerAnchor"
-                    >
-                      {bulkColorPickerOpen ? (
-                        <div className="homepage-bulkColorPickerPop">
-                          <BulkColorPickerPanel
-                            color={selectedColor}
-                            onColorChange={setSelectedColor}
-                          />
-                        </div>
-                      ) : null}
-                      <BulkActionHoverChip chipLabel="Icon color">
-                        <Button
-                          type="button"
-                          variant="transparent"
-                          size="md"
-                          radius="md"
-                          className="homepage-bulkAction-colorBtn"
-                          aria-label="Icon color"
-                          aria-haspopup="dialog"
-                          aria-expanded={bulkColorPickerOpen}
-                          data-color-active={selectedColor != null ? 'true' : undefined}
-                          onClick={() => setBulkColorPickerOpen((o) => !o)}
-                          leadingSlot={
-                            selectedColor != null ? (
-                              <span
-                                className="homepage-bulkAction-colorDot"
-                                style={{ backgroundColor: selectedColor }}
-                                aria-hidden
-                              />
-                            ) : (
-                              <SomeIcon
-                                iconName="formatting-eyedropper"
-                                iconStyle="outline"
-                                iconSize="md"
-                                padding="0"
-                              />
-                            )
-                          }
-                        />
-                      </BulkActionHoverChip>
-                    </div>
-                    <BulkActionHoverChip chipLabel="Icon size">
-                      <Input
-                        className="homepage-bulkBar-sizeInput"
-                        aria-label="Icon size in pixels"
-                        inputMode="numeric"
-                        pattern="[0-9]*"
-                        autoComplete="off"
-                        status={sizeFieldError ? 'error' : 'default'}
-                        value={bulkBarSizeInputValue}
-                        onKeyDown={handleCustomExportSizeKeyDown}
-                        onChange={(e) =>
-                          handleCustomExportSizeChange(e.target.value)
-                        }
-                        leadingSlot={
-                          <button
-                            type="button"
-                            className="homepage-bulkBar-sizeStep"
-                            aria-label="Decrease icon size"
-                            disabled={parseInt(bulkBarSizeInputValue, 10) <= 8}
-                            onClick={() => adjustBulkExportSize(-1)}
-                          >
-                            <SomeIcon
-                              iconName="symbol-minus"
-                              iconStyle="outline"
-                              iconSize="sm"
-                              padding="050"
-                              color="currentColor"
-                            />
-                          </button>
-                        }
-                        trailingSlot={
-                          <button
-                            type="button"
-                            className="homepage-bulkBar-sizeStep"
-                            aria-label="Increase icon size"
-                            onClick={() => adjustBulkExportSize(1)}
-                          >
-                            <SomeIcon
-                              iconName="symbol-plus"
-                              iconStyle="outline"
-                              iconSize="sm"
-                              padding="050"
-                              color="currentColor"
-                            />
-                          </button>
-                        }
-                      />
-                    </BulkActionHoverChip>
-                  </div>
-                  <div className="ds-segmentedControl__dividerWrap" aria-hidden>
-                    <div className="ds-segmentedControl__divider" />
-                  </div>
-                  <div className="ds-buttonGroup">
-                    {showCopyAction ? (
-                      <BulkActionHoverChip
-                        chipLabel={
-                          copySuccessStrip
-                            ? bulkCopySuccessLabel
-                            : bulkCopyIdleLabel
-                        }
-                      >
-                        <Button
-                          type="button"
-                          variant="transparent"
-                          size="md"
-                          radius="md"
-                          disabled={isCopying}
-                          aria-busy={isCopying}
-                          onClick={() => void onBulkCopy()}
-                          aria-label={
-                            copySuccessStrip
-                              ? bulkCopySuccessLabel
-                              : bulkCopyIdleLabel
-                          }
-                          stateIcons={BULK_COPY_STATE_ICONS}
-                          stripActiveIndex={copySuccessStrip ? 1 : 0}
-                          stripActiveBackground="var(--color-overlay-success)"
-                        />
-                      </BulkActionHoverChip>
-                    ) : null}
-                    {showDownloadAction ? (
-                      <BulkActionHoverChip
-                        chipLabel={
-                          downloadSuccessStrip
-                            ? `Downloaded ${downloadAssetLabel}`
-                            : `Download ${downloadAssetLabel}`
-                        }
-                      >
-                        <Button
-                          type="button"
-                          variant="transparent"
-                          size="md"
-                          radius="md"
-                          disabled={isDownloading}
-                          aria-busy={isDownloading}
-                          onClick={() => void onBulkDownload()}
-                          aria-label={
-                            downloadSuccessStrip
-                              ? `Downloaded ${downloadAssetLabel}`
-                              : `Download ${downloadAssetLabel}`
-                          }
-                          stateIcons={BULK_DOWNLOAD_STATE_ICONS}
-                          stripActiveIndex={downloadSuccessStrip ? 1 : 0}
-                          stripActiveBackground="var(--color-overlay-success)"
-                        />
-                      </BulkActionHoverChip>
-                    ) : null}
-                    <div
-                      ref={bulkBarSettingsAnchorRef}
-                      className="homepage-bulkBarSettingsAnchor"
-                    >
-                      {bulkBarSettingsOpen ? (
-                        <div className="homepage-bulkBarSettingsPop">
-                          <BulkActionBarSettingsPanel
-                            copyFormat={copyFormat}
-                            downloadFormat={downloadFormat}
-                            onCopyFormatChange={setCopyFormat}
-                            onDownloadFormatChange={setDownloadFormat}
-                            disableCopySvg={selectionCount > 1}
-                          />
-                        </div>
-                      ) : null}
-                      <BulkActionHoverChip chipLabel="More options">
-                        <Button
-                          type="button"
-                          variant="transparent"
-                          size="md"
-                          radius="md"
-                          className="homepage-bulkAction-settingsBtn"
-                          aria-label="Export format"
-                          aria-haspopup="dialog"
-                          aria-expanded={bulkBarSettingsOpen}
-                          onClick={() =>
-                            setBulkBarSettingsOpen((open) => !open)
-                          }
-                          leadingSlot={
-                            <SomeIcon
-                              iconName="interface-ellipsis-horizontal"
-                              iconStyle="fill"
-                              iconSize="sm"
-                              padding="050"
-                            />
-                          }
-                        />
-                      </BulkActionHoverChip>
-                    </div>
-                  </div>
-                </>
-              </BulkActionBar>
-              <div className="homepage-bulkBarAside">
-                <BulkActionHoverChip chipLabel="Clear">
-                  <Button
-                    type="button"
-                    variant="transparent"
-                    size="md"
-                    radius="md"
-                    className="ds-bulkActionBar__dismiss"
-                    aria-label="Clear"
-                    onClick={() => clearSelection()}
-                    leadingSlot={
-                      <SomeIcon
-                        iconName="symbol-multiply"
-                        iconStyle="outline"
-                        iconSize="md"
-                        padding="0"
-                      />
-                    }
-                  />
-                </BulkActionHoverChip>
+                </div>
               </div>
-            </div>
-            ) : null}
-          </GradientOverlay>
+              ) : null}
+            </GradientOverlay>
+          </div>
+
+          <InfoPanel
+            open={infoPanelOpen}
+            header={
+              infoPanelOpen ? (
+                <IconInfoPanelHeader onClose={handleInfoPanelClose} />
+              ) : undefined
+            }
+            aria-label={
+              infoPanelIcon ? `${infoPanelIcon.id} details` : 'Icon details'
+            }
+          >
+            {infoPanelIcon ? <IconInfoPanelContent icon={infoPanelIcon} /> : null}
+          </InfoPanel>
         </div>
       </main>
 
