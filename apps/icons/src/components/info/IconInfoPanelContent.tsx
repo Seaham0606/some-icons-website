@@ -1,23 +1,53 @@
+import { IconWireframe } from '@/components/info/IconWireframe'
+import { DEFAULT_ICON_SIZE } from '@/lib/constants'
+import {
+  generateFrameworkCodeSnippet,
+  getDefaultCodeFramework,
+} from '@/lib/code-export'
+import { useColorStore } from '@/stores/colorStore'
+import { useExportStore } from '@/stores/exportStore'
+import { useFilterStore } from '@/stores/filterStore'
 import type { Icon } from '@/types/icon'
 import { Button, InputSection } from 'design-system'
+import { useCallback, useMemo } from 'react'
+import { toast } from 'sonner'
 
 export interface IconInfoPanelContentProps {
   icon: Icon
 }
 
-/** Phase 0: layout shell only — placeholders for preview, exports, snippet, frameworks. */
 export function IconInfoPanelContent({ icon }: IconInfoPanelContentProps) {
+  const exportSize = useExportStore((s) => s.size)
+  const selectedColor = useColorStore((s) => s.selectedColor)
+  const style = useFilterStore((s) => s.style)
+
+  const reactSnippet = useMemo(
+    () =>
+      generateFrameworkCodeSnippet(getDefaultCodeFramework(), {
+        orderedIconIds: [icon.id],
+        style,
+        size: exportSize ?? DEFAULT_ICON_SIZE,
+        colorHex: selectedColor,
+      }),
+    [icon.id, style, exportSize, selectedColor],
+  )
+
+  const handleCopySnippet = useCallback(async () => {
+    try {
+      await navigator.clipboard.writeText(reactSnippet)
+    } catch (error) {
+      console.error('Clipboard copy failed:', error)
+      toast.error('Could not copy. Check clipboard permissions.')
+    }
+  }, [reactSnippet])
+
   return (
     <InputSection
       className="homepage-infoPanelShell"
       showLabel={false}
       contentSlot={
         <div className="homepage-infoPanelContent">
-          <div
-            className="homepage-infoPanelContent__preview"
-            data-slot="infoPanel-preview"
-            aria-hidden
-          />
+          <IconWireframe icon={icon} />
 
           <div className="homepage-infoPanelContent__meta" data-slot="infoPanel-meta">
             <p className="homepage-infoPanelContent__metaId">{icon.id}</p>
@@ -48,21 +78,28 @@ export function IconInfoPanelContent({ icon }: IconInfoPanelContentProps) {
             className="homepage-infoPanelContent__snippetSection"
             label="Code snippet"
             trailingSlot={
-              <span
-                className="homepage-infoPanelContent__snippetHelp"
-                data-slot="infoPanel-snippet-help"
-              >
-                Instructions (placeholder)
-              </span>
+              <Button
+                type="button"
+                variant="transparent"
+                size="sm"
+                radius="md"
+                aria-label="Copy React code"
+                iconName="interface-copy"
+                iconStyle="outline"
+                contentColor="var(--color-main-quaternary)"
+                onClick={() => {
+                  void handleCopySnippet()
+                }}
+                data-slot="infoPanel-snippet-copy"
+              />
             }
-            trailingColor="var(--color-main-tertiary)"
             contentSlot={
               <div
                 className="homepage-infoPanelContent__snippet"
                 data-slot="infoPanel-snippet"
               >
                 <pre className="homepage-infoPanelContent__snippetPlaceholder">
-                  <code>{`// Snippet placeholder`}</code>
+                  <code>{reactSnippet}</code>
                 </pre>
               </div>
             }
