@@ -9,7 +9,7 @@ import type { Icon } from '@/types/icon'
 interface IconGridProps {
   /** Extra bottom padding when a bottom gradient overlay is shown (px). */
   gradientOverlayInsetPx?: number
-  onInfoOpen?: (icon: Icon, anchor: HTMLButtonElement) => void
+  onInfoOpen?: (icon: Icon) => void
   infoPanelOpen?: boolean
   /** Icon id whose card stays highlighted while the info panel is open. */
   infoPanelTargetId?: string | null

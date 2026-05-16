@@ -9,6 +9,7 @@ import { IconGrid } from '@/components/icons/IconGrid'
 import { HomePageFilterStack } from '@/components/home/HomePageFilters'
 import { BulkColorPickerPanel } from '@/components/home/BulkColorPickerPanel'
 import { PageContent } from '@/components/layout'
+import { BULK_COPY_STATE_ICONS } from '@/lib/bulk-copy-state-icons'
 import { DEFAULT_ICON_SIZE } from '@/lib/constants'
 import { useExportStore } from '@/stores/exportStore'
 import { useSelectionStore } from '@/stores/selectionStore'
@@ -44,24 +45,17 @@ import {
 } from '@/lib/code-export'
 import { useChangelog } from '@/hooks/useChangelog'
 import type { Icon } from '@/types/icon'
+import gsap from 'gsap'
 import {
   useCallback,
   useEffect,
+  useLayoutEffect,
   useMemo,
   useRef,
   useState,
   type KeyboardEvent,
   type ReactNode,
 } from 'react'
-
-const BULK_COPY_STATE_ICONS = [
-  { iconName: 'interface-copy', iconStyle: 'outline' },
-  {
-    iconName: 'symbol-check-mark',
-    iconStyle: 'outline',
-    color: 'var(--color-intent-success-strong)',
-  },
-] as const satisfies [ButtonStateIcon, ButtonStateIcon]
 
 const BULK_DOWNLOAD_STATE_ICONS = [
   { iconName: 'arrow-down', iconStyle: 'outline' },
@@ -125,6 +119,8 @@ export default function HomePage() {
   const bulkBarSettingsAnchorRef = useRef<HTMLDivElement>(null)
   const [bulkColorPickerOpen, setBulkColorPickerOpen] = useState(false)
   const bulkColorPickerAnchorRef = useRef<HTMLDivElement>(null)
+  const bulkBarsWrapRef = useRef<HTMLDivElement>(null)
+  const prevBulkSelectionCountRef = useRef(0)
   const [infoPanelOpen, setInfoPanelOpen] = useState(false)
   const [infoPanelIcon, setInfoPanelIcon] = useState<Icon | null>(null)
   const selectedColor = useColorStore((s) => s.selectedColor)
@@ -182,6 +178,35 @@ export default function HomePage() {
       })
     }
   }, [clearSelection, flashDownloadSuccess, handleDownload])
+
+  useLayoutEffect(() => {
+    if (selectionCount === 0) {
+      prevBulkSelectionCountRef.current = 0
+      return
+    }
+    const el = bulkBarsWrapRef.current
+    if (!el) return
+
+    const enteringFromZero = prevBulkSelectionCountRef.current === 0
+    prevBulkSelectionCountRef.current = selectionCount
+
+    if (!enteringFromZero) return
+
+    gsap.killTweensOf(el)
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      gsap.set(el, { clearProps: 'transform' })
+      return
+    }
+    gsap.fromTo(
+      el,
+      { yPercent: 40 },
+      {
+        yPercent: 0,
+        duration: 0.45,
+        ease: 'power3.out',
+      },
+    )
+  }, [selectionCount])
 
   const showCopyAction =
     copyFormat === 'code' || selectionCount <= 1
@@ -286,30 +311,9 @@ export default function HomePage() {
     setInfoPanelIcon(null)
   }, [])
 
-  const handleInfoOpen = useCallback((icon: Icon, anchor: HTMLButtonElement) => {
+  const handleInfoOpen = useCallback((icon: Icon) => {
     setInfoPanelIcon(icon)
     setInfoPanelOpen(true)
-
-    const scrollCardIntoView = () => {
-      const instant = window.matchMedia('(prefers-reduced-motion: reduce)').matches
-      anchor.scrollIntoView({
-        block: 'center',
-        /* `nearest` avoids horizontal scroll nudges that read as the grid hugging the sidebar. */
-        inline: 'nearest',
-        behavior: instant ? 'auto' : 'smooth',
-      })
-    }
-
-    const isLaptopPlus = window.matchMedia('(min-width: 1024px)').matches
-    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
-
-    if (isLaptopPlus && !reducedMotion) {
-      window.setTimeout(scrollCardIntoView, 370)
-    } else {
-      requestAnimationFrame(() => {
-        requestAnimationFrame(scrollCardIntoView)
-      })
-    }
   }, [])
 
   useEffect(() => {
@@ -630,7 +634,7 @@ export default function HomePage() {
               backdropBlur={false}
             >
               {selectionCount > 0 ? (
-              <div className="homepage-bulkBarsWrap">
+              <div ref={bulkBarsWrapRef} className="homepage-bulkBarsWrap">
                 <BulkActionBar
                   selectedCount={selectionCount}
                   summaryTrailingSlot={

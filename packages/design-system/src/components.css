@@ -277,8 +277,6 @@
   padding-left: var(--spacing-padding-2);
   padding-bottom: var(--spacing-padding-4);
   /* Bleed through rail `--spacing-padding-6` so the stripe spans the panel; keep symmetric inset for the close control. */
-  margin-right: calc(-1 * var(--spacing-padding-6));
-  padding-right: var(--spacing-padding-6);
 }
 
 .ds-infoPanel__header .ds-siteHeader__topSlot {
@@ -2040,9 +2038,7 @@ button.ds-inputSection__labelRow.ds-inputSection__labelRow--toggle {
   flex-direction: column;
   flex-shrink: 0;
   gap: var(--spacing-gap-3);
-  transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-  /* Matches Figma prototype “Gentle” / Material standard curve (soft landing) */
-  will-change: transform;
+  /* Vertical strip motion: GSAP in `ButtonAnimatedStrip` (0.4s, power2.out) */
 }
 
 .ds-button-icon-strip__cell {
@@ -2790,10 +2786,6 @@ button.ds-inputSection__labelRow.ds-inputSection__labelRow--toggle {
 
   .ds-button:active:not(:disabled):not([aria-disabled="true"]) {
     transform: none;
-  }
-
-  .ds-button-icon-strip__track {
-    transition-duration: 0.01ms;
   }
 
   .ds-iconCard,

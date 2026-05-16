@@ -1,5 +1,5 @@
 import { getCategoryIcon, getCategoryLabel } from '@/lib/category-icons'
-import { getCategories, useIcons } from '@/hooks/useIcons'
+import { getCategories, getCategoryCounts, useIcons } from '@/hooks/useIcons'
 import { useFilterStore } from '@/stores/filterStore'
 import type { IconStyle } from '@/types/icon'
 import {
@@ -20,6 +20,7 @@ export function HomeCategoryList({
 }) {
   const { data: icons } = useIcons()
   const categories = getCategories(icons)
+  const counts = getCategoryCounts(icons)
   const category = useFilterStore((s) => s.category)
   const setCategory = useFilterStore((s) => s.setCategory)
   const selectedRowRef = useRef<HTMLDivElement>(null)
@@ -53,6 +54,11 @@ export function HomeCategoryList({
                 iconSize="sm"
                 padding="050"
               />
+            }
+            trailingSlot={
+              <span className="ds-dropdownOption__iconCount">
+                {icons == null ? '—' : (counts[cat] ?? 0)}
+              </span>
             }
             onClick={() => setCategory(cat)}
           >

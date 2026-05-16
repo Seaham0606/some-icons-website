@@ -4,13 +4,13 @@ import { useFilterStore } from '@/stores/filterStore'
 import { useSvgFetch } from '@/hooks/useSvgFetch'
 import { IconCard as IconCardUI } from 'design-system'
 import type { Icon } from '@/types/icon'
-import { useEffect, memo, type MouseEvent } from 'react'
+import { useEffect, memo, type MouseEventHandler } from 'react'
 import { useQueryClient } from '@tanstack/react-query'
 import { fetchSvg } from '@/lib/api'
 
 interface IconCardProps {
   icon: Icon
-  onInfoOpen?: (icon: Icon, anchor: HTMLButtonElement) => void
+  onInfoOpen?: (icon: Icon) => void
   onInfoPanelClose?: () => void
   /** True when this card is the one tied to the open info panel. */
   infoPanelActive?: boolean
@@ -54,14 +54,14 @@ export const IconCard = memo(function IconCard({
     })
   }, [svg, style, icon.files.filled, icon.files.outline, queryClient])
 
-  const handleCardClick = (e: MouseEvent<HTMLButtonElement>) => {
+  const handleCardClick: MouseEventHandler<HTMLButtonElement> = () => {
     const sel = useSelectionStore.getState()
     if (sel.count > 0) {
       toggle(icon.id)
     } else if (infoPanelActive) {
       onInfoPanelClose?.()
     } else {
-      onInfoOpen?.(icon, e.currentTarget)
+      onInfoOpen?.(icon)
     }
   }
 
