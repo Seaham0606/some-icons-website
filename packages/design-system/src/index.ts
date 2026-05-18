@@ -6,8 +6,13 @@ export { initDesignSystemScrollbarVisibility } from "./scrollbar-visibility"
 export { Sidebar } from "./components/sidebar"
 export { InfoPanel } from "./components/info-panel"
 export type { InfoPanelProps } from "./components/info-panel"
-export { Chip } from "./components/chip"
-export type { ChipProps, ChipVariant } from "./components/chip"
+export { Chip, ChipButton } from "./components/chip"
+export type {
+  ChipButtonProps,
+  ChipLabelSize,
+  ChipProps,
+  ChipVariant,
+} from "./components/chip"
 export { InputSection, InputSectionSlotPlaceholder } from "./components/input-section"
 export type { InputSectionProps } from "./components/input-section"
 export { InputField } from "./components/input-field"
@@ -29,6 +34,8 @@ export type {
   ButtonStateIcon,
   ButtonVariant,
 } from "./components/button"
+export { ButtonGroup } from "./components/button-group"
+export type { ButtonGroupProps } from "./components/button-group"
 export {
   Dropdown,
   DropdownLeadingSlotPlaceholder,
@@ -73,7 +80,6 @@ export {
 export type {
   BulkActionBarProps,
   BulkActionBarCopyFormat,
-  BulkActionBarDownloadFormat,
   BulkActionBarSettingsPanelProps,
 } from "./components/bulk-action-bar"
 export { SiteHeader } from "./components/site-header"

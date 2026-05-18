@@ -7,19 +7,13 @@ import {
 } from '@/components/overlay/GradientOverlay'
 import { IconGrid } from '@/components/icons/IconGrid'
 import { HomePageFilterStack } from '@/components/home/HomePageFilters'
-import { BulkColorPickerPanel } from '@/components/home/BulkColorPickerPanel'
 import { PageContent } from '@/components/layout'
-import { BULK_COPY_STATE_ICONS } from '@/lib/bulk-copy-state-icons'
-import { DEFAULT_ICON_SIZE } from '@/lib/constants'
-import { useExportStore } from '@/stores/exportStore'
 import { useSelectionStore } from '@/stores/selectionStore'
 import { useFilterStore } from '@/stores/filterStore'
 import { useUIStore } from '@/stores/uiStore'
 import {
   BulkActionBar,
-  BulkActionBarSettingsPanel,
   Button,
-  type ButtonStateIcon,
   Chip,
   cn,
   InfoPanel,
@@ -33,16 +27,9 @@ import {
 import { IconInfoPanelContent } from '@/components/info/IconInfoPanelContent'
 import { IconInfoPanelHeader } from '@/components/info/IconInfoPanelHeader'
 import { ThemeButton } from '@/components/ThemeButton'
-import { useColorStore } from '@/stores/colorStore'
 import { useBackdropPresence } from '@/hooks/useBackdropPresence'
-import { useBulkActionStripFeedback } from '@/hooks/useBulkActionStripFeedback'
 import { useFilteredGridIcons } from '@/hooks/useFilteredGridIcons'
-import { useIconExport } from '@/hooks/useIconExport'
-import {
-  getCodeCopyCtaLabel,
-  getCodeCopySuccessLabel,
-  getDefaultCodeFramework,
-} from '@/lib/code-export'
+import { useIcons } from '@/hooks/useIcons'
 import { useChangelog } from '@/hooks/useChangelog'
 import type { Icon } from '@/types/icon'
 import gsap from 'gsap'
@@ -53,18 +40,8 @@ import {
   useMemo,
   useRef,
   useState,
-  type KeyboardEvent,
   type ReactNode,
 } from 'react'
-
-const BULK_DOWNLOAD_STATE_ICONS = [
-  { iconName: 'arrow-down', iconStyle: 'outline' },
-  {
-    iconName: 'symbol-check-mark',
-    iconStyle: 'outline',
-    color: 'var(--color-intent-success)',
-  },
-] as const satisfies [ButtonStateIcon, ButtonStateIcon]
 
 
 /** Inverse chip on hover/focus — below the control (IconCard filename pattern). */
@@ -100,12 +77,6 @@ function HomeThemeButton() {
   )
 }
 
-const EXPORT_FORMAT_OPTIONS = [
-  { value: 'svg' as const, label: 'SVG' },
-  { value: 'png' as const, label: 'PNG' },
-  { value: 'code' as const, label: 'Code' },
-]
-
 export default function HomePage() {
   const searchQuery = useFilterStore((s) => s.searchQuery)
   const setSearchQuery = useFilterStore((s) => s.setSearchQuery)
@@ -115,70 +86,16 @@ export default function HomePage() {
   const [filtersSheetOpen, setFiltersSheetOpen] = useState(false)
   const [headerSettingsRowOpen, setHeaderSettingsRowOpen] = useState(false)
   const [mobileSearchOverlayOpen, setMobileSearchOverlayOpen] = useState(false)
-  const [bulkBarSettingsOpen, setBulkBarSettingsOpen] = useState(false)
-  const bulkBarSettingsAnchorRef = useRef<HTMLDivElement>(null)
-  const [bulkColorPickerOpen, setBulkColorPickerOpen] = useState(false)
-  const bulkColorPickerAnchorRef = useRef<HTMLDivElement>(null)
   const bulkBarsWrapRef = useRef<HTMLDivElement>(null)
   const prevBulkSelectionCountRef = useRef(0)
+  const prevSelectionCountRef = useRef(0)
+  const prevAutoSelectCountRef = useRef(0)
   const [infoPanelOpen, setInfoPanelOpen] = useState(false)
   const [infoPanelIcon, setInfoPanelIcon] = useState<Icon | null>(null)
-  const selectedColor = useColorStore((s) => s.selectedColor)
-  const setSelectedColor = useColorStore((s) => s.setColor)
+  const { data: allIcons } = useIcons()
   const filtersBackdrop = useBackdropPresence(filtersSheetOpen)
-  const exportSize = useExportStore((s) => s.size)
-  const setExportSize = useExportStore((s) => s.setSize)
-  const copyFormat = useExportStore((s) => s.copyFormat)
-  const downloadFormat = useExportStore((s) => s.downloadFormat)
-  const setCopyFormat = useExportStore((s) => s.setCopyFormat)
-  const setDownloadFormat = useExportStore((s) => s.setDownloadFormat)
-  const showExportValidation = useExportStore((s) => s.showValidationErrors)
-  const downloadAssetLabel = useMemo(
-    () =>
-      EXPORT_FORMAT_OPTIONS.find((o) => o.value === downloadFormat)?.label ??
-      downloadFormat.toUpperCase(),
-    [downloadFormat],
-  )
-  const copyAssetLabel =
-    copyFormat === 'code'
-      ? 'React'
-      : EXPORT_FORMAT_OPTIONS.find((o) => o.value === 'svg')?.label ?? 'SVG'
-  const validateExport = useExportStore((s) => s.validate)
-  const [customExportSize, setCustomExportSize] = useState('')
-
-  const { sizeValid } = validateExport()
-  const sizeFieldError = showExportValidation && !sizeValid
-
-  const {
-    handleCopy,
-    handleDownload,
-    isCopying,
-    isDownloading,
-    selectionCount,
-  } = useIconExport()
+  const selectionCount = useSelectionStore((s) => s.count)
   const clearSelection = useSelectionStore((s) => s.clear)
-
-  const {
-    copySuccessStrip,
-    downloadSuccessStrip,
-    flashCopySuccess,
-    flashDownloadSuccess,
-  } = useBulkActionStripFeedback()
-
-  const onBulkCopy = useCallback(async () => {
-    const ok = await handleCopy()
-    if (ok) flashCopySuccess()
-  }, [handleCopy, flashCopySuccess])
-
-  const onBulkDownload = useCallback(async () => {
-    const ok = await handleDownload()
-    if (ok) {
-      flashDownloadSuccess(() => {
-        clearSelection()
-      })
-    }
-  }, [clearSelection, flashDownloadSuccess, handleDownload])
-
   useLayoutEffect(() => {
     if (selectionCount === 0) {
       prevBulkSelectionCountRef.current = 0
@@ -208,18 +125,6 @@ export default function HomePage() {
     )
   }, [selectionCount])
 
-  const showCopyAction =
-    copyFormat === 'code' || selectionCount <= 1
-  const showDownloadAction = true
-
-  const bulkCopyIdleLabel =
-    copyFormat === 'code'
-      ? getCodeCopyCtaLabel(getDefaultCodeFramework())
-      : `Copy ${copyAssetLabel}`
-  const bulkCopySuccessLabel =
-    copyFormat === 'code'
-      ? getCodeCopySuccessLabel(getDefaultCodeFramework())
-      : `Copied ${copyAssetLabel}`
   const visibleGridIcons = useFilteredGridIcons()
   const selectedIds = useSelectionStore((s) => s.selectedIds)
   const selectAllVisible = useSelectionStore((s) => s.selectAll)
@@ -242,20 +147,6 @@ export default function HomePage() {
     }
   }, [allVisibleSelected, deselectMany, selectAllVisible, visibleIds])
 
-  const handleCustomExportSizeChange = useCallback(
-    (raw: string) => {
-      const digits = raw.replace(/\D/g, '')
-      setCustomExportSize(digits)
-      const num = parseInt(digits, 10)
-      if (!isNaN(num) && num > 0) {
-        setExportSize(num)
-      } else if (digits === '') {
-        setExportSize(null)
-      }
-    },
-    [setExportSize],
-  )
-
   const scrollLocked = filtersSheetOpen || filtersBackdrop.mounted
 
   useEffect(() => {
@@ -268,48 +159,11 @@ export default function HomePage() {
   }, [scrollLocked])
 
 
-  useEffect(() => {
-    if (!bulkBarSettingsOpen) return
-    const onKeyDown = (e: globalThis.KeyboardEvent) => {
-      if (e.key === 'Escape') setBulkBarSettingsOpen(false)
-    }
-    const onPointerDown = (e: PointerEvent) => {
-      const node = e.target instanceof Node ? e.target : null
-      if (!node) return
-      if (bulkBarSettingsAnchorRef.current?.contains(node)) return
-      setBulkBarSettingsOpen(false)
-    }
-    document.addEventListener('keydown', onKeyDown)
-    document.addEventListener('pointerdown', onPointerDown, true)
-    return () => {
-      document.removeEventListener('keydown', onKeyDown)
-      document.removeEventListener('pointerdown', onPointerDown, true)
-    }
-  }, [bulkBarSettingsOpen])
-
-  useEffect(() => {
-    if (!bulkColorPickerOpen) return
-    const onKeyDown = (e: globalThis.KeyboardEvent) => {
-      if (e.key === 'Escape') setBulkColorPickerOpen(false)
-    }
-    const onPointerDown = (e: PointerEvent) => {
-      const node = e.target instanceof Node ? e.target : null
-      if (!node) return
-      if (bulkColorPickerAnchorRef.current?.contains(node)) return
-      setBulkColorPickerOpen(false)
-    }
-    document.addEventListener('keydown', onKeyDown)
-    document.addEventListener('pointerdown', onPointerDown, true)
-    return () => {
-      document.removeEventListener('keydown', onKeyDown)
-      document.removeEventListener('pointerdown', onPointerDown, true)
-    }
-  }, [bulkColorPickerOpen])
-
   const handleInfoPanelClose = useCallback(() => {
     setInfoPanelOpen(false)
     setInfoPanelIcon(null)
-  }, [])
+    clearSelection()
+  }, [clearSelection])
 
   const handleInfoOpen = useCallback((icon: Icon) => {
     setInfoPanelIcon(icon)
@@ -324,6 +178,54 @@ export default function HomePage() {
     document.addEventListener('keydown', onKeyDown)
     return () => document.removeEventListener('keydown', onKeyDown)
   }, [infoPanelOpen, handleInfoPanelClose])
+
+  // When the InfoPanel is open from a single-click and the user starts
+  // checkbox-selecting other icons, auto-select the anchor icon on the first
+  // 0→N transition so it's included in the multi-select snippet.
+  // Uses a ref so the effect only fires on that transition — NOT on every
+  // subsequent selection change. Without the ref, deselecting the anchor would
+  // immediately re-add it because the effect would see it missing and re-select.
+  useEffect(() => {
+    const prev = prevAutoSelectCountRef.current
+    prevAutoSelectCountRef.current = selectionCount
+    if (
+      prev === 0 &&
+      selectionCount > 0 &&
+      infoPanelOpen &&
+      infoPanelIcon &&
+      !selectedIds.has(infoPanelIcon.id)
+    ) {
+      // Prepend anchor so insertion order is [panel icon, …new picks], not the reverse.
+      useSelectionStore.setState((state) => {
+        const next = new Set([infoPanelIcon.id, ...state.selectedIds])
+        return { selectedIds: next, count: next.size }
+      })
+    }
+  }, [selectionCount, infoPanelOpen, infoPanelIcon, selectedIds])
+
+  // When the anchor icon is deselected but other icons remain selected, shift
+  // the panel focus to the first icon in the current selection (insertion order).
+  // This un-highlights the original trigger card and highlights the new first icon.
+  useEffect(() => {
+    if (!infoPanelOpen || selectionCount === 0 || !infoPanelIcon) return
+    if (selectedIds.has(infoPanelIcon.id)) return
+    const firstId = [...selectedIds][0]
+    if (!firstId || !allIcons) return
+    const newAnchor = allIcons.find((ic) => ic.id === firstId)
+    if (newAnchor) setInfoPanelIcon(newAnchor)
+  }, [infoPanelOpen, selectionCount, infoPanelIcon, selectedIds, allIcons])
+
+  // Close InfoPanel when every icon is deselected (covers checkbox deselect,
+  // BulkActionBar Clear, download-then-clear, etc.). Uses a ref so the check
+  // is "count just dropped to 0" rather than "count is currently 0" — the
+  // latter would fire on first render and when InfoPanel opens with no selection.
+  useEffect(() => {
+    const prev = prevSelectionCountRef.current
+    prevSelectionCountRef.current = selectionCount
+    if (prev > 0 && selectionCount === 0 && infoPanelOpen) {
+      handleInfoPanelClose()
+    }
+  }, [selectionCount, infoPanelOpen, handleInfoPanelClose])
 
   /** Below laptop, expanded search row and settings row share one strip — only one open at a time. */
   const toggleMobileHeaderSearch = useCallback(() => {
@@ -341,62 +243,6 @@ export default function HomePage() {
       return next
     })
   }, [])
-
-  const handleCustomExportSizeKeyDown = useCallback(
-    (e: KeyboardEvent<HTMLInputElement>) => {
-      if (e.key !== 'ArrowUp' && e.key !== 'ArrowDown') return
-      e.preventDefault()
-      const delta = e.key === 'ArrowUp' ? 1 : -1
-      const raw = e.currentTarget.value
-      const digitsOnly = raw.replace(/\D/g, '')
-      const parsed = parseInt(digitsOnly, 10)
-      const hasTypedDigits = digitsOnly !== '' && !isNaN(parsed)
-      const base = hasTypedDigits
-        ? parsed
-        : exportSize != null && exportSize > 0
-          ? exportSize
-          : 0
-
-      const next = base + delta
-      if (next < 8) {
-        handleCustomExportSizeChange('')
-        return
-      }
-      handleCustomExportSizeChange(String(next))
-    },
-    [exportSize, handleCustomExportSizeChange],
-  )
-
-  const adjustBulkExportSize = useCallback(
-    (delta: number) => {
-      const fromField =
-        customExportSize !== ''
-          ? customExportSize
-          : exportSize != null && exportSize > 0
-            ? String(exportSize)
-            : String(DEFAULT_ICON_SIZE)
-      const digits = fromField.replace(/\D/g, '')
-      const parsed = parseInt(digits, 10)
-      const base =
-        digits !== '' && !isNaN(parsed) && parsed > 0
-          ? parsed
-          : DEFAULT_ICON_SIZE
-      const next = base + delta
-      if (next < 8) {
-        handleCustomExportSizeChange('')
-        return
-      }
-      handleCustomExportSizeChange(String(next))
-    },
-    [customExportSize, exportSize, handleCustomExportSizeChange],
-  )
-
-  const bulkBarSizeInputValue =
-    customExportSize !== ''
-      ? customExportSize
-      : exportSize != null
-        ? String(exportSize)
-        : ''
 
   const versionChip = (
     <Chip variant="accent" aria-label="Version 1.0.0">
@@ -509,6 +355,29 @@ export default function HomePage() {
                         iconSize="md"
                         padding="2"
                       />
+                    }
+                    trailingSlot={
+                      searchQuery.length > 0 ? (
+                        <button
+                          type="button"
+                          className="ds-input__trailingAction"
+                          aria-label="Clear search"
+                          onMouseDown={(e) => {
+                            e.preventDefault()
+                          }}
+                          onClick={() => {
+                            setSearchQuery('')
+                          }}
+                        >
+                          <SomeIcon
+                            iconName="symbol-multiply"
+                            iconStyle="outline"
+                            iconSize="sm"
+                            padding="050"
+                            color="var(--color-main-quaternary)"
+                          />
+                        </button>
+                      ) : undefined
                     }
                   />
                 }
@@ -634,255 +503,52 @@ export default function HomePage() {
               backdropBlur={false}
             >
               {selectionCount > 0 ? (
-              <div ref={bulkBarsWrapRef} className="homepage-bulkBarsWrap">
-                <BulkActionBar
-                  selectedCount={selectionCount}
-                  summaryTrailingSlot={
-                    <BulkActionHoverChip
-                      chipLabel={allVisibleSelected ? 'Deselect all' : 'Select all'}
-                    >
-                      <Button
-                        type="button"
-                        variant="transparent"
-                        size="md"
-                        radius="md"
-                        disabled={visibleGridIcons.length === 0}
-                        aria-label={
-                          allVisibleSelected ? 'Deselect all' : 'Select all'
-                        }
-                        aria-pressed={allVisibleSelected}
-                        onClick={handleToggleSelectAllVisible}
-                        leadingSlot={
-                          <SomeIcon
-                            iconName="symbol-check-multiple"
-                            iconStyle="outline"
-                            iconSize="md"
-                            padding="0"
-                          />
-                        }
-                      />
-                    </BulkActionHoverChip>
-                  }
-                >
-                  <>
-                    <div className="ds-segmentedControl__dividerWrap" aria-hidden>
-                      <div className="ds-segmentedControl__divider" />
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <div
-                        ref={bulkColorPickerAnchorRef}
-                        className="homepage-bulkColorPickerAnchor"
+                <div ref={bulkBarsWrapRef} className="homepage-bulkBarsWrap">
+                  <BulkActionBar selectedCount={selectionCount}>
+                    <>
+                      <BulkActionHoverChip
+                        chipLabel={allVisibleSelected ? 'Deselect all' : 'Select all'}
                       >
-                        {bulkColorPickerOpen ? (
-                          <div className="homepage-bulkColorPickerPop">
-                            <BulkColorPickerPanel
-                              color={selectedColor}
-                              onColorChange={setSelectedColor}
-                            />
-                          </div>
-                        ) : null}
-                        <BulkActionHoverChip chipLabel="Icon color">
-                          <Button
-                            type="button"
-                            variant="transparent"
-                            size="md"
-                            radius="md"
-                            className="homepage-bulkAction-colorBtn"
-                            aria-label="Icon color"
-                            aria-haspopup="dialog"
-                            aria-expanded={bulkColorPickerOpen}
-                            data-color-active={selectedColor != null ? 'true' : undefined}
-                            onClick={() => setBulkColorPickerOpen((o) => !o)}
-                            leadingSlot={
-                              selectedColor != null ? (
-                                <span
-                                  className="homepage-bulkAction-colorDot"
-                                  style={{ backgroundColor: selectedColor }}
-                                  aria-hidden
-                                />
-                              ) : (
-                                <SomeIcon
-                                  iconName="formatting-eyedropper"
-                                  iconStyle="outline"
-                                  iconSize="md"
-                                  padding="0"
-                                />
-                              )
-                            }
-                          />
-                        </BulkActionHoverChip>
-                      </div>
-                      <BulkActionHoverChip chipLabel="Icon size">
-                        <Input
-                          className="homepage-bulkBar-sizeInput"
-                          aria-label="Icon size in pixels"
-                          inputMode="numeric"
-                          pattern="[0-9]*"
-                          autoComplete="off"
-                          status={sizeFieldError ? 'error' : 'default'}
-                          value={bulkBarSizeInputValue}
-                          onKeyDown={handleCustomExportSizeKeyDown}
-                          onChange={(e) =>
-                            handleCustomExportSizeChange(e.target.value)
-                          }
+                        <Button
+                          type="button"
+                          variant="transparent"
+                          size="md"
+                          radius="md"
+                          disabled={visibleGridIcons.length === 0}
+                          aria-label={allVisibleSelected ? 'Deselect all' : 'Select all'}
+                          aria-pressed={allVisibleSelected}
+                          onClick={handleToggleSelectAllVisible}
                           leadingSlot={
-                            <button
-                              type="button"
-                              className="homepage-bulkBar-sizeStep"
-                              aria-label="Decrease icon size"
-                              disabled={parseInt(bulkBarSizeInputValue, 10) <= 8}
-                              onClick={() => adjustBulkExportSize(-1)}
-                            >
-                              <SomeIcon
-                                iconName="symbol-minus"
-                                iconStyle="outline"
-                                iconSize="sm"
-                                padding="050"
-                                color="currentColor"
-                              />
-                            </button>
-                          }
-                          trailingSlot={
-                            <button
-                              type="button"
-                              className="homepage-bulkBar-sizeStep"
-                              aria-label="Increase icon size"
-                              onClick={() => adjustBulkExportSize(1)}
-                            >
-                              <SomeIcon
-                                iconName="symbol-plus"
-                                iconStyle="outline"
-                                iconSize="sm"
-                                padding="050"
-                                color="currentColor"
-                              />
-                            </button>
+                            <SomeIcon
+                              iconName="symbol-check-multiple"
+                              iconStyle="outline"
+                              iconSize="md"
+                              padding="0"
+                            />
                           }
                         />
                       </BulkActionHoverChip>
-                    </div>
-                    <div className="ds-segmentedControl__dividerWrap" aria-hidden>
-                      <div className="ds-segmentedControl__divider" />
-                    </div>
-                    <div className="ds-buttonGroup">
-                      {showCopyAction ? (
-                        <BulkActionHoverChip
-                          chipLabel={
-                            copySuccessStrip
-                              ? bulkCopySuccessLabel
-                              : bulkCopyIdleLabel
-                          }
-                        >
-                          <Button
-                            type="button"
-                            variant="transparent"
-                            size="md"
-                            radius="md"
-                            disabled={isCopying}
-                            aria-busy={isCopying}
-                            onClick={() => void onBulkCopy()}
-                            aria-label={
-                              copySuccessStrip
-                                ? bulkCopySuccessLabel
-                                : bulkCopyIdleLabel
-                            }
-                            stateIcons={BULK_COPY_STATE_ICONS}
-                            stripActiveIndex={copySuccessStrip ? 1 : 0}
-                            stripActiveBackground="var(--color-overlay-success)"
-                          />
-                        </BulkActionHoverChip>
-                      ) : null}
-                      {showDownloadAction ? (
-                        <BulkActionHoverChip
-                          chipLabel={
-                            downloadSuccessStrip
-                              ? `Downloaded ${downloadAssetLabel}`
-                              : `Download ${downloadAssetLabel}`
-                          }
-                        >
-                          <Button
-                            type="button"
-                            variant="transparent"
-                            size="md"
-                            radius="md"
-                            disabled={isDownloading}
-                            aria-busy={isDownloading}
-                            onClick={() => void onBulkDownload()}
-                            aria-label={
-                              downloadSuccessStrip
-                                ? `Downloaded ${downloadAssetLabel}`
-                                : `Download ${downloadAssetLabel}`
-                            }
-                            stateIcons={BULK_DOWNLOAD_STATE_ICONS}
-                            stripActiveIndex={downloadSuccessStrip ? 1 : 0}
-                            stripActiveBackground="var(--color-overlay-success)"
-                          />
-                        </BulkActionHoverChip>
-                      ) : null}
-                      <div
-                        ref={bulkBarSettingsAnchorRef}
-                        className="homepage-bulkBarSettingsAnchor"
-                      >
-                        {bulkBarSettingsOpen ? (
-                          <div className="homepage-bulkBarSettingsPop">
-                            <BulkActionBarSettingsPanel
-                              copyFormat={copyFormat}
-                              downloadFormat={downloadFormat}
-                              onCopyFormatChange={setCopyFormat}
-                              onDownloadFormatChange={setDownloadFormat}
-                              disableCopySvg={selectionCount > 1}
+                      <BulkActionHoverChip chipLabel="Deselect">
+                        <Button
+                          type="button"
+                          variant="transparent"
+                          size="md"
+                          radius="md"
+                          aria-label="Deselect all"
+                          onClick={() => clearSelection()}
+                          leadingSlot={
+                            <SomeIcon
+                              iconName="symbol-multiply"
+                              iconStyle="outline"
+                              iconSize="md"
+                              padding="0"
                             />
-                          </div>
-                        ) : null}
-                        <BulkActionHoverChip chipLabel="More options">
-                          <Button
-                            type="button"
-                            variant="transparent"
-                            size="md"
-                            radius="md"
-                            className="homepage-bulkAction-settingsBtn"
-                            aria-label="Export format"
-                            aria-haspopup="dialog"
-                            aria-expanded={bulkBarSettingsOpen}
-                            onClick={() =>
-                              setBulkBarSettingsOpen((open) => !open)
-                            }
-                            leadingSlot={
-                              <SomeIcon
-                                iconName="interface-ellipsis-horizontal"
-                                iconStyle="fill"
-                                iconSize="sm"
-                                padding="050"
-                              />
-                            }
-                          />
-                        </BulkActionHoverChip>
-                      </div>
-                    </div>
-                  </>
-                </BulkActionBar>
-                <div className="homepage-bulkBarAside">
-                  <BulkActionHoverChip chipLabel="Clear">
-                    <Button
-                      type="button"
-                      variant="transparent"
-                      size="md"
-                      radius="md"
-                      className="ds-bulkActionBar__dismiss"
-                      aria-label="Clear"
-                      onClick={() => clearSelection()}
-                      leadingSlot={
-                        <SomeIcon
-                          iconName="symbol-multiply"
-                          iconStyle="outline"
-                          iconSize="md"
-                          padding="0"
+                          }
                         />
-                      }
-                    />
-                  </BulkActionHoverChip>
+                      </BulkActionHoverChip>
+                    </>
+                  </BulkActionBar>
                 </div>
-              </div>
               ) : null}
             </GradientOverlay>
           </div>

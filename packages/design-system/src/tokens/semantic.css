@@ -40,8 +40,10 @@
   --color-background-weak: var(--color-black-alpha-10);
   --color-background-elevation: var(--color-white);
   --color-background-input: var(--color-black-alpha-10);
+  --color-background-code: var(--color-black-alpha-5);
   --color-background-menu: var(--color-white);
   --color-background-inverse: var(--color-black-alpha-800);
+  --color-background-stack: var(--color-gray-10);
 
   /* border */
   --color-border-extra-strong: var(--color-black-alpha-600);
@@ -157,8 +159,10 @@
   --color-background-weak: var(--color-white-alpha-10);
   --color-background-elevation: var(--color-white-alpha-10);
   --color-background-input: var(--color-white-alpha-10);
+  --color-background-code: var(--color-white-alpha-5);
   --color-background-menu: var(--color-gray-975);
   --color-background-inverse: var(--color-white-alpha-800);
+  --color-background-stack: var(--color-gray-975);
 
   /* border */
   --color-border-extra-strong: var(--color-white-alpha-600);

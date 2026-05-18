@@ -29,7 +29,7 @@ function processSvgForExport(
 }
 
 /**
- * Export flow: **copy** (SVG markup or React code to clipboard) and **download** (SVG/PNG files).
+ * Export flow: **copy** (SVG markup or React code to clipboard) and **download** (SVG files or ZIP).
  * With multiple icons selected, copy is only supported for React code; SVG copy is single-icon only.
  * Bulk actions only mount when there is a selection, so handlers assume `count > 0` in normal UI use.
  * Returns whether the operation completed successfully (for in-UI feedback); errors still use `toast`.
@@ -40,7 +40,6 @@ export function useIconExport() {
   const count = useSelectionStore((state) => state.count)
   const size = useExportStore((state) => state.size)
   const copyFormat = useExportStore((state) => state.copyFormat)
-  const downloadFormat = useExportStore((state) => state.downloadFormat)
   const isValid = useExportStore((state) => state.isValid)
   const setShowValidationErrors = useExportStore(
     (state) => state.setShowValidationErrors,
@@ -158,21 +157,19 @@ export function useIconExport() {
 
       const exportOpts = {
         size,
-        format: downloadFormat,
         color: selectedColor,
-      } as const
+      }
 
       if (count === 1) {
         const { id, svg } = iconData[0]
         const blob = await createExportBlobForIcon(svg, exportOpts)
-        const ext = downloadFormat === 'svg' ? 'svg' : 'png'
-        downloadBlob(blob, `${id}.${ext}`)
+        downloadBlob(blob, `${id}.svg`)
       } else {
         const blob = await exportToZip(iconData, exportOpts)
         const filename = `some-icons-${style}-${size}px.zip`
         downloadBlob(blob, filename)
       }
-      trackDownload({ format: downloadFormat, style, size, count, is_zip: count > 1 })
+      trackDownload({ format: 'svg', style, size, count, is_zip: count > 1 })
       return true
     } catch (error) {
       console.error('Download failed:', error)
@@ -183,7 +180,6 @@ export function useIconExport() {
     }
   }, [
     count,
-    downloadFormat,
     icons,
     isValid,
     selectedColor,

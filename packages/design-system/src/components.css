@@ -32,18 +32,19 @@
   box-sizing: border-box;
   min-width: 0;
   max-width: min(240px, 100%);
-  padding: var(--spacing-padding-1) var(--spacing-padding-2);
+  padding: var(--spacing-padding-1);
   border-radius: var(--radius-full);
   color: var(--color-main-secondary);
-  background: var(--color-background-weak);
+  background: var(--color-overlay-weak);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  line-height: 1.1;
 }
 
 .ds-chip[data-variant="neutral"] {
   color: var(--color-main-secondary);
-  background: var(--color-background-weak);
+  background: var(--color-overlay-weak);
 }
 
 .ds-chip[data-variant="accent"] {
@@ -71,9 +72,151 @@
   background: var(--color-background-inverse);
 }
 
+/* Selected tab chip — dark fill + inverse label (tabs only; not IconCard `inverse`). */
+.ds-chip[data-variant="strong"] {
+  color: var(--color-main-inverse-primary);
+  background: var(--color-background-inverse);
+}
+
+.ds-chip[data-variant="transparent"] {
+  color: var(--color-main-secondary);
+  background: transparent;
+}
+
 .ds-chip[data-backdrop-blur="true"] {
   backdrop-filter: blur(4px);
   -webkit-backdrop-filter: blur(4px);
+}
+
+/* Chip rendered as a control (code snippet tabs, etc.). */
+button.ds-chip,
+.ds-chip--compound {
+  min-height: var(--size-6);
+}
+
+button.ds-chip {
+  appearance: none;
+  margin: 0;
+  border: none;
+  font: inherit;
+  text-align: inherit;
+  letter-spacing: inherit;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+button.ds-chip:disabled {
+  opacity: 0.38;
+  cursor: not-allowed;
+}
+
+button.ds-chip:focus-visible {
+  outline: var(--border-width-thick) solid var(--color-intent-accent);
+  outline-offset: 2px;
+}
+
+button.ds-chip[data-variant="transparent"]:hover:not(:disabled) {
+  color: var(--color-main-primary);
+  background: var(--color-overlay-hover);
+}
+
+/* Chip pill with label segment + optional trailing control (e.g. React tab). */
+.ds-chip--compound {
+  justify-content: flex-start;
+  max-width: none;
+  white-space: nowrap;
+  overflow: visible;
+}
+
+.ds-chip--compound[data-has-trailing="true"] {
+  gap: var(--spacing-gap-050);
+}
+
+.ds-chip--compound[data-disabled="true"] {
+  opacity: 0.38;
+  pointer-events: none;
+}
+
+.ds-chip--compound[data-variant="transparent"]:hover:not([data-disabled="true"]) {
+  color: var(--color-main-primary);
+  background: var(--color-overlay-hover);
+}
+
+/* Text layer — horizontal inset on all chip sizes/variants. */
+.ds-chip__label {
+  min-width: 0;
+  padding-inline: var(--spacing-padding-1);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ds-chip__segment {
+  appearance: none;
+  margin: 0;
+  border: none;
+  padding: 0;
+  min-width: 0;
+  font: inherit;
+  font-weight: inherit;
+  font-size: inherit;
+  line-height: inherit;
+  letter-spacing: inherit;
+  color: inherit;
+  background: none;
+  text-align: inherit;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ds-chip__segment:disabled {
+  cursor: not-allowed;
+}
+
+.ds-chip__segment:focus-visible {
+  outline: var(--border-width-thick) solid var(--color-intent-accent);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
+}
+
+.ds-chipTrailingBtn {
+  appearance: none;
+  margin: 0;
+  border: none;
+  padding: var(--spacing-padding-050);
+  display: grid;
+  place-items: center;
+  color: var(--color-main-quaternary);
+  background: none;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: color 120ms ease, background-color 120ms ease;
+}
+
+.ds-chipTrailingBtn:hover {
+  color: var(--color-main-secondary);
+  background: var(--color-overlay-dark-hover);
+}
+
+.ds-chipTrailingBtn:focus-visible {
+  outline: var(--border-width-thick) solid var(--color-intent-accent);
+  outline-offset: 2px;
+}
+
+/* Compound tab chips — icon slot matches label; no hover fill; spacing on text layer. */
+.ds-chip--compound .ds-chipTrailingBtn {
+  padding: 0;
+  color: inherit;
+  transition: color 120ms ease;
+}
+
+.ds-chip--compound .ds-chipTrailingBtn:hover {
+  color: inherit;
+  background: none;
 }
 
 /* Sidebar — matches icons app homepage-aside (flex column in shell, not position:fixed) */
@@ -589,6 +732,12 @@
 
 .ds-input__trailingAction:hover {
   opacity: 0.7;
+}
+
+.ds-input__trailingAction:focus-visible {
+  outline: none;
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-focus-accent);
 }
 
 /* Optional: tighter line when empty (e.g. color picker “Default”) */
@@ -1116,6 +1265,41 @@ button.ds-nativeInput {
   overflow: hidden;
 }
 
+/*
+ * Content-scrollable variant (`contentScrollable` prop on InputSection).
+ *
+ * WHY THE PADDING MOVES:
+ *   .ds-inputSection has `overflow: hidden` to clip decorative overflow (shadows,
+ *   focus rings). When padding lives on the shell and the content div scrolls with
+ *   `overflow-y: auto`, the scroll container is squeezed inside the padding box —
+ *   items at scroll boundaries collide with the shell border, producing a visible
+ *   clip against the padding edge.
+ *
+ *   Moving padding: 0 to the shell and padding: var(--spacing-padding-3) to the
+ *   content div places the scroll container flush with the card border, so
+ *   `overflow: hidden` clips exactly at the border. Scrolled items retain full
+ *   breathing room at both the top and bottom edges.
+ *
+ * SCROLLBAR:
+ *   Hidden by default (scrollbar-width: none / ::-webkit-scrollbar). Combine with
+ *   height constraints on the shell so the content actually scrolls.
+ */
+.ds-inputSection--contentScrollable {
+  padding: 0;
+}
+
+.ds-inputSection--contentScrollable .ds-inputSection__content {
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: var(--spacing-padding-3);
+  scrollbar-width: none;
+}
+
+.ds-inputSection--contentScrollable .ds-inputSection__content::-webkit-scrollbar {
+  display: none;
+}
+
 /* Match `.ds-dropdown` motion tokens so open/close feels consistent. */
 .ds-inputSection--collapsible {
   gap: 0;
@@ -1364,6 +1548,14 @@ button.ds-inputSection__labelRow.ds-inputSection__labelRow--toggle {
   min-width: 0;
 }
 
+.ds-inputField__labelTrailing {
+  margin-left: auto;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  min-width: 0;
+}
+
 .ds-inputField__content {
   box-sizing: border-box;
   display: flex;
@@ -1419,7 +1611,7 @@ button.ds-inputSection__labelRow.ds-inputSection__labelRow--toggle {
   height: var(--size-10);
   min-width: var(--size-10);
   min-height: var(--size-10);
-  padding: var(--spacing-padding-3);
+  padding: var(--spacing-padding-2);
   flex-shrink: 0;
 }
 
@@ -2244,6 +2436,56 @@ button.ds-inputSection__labelRow.ds-inputSection__labelRow--toggle {
   flex-wrap: wrap;
   align-items: center;
   gap: var(--spacing-gap-050);
+}
+
+/* Fused row: no gap; outer radius only; overlap borders between segments */
+.ds-buttonGroup.ds-buttonGroup--merged {
+  flex-wrap: nowrap;
+  gap: 0;
+  overflow: hidden;
+}
+
+.ds-buttonGroup.ds-buttonGroup--merged[data-radius="none"] {
+  border-radius: 0;
+}
+.ds-buttonGroup.ds-buttonGroup--merged[data-radius="xs"] {
+  border-radius: var(--radius-xs);
+}
+.ds-buttonGroup.ds-buttonGroup--merged[data-radius="sm"] {
+  border-radius: var(--radius-sm);
+}
+.ds-buttonGroup.ds-buttonGroup--merged[data-radius="md"] {
+  border-radius: var(--radius-md);
+}
+.ds-buttonGroup.ds-buttonGroup--merged[data-radius="lg"] {
+  border-radius: var(--radius-lg);
+}
+.ds-buttonGroup.ds-buttonGroup--merged[data-radius="xl"] {
+  border-radius: var(--radius-xl);
+}
+.ds-buttonGroup.ds-buttonGroup--merged[data-radius="2xl"] {
+  border-radius: var(--radius-2xl);
+}
+.ds-buttonGroup.ds-buttonGroup--merged[data-radius="3xl"] {
+  border-radius: var(--radius-3xl);
+}
+.ds-buttonGroup.ds-buttonGroup--merged[data-radius="full"] {
+  border-radius: var(--radius-full);
+}
+
+.ds-buttonGroup.ds-buttonGroup--merged > .ds-buttonGroup__btn {
+  margin: 0;
+  flex: 0 0 auto;
+  border-radius: 0;
+}
+
+.ds-buttonGroup.ds-buttonGroup--merged > .ds-buttonGroup__btn + .ds-buttonGroup__btn {
+  margin-inline-start: calc(-1 * var(--border-width-base));
+}
+
+.ds-buttonGroup.ds-buttonGroup--merged > .ds-buttonGroup__btn:focus-visible,
+.ds-buttonGroup.ds-buttonGroup--merged > .ds-buttonGroup__btn:hover {
+  z-index: 1;
 }
 
 /* --- Bulk action bar (multi-select summary + actions) --- */

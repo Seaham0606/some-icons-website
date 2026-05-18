@@ -5,7 +5,7 @@ declare global {
 }
 
 interface DownloadEventParams {
-  format: 'svg' | 'png'
+  format: 'svg'
   style: string
   size: number
   count: number

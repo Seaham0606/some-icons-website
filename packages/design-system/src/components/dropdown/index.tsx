@@ -81,6 +81,11 @@ export interface DropdownProps
    * Recommended whenever using the overlay variant.
    */
   onOverlayDismiss?: () => void
+  /**
+   * When `variant="overlay"`, minimum width (px) of the portaled menu. The menu is aligned so its
+   * trailing edge matches the trigger when width grows past the trigger (compact triggers).
+   */
+  overlayMinWidth?: number
 }
 
 export const Dropdown = React.forwardRef<HTMLButtonElement, DropdownProps>(
@@ -101,6 +106,7 @@ export const Dropdown = React.forwardRef<HTMLButtonElement, DropdownProps>(
       fullWidth = false,
       variant = "inline",
       onOverlayDismiss,
+      overlayMinWidth,
       "aria-invalid": ariaInvalid,
       onFocus,
       onBlur,
@@ -161,8 +167,13 @@ export const Dropdown = React.forwardRef<HTMLButtonElement, DropdownProps>(
       const top = r.top
       const viewportCap = Math.max(120, window.innerHeight - top - margin)
       const maxHeight = Math.min(DROPDOWN_OVERLAY_MAX_HEIGHT_PX, viewportCap)
-      let left = r.left
-      const w = r.width
+      const triggerW = r.width
+      const w =
+        overlayMinWidth != null
+          ? Math.max(triggerW, overlayMinWidth)
+          : triggerW
+      let left =
+        overlayMinWidth != null && w > triggerW ? r.right - w : r.left
       const rightEdge = left + w
       if (rightEdge > window.innerWidth - margin) {
         left = Math.max(margin, window.innerWidth - margin - w)
@@ -171,7 +182,7 @@ export const Dropdown = React.forwardRef<HTMLButtonElement, DropdownProps>(
         left = margin
       }
       setOverlayBox({ top, left, width: w, maxHeight })
-    }, [])
+    }, [overlayMinWidth])
 
     React.useLayoutEffect(() => {
       if (!isOverlay || !overlayActive) return

@@ -285,26 +285,16 @@ body {
   flex: 0 0 auto;
 }
 
-/* Category: hugs content height; shrinks (not grows) when space is tight so the list
-   scrolls internally rather than the whole sidebar content slot scrolling.
-   padding:0 moves the breathing room onto the content div so the scroll container
-   starts at the card's inner border — card's overflow:hidden clips there, not at padding. */
+/* Category: shrinks (not grows) so the list scrolls internally.
+   Scroll, padding, and scrollbar are owned by the InputSection `contentScrollable`
+   modifier (see .ds-inputSection--contentScrollable in design-system/components.css). */
 .homepage-sidebarCategorySection {
   flex: 0 1 auto;
   min-height: 0;
-  padding: 0;
 }
 
 .homepage-sidebarCategorySection .ds-inputSection__content {
   flex: 1 1 auto;
-  min-width: 0;
-  min-height: 0;
-  display: flex;
-  flex-direction: column;
-  overflow-y: auto;
-  overflow-x: hidden;
-  scrollbar-gutter: stable;
-  padding: var(--spacing-padding-3);
 }
 
 .homepage-categoryList.ds-dropdownMenu {
@@ -384,17 +374,27 @@ body {
   align-items: stretch;
 }
 
-/* Preview: wireframe + corner overlays */
+/* Preview: wireframe + corner / bottom overlays */
 .homepage-infoPanelWireframeShell {
   position: relative;
   width: 100%;
   min-width: 0;
   box-sizing: border-box;
+  border-radius: var(--radius-2xl);
+  border: var(--border-width-base) solid var(--color-border-weak);
+  overflow: hidden;
+  background: var(--color-background-elevation);
 }
 
 .homepage-infoPanelWireframeShell > .homepage-iconWireframe {
   width: 100%;
-  border-radius: var(--radius-2xl);
+  border-radius: 0;
+  border: none;
+  background: transparent;
+}
+
+.homepage-infoPanelWireframeShell > .homepage-iconWireframe.homepage-iconWireframe--multiSelect {
+  background-color: var(--color-background-elevation);
 }
 
 .homepage-infoPanelWireframeOverlay {
@@ -407,15 +407,143 @@ body {
 .homepage-infoPanelWireframeOverlay--token {
   top: var(--spacing-padding-3);
   left: var(--spacing-padding-3);
-  max-width: calc(100% - 2 * var(--spacing-padding-2));
+  max-width: calc(50% - var(--spacing-padding-4));
 }
 
 .homepage-infoPanelWireframeOverlay--category {
-  bottom: var(--spacing-padding-3);
-  left: var(--spacing-padding-3);
-  max-width: calc(100% - 2 * var(--spacing-padding-2));
+  top: var(--spacing-padding-3);
+  right: var(--spacing-padding-3);
+  left: auto;
+  max-width: calc(50% - var(--spacing-padding-4));
 }
 
+.homepage-infoPanelWireframeOverlay--download {
+  bottom: var(--spacing-padding-3);
+  right: var(--spacing-padding-3);
+  left: auto;
+  top: auto;
+  width: auto;
+  max-width: calc(100% - 2 * var(--spacing-padding-3));
+  z-index: 3;
+  pointer-events: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: var(--spacing-gap-1);
+}
+
+/* Neutral chip surface + blur; segment padding is shared via DS tokens on the root. */
+.homepage-infoPanelWireframeDownloadChip {
+  box-sizing: border-box;
+  display: inline-flex;
+  flex-direction: row;
+  align-items: stretch;
+  flex-shrink: 0;
+  border-radius: var(--radius-full);
+  overflow: hidden;
+  color: var(--color-main-secondary);
+  background: var(--color-background-weak);
+  border: var(--border-width-base) solid var(--color-border-weak);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  --homepage-downloadChip-pad-block: var(--spacing-padding-1);
+  --homepage-downloadChip-pad-inline-start: var(--spacing-padding-1);
+  --homepage-downloadChip-pad-inline-end: var(--spacing-padding-3);
+}
+
+.homepage-infoPanelWireframeDownloadChip__segment {
+  box-sizing: border-box;
+}
+
+.homepage-infoPanelWireframeDownloadChip__segment--main {
+  margin: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  color: inherit;
+  line-height: 0;
+  padding-block: var(--homepage-downloadChip-pad-block);
+  padding-inline-start: var(--homepage-downloadChip-pad-inline-start);
+  padding-inline-end: var(--homepage-downloadChip-pad-inline-end);
+}
+
+.homepage-infoPanelWireframeDownloadChip__segmentInner {
+  display: inline-flex;
+  flex-direction: row;
+  align-items: center;
+  gap: var(--spacing-gap-1);
+  color: inherit;
+}
+
+.homepage-infoPanelWireframeDownloadChip__format {
+  flex-shrink: 0;
+  font-weight: 600;
+  line-height: 110%;
+  color: inherit;
+}
+
+.homepage-infoPanelWireframeDownloadChip__segment--main:hover:not(:disabled) {
+  background: var(--color-overlay-dark-hover);
+}
+
+.homepage-infoPanelWireframeDownloadChip__segment--main:focus-visible {
+  outline: none;
+  box-shadow: var(--shadow-focus-accent);
+}
+
+.homepage-infoPanelWireframeDownloadChip__segment--main:disabled {
+  opacity: 0.38;
+  cursor: not-allowed;
+}
+
+/* Toggle button for alternate download formats (unused). */
+.homepage-infoPanelWireframeDownloadChip__segment--toggle {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+  align-self: stretch;
+  margin: 0;
+  padding-block: var(--homepage-downloadChip-pad-block);
+  padding-inline-start: var(--homepage-downloadChip-pad-inline-start);
+  padding-inline-end: var(--homepage-downloadChip-pad-inline-end);
+  border: none;
+  border-inline-start: var(--border-width-base) solid var(--color-border-weak);
+  background: transparent;
+  cursor: pointer;
+  color: inherit;
+  line-height: 0;
+  min-inline-size: calc(
+    var(--homepage-downloadChip-pad-inline-start) + var(--homepage-downloadChip-pad-inline-end) +
+      var(--spacing-padding-4)
+  );
+}
+
+.homepage-infoPanelWireframeDownloadChip__segment--toggle:hover:not(:disabled) {
+  background: var(--color-overlay-dark-hover);
+}
+
+/* Inset ring avoids clipping by overflow:hidden on the chip container. */
+.homepage-infoPanelWireframeDownloadChip__segment--toggle:focus-visible {
+  outline: none;
+  box-shadow: inset 0 0 0 var(--spacing-050) var(--color-focus-accent);
+}
+
+.homepage-infoPanelWireframeDownloadChip__segment--toggle:focus:not(:focus-visible) {
+  box-shadow: none;
+}
+
+.homepage-infoPanelWireframeDownloadChip__segment--toggle:disabled {
+  opacity: 0.38;
+  cursor: not-allowed;
+}
+
+/* InfoPanel body: fills remaining rail height and scrolls its content.
+   Scroll, padding, and scrollbar are owned by the InputSection `contentScrollable`
+   modifier (see .ds-inputSection--contentScrollable in design-system/components.css). */
 .homepage-infoPanelShellBody.ds-inputSection {
   flex: 1 1 auto;
   min-height: 0;
@@ -424,8 +552,6 @@ body {
 
 .homepage-infoPanelShellBody .ds-inputSection__content {
   flex: 1 1 auto;
-  min-height: 0;
-  overflow-y: auto;
   -webkit-overflow-scrolling: touch;
 }
 
@@ -438,6 +564,26 @@ body {
   width: 100%;
   min-width: 0;
   flex-shrink: 0;
+}
+
+.homepage-infoPanel-labelReset {
+  margin: 0;
+  padding: 0;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  color: var(--color-main-tertiary);
+  transition: color 150ms ease;
+}
+
+.homepage-infoPanel-labelReset:hover {
+  color: var(--color-intent-warning);
+}
+
+.homepage-infoPanel-labelReset:focus-visible {
+  outline: none;
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-focus-accent);
 }
 
 /* Icon info panel: 24×24 wireframe; central 16×16 area for the SVG preview */
@@ -453,6 +599,14 @@ body {
   background-color: var(--color-background-elevation);
 }
 
+.homepage-iconWireframe__clip {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  overflow: hidden;
+  pointer-events: none;
+}
+
 .homepage-iconWireframe__grid {
   position: absolute;
   inset: 0;
@@ -462,7 +616,12 @@ body {
   pointer-events: none;
 }
 
-.homepage-iconWireframe__iconSlot {
+/* Multi-select stacked cards (IconStack) — shared single + multi preview layer */
+.homepage-iconWireframe--multiSelect {
+  background-color: var(--color-background-elevation);
+}
+
+.homepage-iconStack {
   position: absolute;
   inset: 0;
   display: flex;
@@ -471,24 +630,46 @@ body {
   pointer-events: none;
 }
 
-.homepage-iconWireframe__icon {
-  box-sizing: border-box;
+.homepage-iconStack__slot {
+  position: relative;
   width: calc(100% * 16 / 24);
-  height: calc(100% * 16 / 24);
-  max-width: 100%;
-  max-height: 100%;
   aspect-ratio: 1;
 }
 
-.homepage-infoPanelContent__controlsRow {
-  display: flex;
-  flex-direction: row;
-  flex-wrap: nowrap;
-  align-items: center;
-  gap: var(--spacing-gap-2);
+.homepage-iconStack__card {
+  --stack-card-chrome: 1;
+  position: absolute;
+  inset: 0;
   box-sizing: border-box;
-  width: 100%;
-  min-width: 0;
+  border-radius: var(--radius-lg);
+  background: color-mix(
+    in srgb,
+    var(--color-background-stack) calc(var(--stack-card-chrome) * 100%),
+    transparent
+  );
+  border: var(--border-width-base) solid color-mix(
+    in srgb,
+    var(--color-border-weak) calc(var(--stack-card-chrome) * 100%),
+    transparent
+  );
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transform-origin: center center;
+}
+
+.homepage-iconStack__card--front {
+  --stack-card-chrome: 0;
+  z-index: 1;
+}
+
+.homepage-iconStack__card:not(.homepage-iconStack__card--front) {
+  z-index: 0;
+}
+
+.homepage-iconStack__icon {
+  width: calc(100% - 40% * var(--stack-card-chrome, 1));
+  height: calc(100% - 40% * var(--stack-card-chrome, 1));
 }
 
 /* Color picker anchor/popup */
@@ -504,6 +685,49 @@ body {
   bottom: calc(100% + var(--spacing-gap-2));
   z-index: 5;
   width: max-content;
+}
+
+.homepage-infoPanelContent__colorField .ds-inputField__row {
+  align-items: stretch;
+}
+
+.homepage-infoPanel-colorHexWrap {
+  box-sizing: border-box;
+  display: flex;
+  align-items: stretch;
+  width: 100%;
+  min-width: 0;
+}
+
+.homepage-infoPanel-colorHexWrap .homepage-bulkColorPicker__hexRow {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.homepage-infoPanel-colorHexWrap .homepage-bulkColorPicker__hexRow .ds-input {
+  flex: 1 1 auto;
+  align-self: stretch;
+  width: 100%;
+  height: auto;
+  min-height: var(--size-12);
+}
+
+.homepage-infoPanelContent__colorField .ds-inputField__col--secondary {
+  display: flex;
+  align-self: stretch;
+}
+
+.homepage-infoPanelContent__colorField .homepage-infoPanel-colorAnchor {
+  display: flex;
+  align-items: stretch;
+  justify-content: center;
+  height: 100%;
+  align-self: stretch;
+}
+
+.homepage-infoPanelContent__colorField .homepage-bulkAction-colorBtn {
+  flex: 1 1 auto;
+  align-self: stretch;
 }
 
 /* Settings anchor/popup */
@@ -522,68 +746,71 @@ body {
   width: max-content;
 }
 
-/* Info panel size field: InputField stretches to fill remaining row space */
-.homepage-infoPanelContent__sizeField.ds-inputField {
-  flex: 1 1 auto;
-  min-width: 0;
+
+/* Size row: match secondary column height to segmented control frame */
+.homepage-infoPanelContent__sizeField .ds-inputField__row {
+  align-items: stretch;
 }
 
-/* Custom size input — compact numeric-only field */
+
+/* Custom size input — fills column height beside SegmentedControl */
 .homepage-infoPanelContent__sizeCustomInput.ds-input {
-  min-height: 0;
+  flex: 1 1 auto;
+  align-self: stretch;
+  width: 100%;
   height: auto;
-  align-items: center;
+  min-height: var(--size-12);
 }
 
 .homepage-infoPanelContent__sizeCustomInput.ds-input .ds-input__input {
   text-align: center;
 }
 
-.homepage-infoPanelContent__exportActions {
+.homepage-infoPanelContent__snippetSection {
+  box-sizing: border-box;
+  min-width: 0;
+  flex-shrink: 0;
+  width: 100%;
+}
+
+/* Code label row: caption left, chip tabs flush right. */
+.homepage-infoPanelContent__snippetSection .ds-inputField__labelRow {
+  width: 100%;
+}
+
+.homepage-infoPanelContent__snippetSection .ds-inputField__labelTrailing {
+  flex: 1 1 auto;
+  min-width: 0;
+  justify-content: flex-end;
+}
+
+/* Chip tab list (info panel label row) + cluster (React + install info). */
+.homepage-infoPanelContent__snippetTabBar {
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
-  gap: var(--spacing-gap-2);
-}
-
-.homepage-infoPanelContent__snippetSection {
-  box-sizing: border-box;
-  display: flex;
-  flex-direction: column;
-  gap: var(--spacing-gap-2);
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--spacing-gap-1);
   min-width: 0;
+  margin-left: auto;
+}
+
+/* `ds-chip` caps width; snippet tabs size to label. */
+.homepage-codeSnippetTab {
   flex-shrink: 0;
-  width: 100%;
+  max-width: none;
 }
 
-.homepage-infoPanelContent__snippetHeading {
-  margin: 0;
-  font-family: var(--font-family-sans);
-  font-size: var(--font-size-settings-group-label);
-  font-weight: 600;
-  line-height: var(--line-height-settings-group-label);
-  color: var(--color-main-secondary);
-}
-
-.homepage-infoPanelContent__snippetWrap {
+/* Tab panel: stacked code frames (each .rii-codeFrame is its own bordered card). */
+.homepage-infoPanelContent__snippetTabPanel {
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
+  gap: var(--spacing-gap-3);
   width: 100%;
   min-width: 0;
   flex-shrink: 0;
-  overflow: hidden;
-  border-radius: var(--radius-md);
-  border: var(--border-width-base) solid var(--color-border-weak);
-  background: var(--item-grid);
-}
-
-.homepage-infoPanelContent__snippetBlocks {
-  display: flex;
-  flex-direction: column;
-  box-sizing: border-box;
-  width: 100%;
-  min-width: 0;
 }
 
 .homepage-infoPanelContent__snippetBlock {
@@ -592,10 +819,6 @@ body {
   box-sizing: border-box;
   width: 100%;
   min-width: 0;
-}
-
-.homepage-infoPanelContent__snippetBlock:not(:first-of-type) {
-  border-top: var(--border-width-base) solid var(--color-border-weak);
 }
 
 .homepage-infoPanelContent__snippetBlockHead {
@@ -607,8 +830,8 @@ body {
   box-sizing: border-box;
   width: 100%;
   min-width: 0;
-  padding: var(--spacing-padding-1) var(--spacing-padding-1)
-    var(--spacing-padding-1) var(--spacing-padding-2);
+  padding: var(--spacing-padding-050) var(--spacing-padding-050)
+    var(--spacing-padding-050) var(--spacing-padding-2);
 }
 
 .homepage-infoPanelContent__snippetBlockLabel {
@@ -627,42 +850,10 @@ body {
   align-self: center;
 }
 
-/* Code rows: single card, internal sections — no nested field border */
-.homepage-infoPanelContent__snippetWrap .homepage-infoPanelContent__snippetPlaceholder--block {
-  padding: 0 var(--spacing-padding-3) var(--spacing-padding-2);
-  border: none;
-  border-radius: 0;
-  background: transparent;
-  max-height: none;
-}
-
-.homepage-infoPanelContent__snippetPlaceholder {
-  box-sizing: border-box;
-  margin: 0;
-  width: 100%;
-  overflow-x: auto;
-  overflow-y: auto;
-  max-height: 12rem;
-  padding: var(--spacing-padding-2) var(--spacing-padding-3);
-  border-radius: var(--radius-md);
-  border: var(--border-width-base) solid var(--color-border-weak);
-  background: var(--item-grid);
-  font-family:
-    ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace;
-  font-size: 12px;
-  font-weight: 500;
-  line-height: 1.45;
-  color: var(--color-main-secondary);
-  tab-size: 2;
-}
-
-.homepage-infoPanelContent__snippetPlaceholder span {
-  font-family: inherit;
-}
-
-.homepage-infoPanelContent__snippetPlaceholder code {
-  font-family: inherit;
-  white-space: pre;
+/* Icon-strip copy control: drop sm button padding so the glyph aligns with the label row. */
+.homepage-infoPanelContent__snippetBlockHead
+  .homepage-infoPanelContent__snippetBlockCopy.ds-button {
+  padding: 0;
 }
 
 .homepage-infoPanelContent__snippetHelp {
@@ -672,15 +863,238 @@ body {
   line-height: 1.35;
 }
 
-/**
- * Grid icon previews: when export size is set, the store exposes `gridPreviewPx` and
- * `--icon-preview-user-px` on `.ds-iconGrid`; until then the var is unset (cap-only).
- * Still capped by `--ds-iconGrid-preview-cap`.
+/* =========================================================================
+   ReactInstallModal (.rii-*)
+   All colors, spacing, and radii use design-system semantic tokens.
+   ========================================================================= */
+
+/* Scrim — full-viewport backdrop */
+.rii-scrim {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  background: var(--color-background-inverse);
+  -webkit-backdrop-filter: blur(2px);
+  backdrop-filter: blur(2px);
+  display: grid;
+  place-items: center;
+  padding: var(--spacing-padding-4);
+  font-family: var(--font-family-sans);
+  animation: rii-scrim-in 160ms ease-out;
+}
+
+@keyframes rii-scrim-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+/* Modal card */
+.rii-modal {
+  position: relative;
+  width: min(520px, 100%);
+  background: var(--color-background-strong);
+  color: var(--color-main-primary);
+  border: var(--border-width-base) solid var(--color-border-weak);
+  border-radius: var(--radius-2xl);
+  box-shadow: var(--shadow-strong);
+  overflow: hidden;
+  animation: rii-modal-in 220ms cubic-bezier(.2,.7,.3,1);
+}
+
+@keyframes rii-modal-in {
+  from { opacity: 0; transform: translateY(8px) scale(.98); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* Hero strip */
+.rii-hero {
+  position: relative;
+  padding: var(--spacing-padding-4) var(--spacing-padding-5) var(--spacing-padding-5);
+  background:
+    radial-gradient(
+      circle at 22% 30%,
+      color-mix(in srgb, var(--color-intent-accent) 12%, transparent),
+      transparent 60%
+    ),
+    radial-gradient(
+      circle at 78% 80%,
+      color-mix(in srgb, var(--color-intent-accent) 7%, transparent),
+      transparent 55%
+    ),
+    var(--color-background-base);
+  border-bottom: var(--border-width-base) solid var(--color-border-extra-weak);
+}
+
+/* Close button */
+.rii-close {
+  position: absolute;
+  top: var(--spacing-3);
+  right: var(--spacing-3);
+  width: 28px;
+  height: 28px;
+  display: grid;
+  place-items: center;
+  background: transparent;
+  border: 0;
+  border-radius: var(--radius-sm);
+  color: var(--color-main-tertiary);
+  cursor: pointer;
+  transition: background 120ms ease, color 120ms ease;
+}
+
+.rii-close:hover {
+  background: var(--color-overlay-dark-hover);
+  color: var(--color-main-primary);
+}
+
+.rii-close:focus-visible {
+  outline: var(--border-width-thick) solid var(--color-intent-accent);
+  outline-offset: 2px;
+}
+
+/* Eyebrow pill */
+.rii-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-gap-2);
+  padding: var(--spacing-padding-1) var(--spacing-padding-3) var(--spacing-padding-1) var(--spacing-padding-2);
+  background: var(--color-background-strong);
+  border: var(--border-width-base) solid var(--color-border-weak);
+  border-radius: var(--radius-full);
+  font-size: 11.5px;
+  font-weight: 600;
+  color: var(--color-main-secondary);
+}
+
+.rii-eyebrow__mark {
+  flex-shrink: 0;
+  display: block;
+  width: 14px;
+  height: 14px;
+}
+
+/* Title */
+.rii-title {
+  margin: var(--spacing-3) 0 0;
+  font-size: 22px;
+  font-weight: 600;
+  line-height: 1.2;
+  max-width: 380px;
+  color: var(--color-main-primary);
+  letter-spacing: -0.005em;
+}
+
+/* Package name (monospace pill) */
+.rii-package {
+  display: block;
+  margin-top: var(--spacing-2);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 13px;
+  color: var(--color-main-tertiary);
+}
+
+/* Body — wraps the two code frames */
+.rii-body {
+  padding: var(--spacing-padding-4);
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-gap-3);
+}
+
+/* Individual code frame — border + background for each section */
+.rii-codeFrame {
+  border-radius: var(--radius-lg);
+  border: var(--border-width-base) solid var(--color-border-weak);
+  overflow: hidden;
+}
+
+/* Min height for code row only (single-line snippets stay vertically comfortable). */
+.rii-codeFrame .homepage-infoPanelContent__snippetBlock {
+  --rii-snippet-row-min-height: calc(
+    2 * var(--spacing-padding-2) + 32px
+  );
+}
+
+/*
+ * Header row height follows label / tabs / copy (no fixed min-height).
  */
+.rii-codeFrame .homepage-infoPanelContent__snippetBlockHead {
+  padding: var(--spacing-padding-1) var(--spacing-padding-1)
+    var(--spacing-padding-0) var(--spacing-padding-3);
+}
+
+/* Code pre — optional min-height for short one-line bodies */
+.rii-codeFrame .rii-codeBlock {
+  min-height: var(--rii-snippet-row-min-height);
+}
+
+/*
+ * Prism-react-renderer outputs one <div> per logical line under <pre>.
+ * Column flex + justify center keeps single-line imports vertically centered.
+ *
+ * Install row uses plain <span> siblings ($ + command). Column flex would stack
+ * each span on its own line — use a row instead.
+ */
+.rii-codeFrame .rii-codeBlock:has(> div) {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.rii-codeFrame .rii-codeBlock:not(:has(> div)) {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  flex-wrap: nowrap;
+}
+
+/* Info panel only: cap long snippets: modal install/import stays short. */
+.homepage-infoPanelContent__snippetTabPanel .rii-codeFrame .rii-codeBlock {
+  max-height: 12rem;
+  overflow-y: auto;
+}
+
+.rii-codeBlock {
+  box-sizing: border-box;
+  margin: 0;
+  padding: var(--spacing-padding-2) var(--spacing-padding-3);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', monospace;
+  font-size: 12.5px;
+  font-weight: 500;
+  line-height: 1.55;
+  color: var(--color-main-secondary);
+  overflow-x: auto;
+  background: transparent;
+  border: none;
+  border-radius: 0;
+  tab-size: 2;
+  /* Prism-react-renderer sets background via inline style; we reset it. */
+}
+
+/* Shell command token colors */
+.rii-tok--dim  { color: var(--color-main-quaternary); }
+.rii-tok--cmd  { color: var(--color-main-secondary); }
+
+/* RII modal — install/import header chip tabs */
+.rii-modal__codeTabList {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--spacing-gap-1);
+  min-width: 0;
+}
+
+.rii-modal__codeTabList .homepage-codeSnippetTab {
+  text-transform: lowercase;
+}
+
+/* ── end ReactInstallModal tab styling ─────────────────────────────────── */
+
+/* Grid icon previews: sized by the layout cap only. */
 .icon-grid-preview {
   flex: 0 0 auto;
-  width: min(var(--icon-preview-user-px, 1000px), var(--ds-iconGrid-preview-cap));
-  height: min(var(--icon-preview-user-px, 1000px), var(--ds-iconGrid-preview-cap));
+  width: var(--ds-iconGrid-preview-cap);
+  height: var(--ds-iconGrid-preview-cap);
 }
 
 /* Main column: scroll area + absolutely positioned overlay. */
@@ -782,7 +1196,7 @@ body {
 .homepage-bulkOverlay .gradient-overlay__content {
   align-items: flex-end;
   justify-content: center;
-  padding-bottom: calc(var(--spacing-padding-10) + var(--spacing-padding-5));
+  padding-bottom: 40px;
   pointer-events: none;
 }
 
@@ -797,49 +1211,11 @@ body {
   pointer-events: auto;
 }
 
-/* Export format popover: centered on ellipsis trigger, gap-4 above button */
-.homepage-bulkBarSettingsAnchor {
-  position: relative;
-  display: inline-flex;
-  vertical-align: middle;
-}
-
-.homepage-bulkBarSettingsPop {
-  position: absolute;
-  left: 50%;
-  bottom: calc(100% + var(--spacing-gap-4));
-  z-index: 5;
-  box-sizing: border-box;
-  width: calc(2 * var(--size-20));
-  max-width: calc(100vw - 2 * var(--spacing-padding-4));
-  transform: translateX(-50%);
-  pointer-events: auto;
-}
-
 .homepage-bulkOverlay .ds-bulkActionBar {
   position: relative;
   flex: 0 1 auto;
   min-width: 0;
   max-width: 100%;
-}
-
-/* Second shell: single dismiss control, matches main bulk bar chrome */
-.homepage-bulkBarAside {
-  box-sizing: border-box;
-  display: inline-flex;
-  flex: 0 0 auto;
-  align-items: center;
-  justify-content: center;
-  padding: var(--spacing-padding-2);
-  border-radius: var(--radius-xl);
-  border: var(--border-width-base) solid var(--color-border-weak);
-  background: var(--color-background-strong);
-  box-shadow:
-    0 var(--spacing-padding-050) var(--spacing-padding-3) var(--color-overlay-weak);
-}
-
-[data-theme="dark"] .homepage-bulkBarAside {
-  box-shadow: none;
 }
 
 /* Bulk bar: inverse label chip (IconCard filename pattern: centered, just past the control edge). */
@@ -868,8 +1244,7 @@ body {
 .homepage-bulkAction-hoverWrap:not(:has(.ds-button:disabled)):not(:has(.ds-button[aria-disabled="true"])):hover
   .homepage-bulkAction-hoverMeta,
 .homepage-bulkAction-hoverWrap:has(.ds-button:focus-visible:not(:disabled):not([aria-disabled="true"]))
-  .homepage-bulkAction-hoverMeta,
-.homepage-bulkAction-hoverWrap:has(.homepage-bulkBar-sizeInput):hover .homepage-bulkAction-hoverMeta {
+  .homepage-bulkAction-hoverMeta {
   opacity: 1;
 }
 
@@ -885,23 +1260,8 @@ body {
   flex-shrink: 0;
 }
 
-/* Color picker anchor + popover (mirrors settings panel pattern) */
-.homepage-bulkColorPickerAnchor {
-  position: relative;
-  display: inline-flex;
-  vertical-align: middle;
-}
-
-.homepage-bulkColorPickerPop {
-  position: absolute;
-  left: 50%;
-  bottom: calc(100% + var(--spacing-gap-4));
-  z-index: 5;
-  box-sizing: border-box;
-  width: max-content;
-  max-width: calc(100vw - 2 * var(--spacing-padding-4));
-  transform: translateX(-50%);
-  pointer-events: auto;
+.homepage-bulkColorPicker--presetsOnly {
+  gap: 0;
 }
 
 /* Panel chrome — same as ds-bulkActionBarSettingsPanel */
@@ -968,94 +1328,8 @@ body {
   }
 }
 
-/*
- * Bulk bar: size control — matches Figma (node 1181:9469): frame padding 2, radius md,
- * border/base, label px-2 only; 20px glyphs with p-050 in slots; hug width + height.
- */
-.homepage-bulkBar-sizeInput.ds-input {
-  width: fit-content;
-  max-width: 100%;
-  min-width: 0;
-  min-height: 0;
-  height: auto;
-  align-items: center;
-  border-radius: var(--radius-md);
-  border-color: var(--color-border-base);
-  padding: calc(var(--spacing-padding-2) - var(--border-width-base));
-}
 
-/* Idle: no input fill; hover or focus shows standard input background (error keeps system fill). */
-.homepage-bulkBar-sizeInput.ds-input[data-status="default"] {
-  background: transparent;
-}
-
-.homepage-bulkBar-sizeInput.ds-input[data-status="default"]:hover,
-.homepage-bulkBar-sizeInput.ds-input[data-status="default"]:focus-within {
-  background: var(--ds-input-bg);
-}
-
-.homepage-bulkBar-sizeInput.ds-input .ds-input__slot {
-  flex: 0 0 auto;
-  width: auto;
-  min-width: 0;
-  align-self: center;
-}
-
-.homepage-bulkBar-sizeInput.ds-input .ds-input__field {
-  flex: 0 1 auto;
-  min-width: 0;
-  padding-block: 0;
-  padding-inline: var(--spacing-padding-2);
-}
-
-.homepage-bulkBar-sizeInput.ds-input .ds-input__input {
-  width: auto;
-  min-width: 2.75ch;
-  text-align: center;
-}
-
-@supports (field-sizing: content) {
-  .homepage-bulkBar-sizeInput.ds-input .ds-input__input {
-    field-sizing: content;
-  }
-}
-
-.homepage-bulkBar-sizeStep {
-  box-sizing: border-box;
-  display: flex;
-  width: var(--size-6);
-  height: var(--size-6);
-  flex-shrink: 0;
-  align-items: center;
-  justify-content: center;
-  margin: 0;
-  padding: 0;
-  border: none;
-  border-radius: var(--radius-md);
-  background: transparent;
-  cursor: pointer;
-  color: var(--color-main-quaternary);
-}
-
-.homepage-bulkBar-sizeStep:hover:not(:disabled),
-.homepage-bulkBar-sizeStep:focus-visible:not(:disabled),
-.homepage-bulkBar-sizeStep:active:not(:disabled) {
-  color: var(--color-main-primary);
-}
-
-.homepage-bulkBar-sizeStep:focus-visible {
-  outline: none;
-}
-
-/* More options: quaternary idle → accent icon + accent overlay on hover / focus / press / popover open */
-.homepage-bulkAction-settingsBtn.ds-button[data-variant="transparent"] .ds-button__iconSlot {
-  color: var(--color-main-quaternary);
-}
-
-.homepage-bulkAction-settingsBtn.ds-button[data-variant="transparent"]:hover:not(:disabled):not([aria-disabled="true"]),
-.homepage-bulkAction-settingsBtn.ds-button[data-variant="transparent"]:focus-visible:not(:disabled):not([aria-disabled="true"]),
-.homepage-bulkAction-settingsBtn.ds-button[data-variant="transparent"]:active:not(:disabled):not([aria-disabled="true"]),
-.homepage-bulkAction-settingsBtn.ds-button[data-variant="transparent"][aria-expanded="true"]:not(:disabled):not([aria-disabled="true"]),
+/* Color button: accent overlay on hover / focus / press / popover open */
 .homepage-bulkAction-colorBtn.ds-button[data-variant="transparent"]:hover:not(:disabled):not([aria-disabled="true"]),
 .homepage-bulkAction-colorBtn.ds-button[data-variant="transparent"]:focus-visible:not(:disabled):not([aria-disabled="true"]),
 .homepage-bulkAction-colorBtn.ds-button[data-variant="transparent"]:active:not(:disabled):not([aria-disabled="true"]),
@@ -1063,10 +1337,6 @@ body {
   background-color: var(--color-overlay-accent);
 }
 
-.homepage-bulkAction-settingsBtn.ds-button[data-variant="transparent"]:hover:not(:disabled):not([aria-disabled="true"]) .ds-button__iconSlot,
-.homepage-bulkAction-settingsBtn.ds-button[data-variant="transparent"]:focus-visible:not(:disabled):not([aria-disabled="true"]) .ds-button__iconSlot,
-.homepage-bulkAction-settingsBtn.ds-button[data-variant="transparent"]:active:not(:disabled):not([aria-disabled="true"]) .ds-button__iconSlot,
-.homepage-bulkAction-settingsBtn.ds-button[data-variant="transparent"][aria-expanded="true"]:not(:disabled):not([aria-disabled="true"]) .ds-button__iconSlot,
 .homepage-bulkAction-colorBtn.ds-button[data-variant="transparent"]:hover:not(:disabled):not([aria-disabled="true"]) .ds-button__iconSlot,
 .homepage-bulkAction-colorBtn.ds-button[data-variant="transparent"]:focus-visible:not(:disabled):not([aria-disabled="true"]) .ds-button__iconSlot,
 .homepage-bulkAction-colorBtn.ds-button[data-variant="transparent"]:active:not(:disabled):not([aria-disabled="true"]) .ds-button__iconSlot,

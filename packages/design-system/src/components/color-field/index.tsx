@@ -139,7 +139,7 @@ export function ColorField({
                 onColorChange(normalized)
               }
             }}
-            placeholder="default"
+            placeholder="currentColor"
             autoCapitalize="none"
             autoCorrect="off"
             spellCheck={false}

@@ -1,18 +1,16 @@
 import { useSvgFetch } from '@/hooks/useSvgFetch'
-import { useColorStore } from '@/stores/colorStore'
 import { cn } from '@/lib/utils'
 
 interface IconPreviewProps {
   path: string | undefined
   className?: string
-  /** When set, overrides the global color-picker tint for this preview. */
+  /** Explicit tint colour for this preview. Defaults to the secondary text colour. */
   tintColor?: string
 }
 
 export function IconPreview({ path, className, tintColor }: IconPreviewProps) {
   const { data: svg, isLoading, error } = useSvgFetch(path)
-  const selectedColor = useColorStore((state) => state.selectedColor)
-  const resolvedTint = tintColor ?? selectedColor ?? 'var(--color-main-secondary)'
+  const resolvedTint = tintColor ?? 'var(--color-main-secondary)'
 
   if (isLoading) {
     return (

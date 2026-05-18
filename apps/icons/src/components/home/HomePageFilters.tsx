@@ -120,6 +120,29 @@ export function HomePageFilterStack({
                         padding="2"
                       />
                     }
+                    trailingSlot={
+                      searchQuery.length > 0 ? (
+                        <button
+                          type="button"
+                          className="ds-input__trailingAction"
+                          aria-label="Clear search"
+                          onMouseDown={(e) => {
+                            e.preventDefault()
+                          }}
+                          onClick={() => {
+                            onSearchChange('')
+                          }}
+                        >
+                          <SomeIcon
+                            iconName="symbol-multiply"
+                            iconStyle="outline"
+                            iconSize="sm"
+                            padding="050"
+                            color="var(--color-main-quaternary)"
+                          />
+                        </button>
+                      ) : undefined
+                    }
                   />
                 }
               />
@@ -139,6 +162,7 @@ export function HomePageFilterStack({
       />
       <InputSection
         showLabel={false}
+        contentScrollable
         className={
           categorySectionClassName ?? 'homepage-sidebarCategorySection'
         }

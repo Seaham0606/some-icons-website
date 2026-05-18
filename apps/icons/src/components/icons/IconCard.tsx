@@ -68,8 +68,8 @@ export const IconCard = memo(function IconCard({
   const handleSelectionToggleClick = () => {
     const wasSelected = useSelectionStore.getState().selectedIds.has(icon.id)
     toggle(icon.id)
-    if (infoPanelOpen && !wasSelected) {
-      onInfoPanelClose?.()
+    if (!wasSelected && !infoPanelOpen) {
+      onInfoOpen?.(icon)
     }
   }
 
