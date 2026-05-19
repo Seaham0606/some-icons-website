@@ -2,12 +2,12 @@ import { Button, type ButtonRadius, type ButtonStateIcon } from 'design-system'
 
 const THEME_STRIP_ICONS: [ButtonStateIcon, ButtonStateIcon] = [
   {
-    iconName: 'weather-sun',
+    iconName: 'sun',
     iconStyle: 'fill',
     color: 'var(--color-main-tertiary)',
   },
   {
-    iconName: 'weather-moon',
+    iconName: 'moon',
     iconStyle: 'fill',
     color: 'var(--color-main-tertiary)',
   },

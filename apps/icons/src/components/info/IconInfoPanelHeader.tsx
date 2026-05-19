@@ -21,7 +21,7 @@ export function IconInfoPanelHeader({ onClose }: IconInfoPanelHeaderProps) {
           onClick={onClose}
           leadingSlot={
             <SomeIcon
-              iconName="symbol-multiply"
+              iconName="multiply"
               iconStyle="outline"
               iconSize="md"
               padding="0"

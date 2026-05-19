@@ -1,5 +1,8 @@
 export const CDN_BASE_URL = 'https://raw.githubusercontent.com/Seaham0606/some-icons-cdn/main/'
 
+/** Preset swatch grid + info-panel swatches trigger. */
+export const SHOW_COLOR_PRESET_SWATCHES = false
+
 export const DEFAULT_ICON_SIZE = 24
 
 // Size presets match the vanilla version

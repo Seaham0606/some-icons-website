@@ -1,6 +1,6 @@
 import {
   IconStack,
-  MULTI_STACK_SLOT_PERCENT,
+  MULTI_STACK_SLOT_PX,
   SINGLE_STACK_SLOT_PERCENT,
 } from '@/components/info/IconStack'
 import { cn } from '@/lib/utils'
@@ -70,7 +70,7 @@ function applyStackMode(
     gsap.set(slot, { width: px, height: px })
   } else {
     gsap.set(slot, {
-      width: multi ? `${MULTI_STACK_SLOT_PERCENT}%` : `${SINGLE_STACK_SLOT_PERCENT}%`,
+      width: multi ? MULTI_STACK_SLOT_PX : `${SINGLE_STACK_SLOT_PERCENT}%`,
       height: 'auto',
     })
   }
@@ -102,6 +102,9 @@ export interface IconWireframeProps {
  * Icon preview framed by a proportional 24×24 unit grid. The icon always renders inside the
  * shared stack card layer; single mode hides card fill/stroke and uses a larger slot, multi-select
  * reveals chrome and stacks additional icons behind the front card.
+ *
+ * Stacking order: the most recently selected icon (last in `selectedIcons`) sits on top;
+ * older selections cascade behind it, oldest at the bottom.
  */
 export function IconWireframe({
   icon,
@@ -119,20 +122,30 @@ export function IconWireframe({
   const previewIcons =
     isMultiSelect && selectedIcons != null ? selectedIcons : [icon]
 
+  // The visual front card is always the most recently selected (last in list).
+  const stackFrontIconId =
+    isMultiSelect && selectedIcons != null && selectedIcons.length > 0
+      ? (selectedIcons[selectedIcons.length - 1]?.id ?? icon.id)
+      : icon.id
+
   const gridRef = useRef<SVGSVGElement>(null)
   const slotRef = useRef<HTMLDivElement>(null)
   const frontCardRef = useRef<HTMLDivElement>(null)
   const prevMultiSelectRef = useRef<boolean | null>(null)
   const prevAnchorIdRef = useRef(icon.id)
+  const prevStackFrontIdRef = useRef<string | null>(null)
 
   useLayoutEffect(() => {
     const grid = gridRef.current
     const slot = slotRef.current
     const frontCard = frontCardRef.current
     const wasMulti = prevMultiSelectRef.current
+    const prevStackFrontId = prevStackFrontIdRef.current
     const anchorChanged = prevAnchorIdRef.current !== icon.id
+
     prevMultiSelectRef.current = isMultiSelect
     prevAnchorIdRef.current = icon.id
+    prevStackFrontIdRef.current = stackFrontIconId
 
     if (grid == null || slot == null || frontCard == null) return
 
@@ -145,18 +158,16 @@ export function IconWireframe({
         ? Math.min(displaySize, 200)
         : `${SINGLE_STACK_SLOT_PERCENT}%`
     const multiSlotWidth =
-      displaySize != null
-        ? Math.min(displaySize, 200)
-        : `${MULTI_STACK_SLOT_PERCENT}%`
+      displaySize != null ? Math.min(displaySize, 200) : MULTI_STACK_SLOT_PX
 
+    // ── Initial mount ──
     if (wasMulti === null) {
       gsap.set(grid, { opacity: isMultiSelect ? 0 : 1 })
       applyStackMode(slot, frontCard, isMultiSelect, displaySize)
       return
     }
 
-    gsap.killTweensOf([grid, slot, frontCard])
-
+    // ── Single → Multi ──
     if (isMultiSelect && !wasMulti) {
       if (reducedMotion) {
         gsap.set(grid, { opacity: 0 })
@@ -164,8 +175,8 @@ export function IconWireframe({
         return
       }
 
-      gsap
-        .timeline()
+      gsap.killTweensOf([grid, slot])
+      gsap.timeline()
         .to(
           grid,
           { opacity: 0, duration: WIREFRAME_TWEEN_DURATION_S, ease: WIREFRAME_TWEEN_EASE },
@@ -180,18 +191,17 @@ export function IconWireframe({
           },
           0,
         )
-        .to(
-          frontCard,
-          {
-            '--stack-card-chrome': 1,
-            duration: WIREFRAME_TWEEN_DURATION_S,
-            ease: WIREFRAME_TWEEN_EASE,
-          },
-          0,
-        )
+      // Chrome tween runs independently so it doesn't cancel IconStack's entrance animation
+      gsap.to(frontCard, {
+        '--stack-card-chrome': 1,
+        duration: WIREFRAME_TWEEN_DURATION_S,
+        ease: WIREFRAME_TWEEN_EASE,
+        overwrite: 'auto',
+      })
       return
     }
 
+    // ── Multi → Single ──
     if (!isMultiSelect && wasMulti) {
       if (reducedMotion) {
         gsap.set(grid, { opacity: 1 })
@@ -199,8 +209,8 @@ export function IconWireframe({
         return
       }
 
-      gsap
-        .timeline()
+      gsap.killTweensOf([grid, slot])
+      gsap.timeline()
         .to(
           grid,
           { opacity: 1, duration: WIREFRAME_TWEEN_DURATION_S, ease: WIREFRAME_TWEEN_EASE },
@@ -215,30 +225,39 @@ export function IconWireframe({
           },
           0,
         )
-        .to(
-          frontCard,
-          {
-            '--stack-card-chrome': 0,
-            duration: WIREFRAME_TWEEN_DURATION_S,
-            ease: WIREFRAME_TWEEN_EASE,
-          },
-          0,
-        )
+      gsap.to(frontCard, {
+        '--stack-card-chrome': 0,
+        duration: WIREFRAME_TWEEN_DURATION_S,
+        ease: WIREFRAME_TWEEN_EASE,
+        overwrite: 'auto',
+      })
       return
     }
 
+    // ── Single mode, anchor icon changed ──
     if (!isMultiSelect) {
       gsap.set(grid, { opacity: 1 })
       applyStackMode(slot, frontCard, false, displaySize)
       return
     }
 
+    // ── Multi mode, front card changed (new icon selected into stack) ──
+    if (stackFrontIconId !== prevStackFrontId) {
+      // New front card needs its chrome set to 1 immediately (already in multi mode)
+      gsap.set(frontCard, { '--stack-card-chrome': 1 })
+      // Ensure slot dimensions are correct (e.g. displaySize changed)
+      if (displaySize != null) {
+        const px = Math.min(displaySize, 200)
+        gsap.set(slot, { width: px, height: px })
+      }
+      return
+    }
+
+    // ── Multi mode, anchor changed but front is the same ──
     if (anchorChanged) {
-      gsap.killTweensOf(frontCard)
-      gsap.set(frontCard, { clearProps: 'transform,filter,opacity' })
       applyStackMode(slot, frontCard, true, displaySize)
     }
-  }, [isMultiSelect, displaySize, icon.id])
+  }, [isMultiSelect, displaySize, icon.id, stackFrontIconId])
 
   return (
     <div
@@ -254,7 +273,6 @@ export function IconWireframe({
 
         <IconStack
           icons={previewIcons}
-          frontIconId={icon.id}
           color={previewTint}
           slotRef={slotRef}
           frontCardRef={frontCardRef}

@@ -1,6 +1,7 @@
 import * as React from 'react'
 import { HexColorPicker } from 'react-colorful'
-import { Input, ColorSwatch, SomeIcon } from 'design-system'
+import { Button, Input, ColorSwatch } from 'design-system'
+import { SHOW_COLOR_PRESET_SWATCHES } from '@/lib/constants'
 
 export interface BulkColorPickerPanelProps {
   /** Canonical `#RRGGBB`, or `null` for default (`currentColor`). */
@@ -90,9 +91,6 @@ export function ColorHexField({
     return () => document.removeEventListener('pointerdown', handler)
   }, [pickerOpen])
 
-  const hexTrimmed = hexText.trim()
-  const hasUserHexInput = hexTrimmed !== '' && hexTrimmed !== '#'
-  const canReset = hasUserHexInput || color !== null
   const pickerValue = color ?? '#000000'
 
   return (
@@ -142,20 +140,6 @@ export function ColorHexField({
             <ColorSwatch color={color} />
           </button>
         }
-        trailingSlot={
-          <button
-            type="button"
-            className="ds-colorField__reset"
-            aria-label="Reset icon color to default"
-            disabled={!canReset}
-            onClick={() => {
-              setHexText('')
-              onColorChange(null)
-            }}
-          >
-            <SomeIcon iconName="arrow-undo" iconStyle="outline" iconSize="md" padding="2" />
-          </button>
-        }
       />
       {pickerOpen && (
         <div className="ds-colorField__pickerPop">
@@ -199,6 +183,70 @@ function BulkColorPresetGrid({ color, onColorChange }: BulkColorPickerPanelProps
   )
 }
 
+/** Info panel col-2: opens preset swatch grid (same width as size custom input). */
+export function ColorPresetTrigger({ color, onColorChange }: BulkColorPickerPanelProps) {
+  const [open, setOpen] = React.useState(false)
+  const anchorRef = React.useRef<HTMLDivElement>(null)
+
+  React.useEffect(() => {
+    if (!open) return
+    const handler = (e: PointerEvent) => {
+      if (anchorRef.current && !anchorRef.current.contains(e.target as Node)) {
+        setOpen(false)
+      }
+    }
+    document.addEventListener('pointerdown', handler)
+    return () => document.removeEventListener('pointerdown', handler)
+  }, [open])
+
+  return (
+    <div
+      ref={anchorRef}
+      className="homepage-infoPanel-colorAnchor"
+    >
+      <Button
+        type="button"
+        variant="transparent"
+        size="md"
+        radius="lg"
+        className="homepage-infoPanelContent__colorSwatchesBtn"
+        aria-label="Color presets"
+        aria-expanded={open}
+        onClick={() => setOpen((p) => !p)}
+        leadingSlot={
+          color != null ? (
+            <span
+              className="homepage-bulkAction-colorDot"
+              style={{ backgroundColor: color }}
+            />
+          ) : (
+            <span className="homepage-infoPanelContent__colorSwatchMini" aria-hidden>
+              {PRESET_COLORS.slice(0, 4).map((hex) => (
+                <span
+                  key={hex}
+                  className="homepage-infoPanelContent__colorSwatchMiniCell"
+                  style={{ backgroundColor: hex }}
+                />
+              ))}
+            </span>
+          )
+        }
+      />
+      {open ? (
+        <div className="homepage-infoPanel-colorPop">
+          <BulkColorPresetPanel
+            color={color}
+            onColorChange={(next) => {
+              onColorChange(next)
+              setOpen(false)
+            }}
+          />
+        </div>
+      ) : null}
+    </div>
+  )
+}
+
 /** Floating panel: presets only (e.g. icon info rail palette popover). */
 export function BulkColorPresetPanel(props: BulkColorPickerPanelProps) {
   return (
@@ -217,7 +265,7 @@ export function BulkColorPickerPanel(props: BulkColorPickerPanelProps) {
   return (
     <div className="homepage-bulkColorPicker" role="dialog" aria-label="Icon color">
       <ColorHexField {...props} />
-      <BulkColorPresetGrid {...props} />
+      {SHOW_COLOR_PRESET_SWATCHES ? <BulkColorPresetGrid {...props} /> : null}
     </div>
   )
 }

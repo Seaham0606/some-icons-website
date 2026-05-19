@@ -245,8 +245,8 @@ export default function HomePage() {
   }, [])
 
   const versionChip = (
-    <Chip variant="accent" aria-label="Version 1.1.1">
-      v1.1.1
+    <Chip variant="accent" aria-label="Version 1.1.2">
+      v1.1.2
     </Chip>
   )
 
@@ -350,7 +350,7 @@ export default function HomePage() {
                     onChange={(e) => setSearchQuery(e.target.value)}
                     leadingSlot={
                       <SomeIcon
-                        iconName="interface-search"
+                        iconName="search"
                         iconStyle="outline"
                         iconSize="md"
                         padding="2"
@@ -370,7 +370,7 @@ export default function HomePage() {
                           }}
                         >
                           <SomeIcon
-                            iconName="symbol-multiply"
+                            iconName="multiply"
                             iconStyle="outline"
                             iconSize="sm"
                             padding="050"
@@ -396,7 +396,7 @@ export default function HomePage() {
                   onClick={toggleMobileHeaderSearch}
                   leadingSlot={
                     <SomeIcon
-                      iconName="interface-search"
+                      iconName="search"
                       iconStyle="outline"
                       iconSize="md"
                       padding="050"
@@ -415,7 +415,7 @@ export default function HomePage() {
                 onClick={toggleMobileHeaderSettingsRow}
                 leadingSlot={
                   <SomeIcon
-                    iconName="interface-menu-hamburger"
+                    iconName="menu-hamburger"
                     iconStyle="outline"
                     iconSize="md"
                     padding="050"
@@ -520,7 +520,7 @@ export default function HomePage() {
                           onClick={handleToggleSelectAllVisible}
                           leadingSlot={
                             <SomeIcon
-                              iconName="symbol-check-multiple"
+                              iconName="check-multiple"
                               iconStyle="outline"
                               iconSize="md"
                               padding="0"
@@ -538,7 +538,7 @@ export default function HomePage() {
                           onClick={() => clearSelection()}
                           leadingSlot={
                             <SomeIcon
-                              iconName="symbol-multiply"
+                              iconName="multiply"
                               iconStyle="outline"
                               iconSize="md"
                               padding="0"

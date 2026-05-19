@@ -184,7 +184,7 @@ export function ColorField({
               placeholder=""
               leadingSlot={
                 <SomeIcon
-                  iconName="formatting-eyedropper"
+                  iconName="eyedropper"
                   iconStyle="fill"
                   iconSize="md"
                   padding="2"

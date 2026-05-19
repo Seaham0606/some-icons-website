@@ -1,4 +1,5 @@
-import { ColorHexField } from '@/components/home/BulkColorPickerPanel'
+import { ColorHexField, ColorPresetTrigger } from '@/components/home/BulkColorPickerPanel'
+import { SHOW_COLOR_PRESET_SWATCHES } from '@/lib/constants'
 import { CodeSnippet, CodeSnippetGroup } from '@/components/info/CodeSnippetGroup'
 import { IconPreviewCard } from '@/components/info/IconPreviewCard'
 import { ReactInstallModal } from '@/components/info/ReactInstallModal'
@@ -378,6 +379,8 @@ export function IconInfoPanelContent({ icon }: IconInfoPanelContentProps) {
             <InputField
               className="homepage-infoPanelContent__colorField"
               label="Color"
+              showCol2={SHOW_COLOR_PRESET_SWATCHES}
+              col2Width="size-12"
               data-slot="infoPanel-color"
               labelTrailingSlot={
                 showColorReset ? (
@@ -396,6 +399,14 @@ export function IconInfoPanelContent({ icon }: IconInfoPanelContentProps) {
                   <ColorHexField color={selectedColor} onColorChange={setSelectedColor} />
                 </div>
               }
+              secondarySlot={
+                SHOW_COLOR_PRESET_SWATCHES ? (
+                  <ColorPresetTrigger
+                    color={selectedColor}
+                    onColorChange={setSelectedColor}
+                  />
+                ) : undefined
+              }
             />
 
             {/* Row 3: Code snippets */}
@@ -412,7 +423,7 @@ export function IconInfoPanelContent({ icon }: IconInfoPanelContentProps) {
                       onClick={() => setShowInstallModal(true)}
                     >
                       <SomeIcon
-                        iconName="symbol-information-circle"
+                        iconName="information-circle"
                         iconStyle="fill"
                         iconSize="xs"
                         padding="0"

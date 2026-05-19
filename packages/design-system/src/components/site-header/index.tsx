@@ -149,7 +149,7 @@ export function SiteHeader({
                       onChange={(e) => onSearchChange(e.target.value)}
                       leadingSlot={
                         <SomeIcon
-                          iconName="interface-search"
+                          iconName="search"
                           iconStyle="outline"
                           iconSize="md"
                           padding="2"
@@ -169,7 +169,7 @@ export function SiteHeader({
                             }}
                           >
                             <SomeIcon
-                              iconName="symbol-multiply"
+                              iconName="multiply"
                               iconStyle="outline"
                               iconSize="sm"
                               padding="050"

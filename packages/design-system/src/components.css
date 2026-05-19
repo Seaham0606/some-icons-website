@@ -353,14 +353,14 @@ button.ds-chip[data-variant="transparent"]:hover:not(:disabled) {
 }
 
 /*
- * InfoPanel — matches Sidebar content width (320px).
- * Laptop+ (1024px): in-flow width transition; pushes main column so icon grid reflows.
- * Below: fixed overlay (does not shrink grid to unusable width on narrow viewports).
+ * InfoPanel
+ * Mobile/tablet (below 1024px): full-page fixed overlay with background-base fill.
+ * Laptop+ (1024px): in-flow width transition (0→320px); pushes main column so icon grid reflows.
  */
 .ds-infoPanel {
   --ds-infoPanel-ease: ease-in-out;
   --ds-infoPanel-duration: 360ms;
-  /* narrow: overlay drawer */
+  /* narrow: full-page overlay */
   position: fixed;
   top: 0;
   right: 0;
@@ -368,12 +368,12 @@ button.ds-chip[data-variant="transparent"]:hover:not(:disabled) {
   height: 100dvh;
   z-index: 40;
   box-sizing: border-box;
-  width: 320px;
+  width: 100%;
   transform: translateX(100%);
   overflow: hidden;
   display: flex;
   flex-direction: column;
-  background: transparent;
+  background: var(--color-background-base);
   border: none;
   padding: 0;
   margin: 0;
@@ -386,10 +386,10 @@ button.ds-chip[data-variant="transparent"]:hover:not(:disabled) {
   pointer-events: auto;
 }
 
-/* Fixed 320px inner column (padding on rail); outer clips width on laptop when closed */
+/* Full-width inner column on mobile/tablet; fixed 320px on laptop+ (outer clips animated width) */
 .ds-infoPanel__rail {
   box-sizing: border-box;
-  width: 320px;
+  width: 100%;
   flex: 1 1 auto;
   min-height: 0;
   min-width: 0;
@@ -398,7 +398,7 @@ button.ds-chip[data-variant="transparent"]:hover:not(:disabled) {
   padding-top: var(--spacing-padding-6);
   padding-right: var(--spacing-padding-6);
   padding-bottom: var(--spacing-padding-6);
-  padding-left: 0;
+  padding-left: var(--spacing-padding-6);
   background: transparent;
   border: none;
 }
@@ -458,9 +458,10 @@ button.ds-chip[data-variant="transparent"]:hover:not(:disabled) {
     transform: none;
   }
 
-  /* Inner rail fills animated aside width (fixed px was for overlay-only). */
+  /* Inner rail fills animated aside width; restore left-padding to 0 (homepage applies its own inset). */
   .ds-infoPanel__rail {
     width: 100%;
+    padding-left: 0;
   }
 }
 
@@ -653,7 +654,7 @@ button.ds-chip[data-variant="transparent"]:hover:not(:disabled) {
   appearance: none;
   font-family: var(--font-family-sans);
   font-size: var(--font-size-input);
-  font-weight: 600;
+  font-weight: 500;
   font-style: normal;
   line-height: var(--line-height-input);
   color: var(--ds-input-content-color, var(--color-main-primary));
@@ -689,7 +690,7 @@ button.ds-chip[data-variant="transparent"]:hover:not(:disabled) {
 
 .ds-input__input::placeholder {
   color: var(--ds-input-content-color, var(--color-main-quaternary));
-  font-weight: 600;
+  font-weight: 500;
 }
 
 .ds-input__input::selection {
@@ -987,7 +988,7 @@ button.ds-dropdown__trigger.ds-input {
   font-family: var(--font-family-sans);
   font-size: var(--font-size-input);
   line-height: var(--line-height-input);
-  font-weight: 600;
+  font-weight: 500;
   font-style: normal;
   color: var(--color-main-primary);
   outline: none;
@@ -1000,7 +1001,7 @@ button.ds-dropdown__trigger.ds-input {
 
 .ds-nativeInput::placeholder {
   color: var(--color-main-tertiary);
-  font-weight: 600;
+  font-weight: 500;
 }
 
 .ds-nativeInput:hover:not(:disabled) {
@@ -1048,7 +1049,7 @@ button.ds-dropdown__trigger.ds-input {
   background: transparent;
   font-family: inherit;
   font-size: 14px;
-  font-weight: 600;
+  font-weight: 500;
   color: var(--color-main-primary);
 }
 
@@ -1429,7 +1430,7 @@ button.ds-inputSection__labelRow.ds-inputSection__labelRow--toggle {
   gap: var(--spacing-gap-3);
 }
 
-/* Checkbox — Figma 1089:9020 (Some Icons interface-checkbox-unchecked / interface-checkbox-checked) */
+/* Checkbox — Figma 1089:9020 (Some Icons checkbox-unchecked / checkbox-checked) */
 .ds-checkbox {
   box-sizing: border-box;
   display: inline-flex;

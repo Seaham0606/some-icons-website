@@ -120,7 +120,7 @@ export const IconCard = React.forwardRef<HTMLButtonElement, IconCardProps>(
               >
                 {selected ? (
                   <SomeIcon
-                    iconName="interface-checkbox-checked"
+                    iconName="checkbox-checked"
                     iconStyle="fill"
                     cdnBaseUrl={cdnBaseUrl}
                     iconSize="sm"
@@ -128,7 +128,7 @@ export const IconCard = React.forwardRef<HTMLButtonElement, IconCardProps>(
                   />
                 ) : (
                   <SomeIcon
-                    iconName="interface-checkbox-unchecked"
+                    iconName="checkbox-unchecked"
                     iconStyle="outline"
                     cdnBaseUrl={cdnBaseUrl}
                     iconSize="sm"
@@ -154,7 +154,7 @@ export const IconCard = React.forwardRef<HTMLButtonElement, IconCardProps>(
             aria-live="polite"
           >
             <SomeIcon
-              iconName="symbol-check-mark"
+              iconName="check-mark"
               iconStyle="outline"
               cdnBaseUrl={cdnBaseUrl}
               iconSize="xs"

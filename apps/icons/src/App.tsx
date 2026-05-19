@@ -26,7 +26,7 @@ function Toaster(props: ToasterProps) {
       icons={{
         success: (
           <SomeIcon
-            iconName="symbol-check-circle"
+            iconName="check-circle"
             iconStyle="fill"
             iconSize="lg"
             padding="0"
@@ -34,7 +34,7 @@ function Toaster(props: ToasterProps) {
         ),
         info: (
           <SomeIcon
-            iconName="symbol-information-circle"
+            iconName="information-circle"
             iconStyle="outline"
             iconSize="lg"
             padding="0"
@@ -42,7 +42,7 @@ function Toaster(props: ToasterProps) {
         ),
         warning: (
           <SomeIcon
-            iconName="symbol-check-circle"
+            iconName="check-circle"
             iconStyle="fill"
             iconSize="lg"
             padding="0"
@@ -50,7 +50,7 @@ function Toaster(props: ToasterProps) {
         ),
         error: (
           <SomeIcon
-            iconName="symbol-warning-octagon"
+            iconName="warning-octagon"
             iconStyle="outline"
             iconSize="lg"
             padding="0"
@@ -58,7 +58,7 @@ function Toaster(props: ToasterProps) {
         ),
         loading: (
           <SomeIcon
-            iconName="interface-loading"
+            iconName="loading"
             iconStyle="outline"
             iconSize="lg"
             padding="0"
