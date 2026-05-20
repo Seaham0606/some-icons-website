@@ -6,7 +6,7 @@ import {
   GRADIENT_OVERLAY_HOME_HEIGHT_PX,
 } from '@/components/overlay/GradientOverlay'
 import { IconGrid } from '@/components/icons/IconGrid'
-import { HomePageFilterStack } from '@/components/home/HomePageFilters'
+import { HomeCategoryList, HomePageFilterStack } from '@/components/home/HomePageFilters'
 import { PageContent } from '@/components/layout'
 import { useSelectionStore } from '@/stores/selectionStore'
 import { useFilterStore } from '@/stores/filterStore'
@@ -19,6 +19,7 @@ import {
   InfoPanel,
   Input,
   InputField,
+  InputSection,
   Sidebar,
   SiteFooter,
   SiteHeader,
@@ -36,6 +37,7 @@ import gsap from 'gsap'
 import {
   useCallback,
   useEffect,
+  useId,
   useLayoutEffect,
   useMemo,
   useRef,
@@ -83,9 +85,10 @@ export default function HomePage() {
   const iconStyle = useFilterStore((s) => s.style)
   const setIconStyle = useFilterStore((s) => s.setStyle)
   useChangelog()
-  const [filtersSheetOpen, setFiltersSheetOpen] = useState(false)
-  const [headerSettingsRowOpen, setHeaderSettingsRowOpen] = useState(false)
+  const [headerCategoryOpen, setHeaderCategoryOpen] = useState(false)
   const [mobileSearchOverlayOpen, setMobileSearchOverlayOpen] = useState(false)
+  const navChromeRef = useRef<HTMLDivElement>(null)
+  const categoryPanelId = useId()
   const bulkBarsWrapRef = useRef<HTMLDivElement>(null)
   const prevBulkSelectionCountRef = useRef(0)
   const prevSelectionCountRef = useRef(0)
@@ -93,7 +96,7 @@ export default function HomePage() {
   const [infoPanelOpen, setInfoPanelOpen] = useState(false)
   const [infoPanelIcon, setInfoPanelIcon] = useState<Icon | null>(null)
   const { data: allIcons } = useIcons()
-  const filtersBackdrop = useBackdropPresence(filtersSheetOpen)
+  const categoryNavBackdrop = useBackdropPresence(headerCategoryOpen)
   const selectionCount = useSelectionStore((s) => s.count)
   const clearSelection = useSelectionStore((s) => s.clear)
   useLayoutEffect(() => {
@@ -147,7 +150,21 @@ export default function HomePage() {
     }
   }, [allVisibleSelected, deselectMany, selectAllVisible, visibleIds])
 
-  const scrollLocked = filtersSheetOpen || filtersBackdrop.mounted
+  const scrollLocked = headerCategoryOpen || categoryNavBackdrop.mounted
+
+  useLayoutEffect(() => {
+    const el = navChromeRef.current
+    if (!el) return
+
+    const syncNavChromeHeight = () => {
+      el.style.setProperty('--homepage-nav-chrome-height', `${el.offsetHeight}px`)
+    }
+
+    syncNavChromeHeight()
+    const observer = new ResizeObserver(syncNavChromeHeight)
+    observer.observe(el)
+    return () => observer.disconnect()
+  }, [headerCategoryOpen, mobileSearchOverlayOpen])
 
   useEffect(() => {
     if (!scrollLocked) return
@@ -227,26 +244,35 @@ export default function HomePage() {
     }
   }, [selectionCount, infoPanelOpen, handleInfoPanelClose])
 
-  /** Below laptop, expanded search row and settings row share one strip — only one open at a time. */
+  /** Below laptop, expanded search row and category panel share one strip — only one open at a time. */
   const toggleMobileHeaderSearch = useCallback(() => {
     setMobileSearchOverlayOpen((open) => {
       const next = !open
-      if (next) setHeaderSettingsRowOpen(false)
+      if (next) setHeaderCategoryOpen(false)
       return next
     })
   }, [])
 
-  const toggleMobileHeaderSettingsRow = useCallback(() => {
-    setHeaderSettingsRowOpen((open) => {
+  const toggleHeaderCategory = useCallback(() => {
+    setHeaderCategoryOpen((open) => {
       const next = !open
       if (next) setMobileSearchOverlayOpen(false)
       return next
     })
   }, [])
 
+  useEffect(() => {
+    if (!headerCategoryOpen) return
+    const onKeyDown = (e: globalThis.KeyboardEvent) => {
+      if (e.key === 'Escape') setHeaderCategoryOpen(false)
+    }
+    document.addEventListener('keydown', onKeyDown)
+    return () => document.removeEventListener('keydown', onKeyDown)
+  }, [headerCategoryOpen])
+
   const versionChip = (
-    <Chip variant="accent" aria-label="Version 1.1.2">
-      v1.1.2
+    <Chip variant="accent" aria-label="Version 1.1.3">
+      v1.1.3
     </Chip>
   )
 
@@ -270,7 +296,12 @@ export default function HomePage() {
   const copyrightNode = <>© {new Date().getFullYear()} Some UI</>
 
   return (
-    <div className="homepage-shell">
+    <div
+      className={cn(
+        'homepage-shell',
+        headerCategoryOpen && 'homepage-shell--categoryNavOpen',
+      )}
+    >
       <div className="homepage-laptop-only">
         <Sidebar
           pageName="Icon library"
@@ -323,80 +354,99 @@ export default function HomePage() {
         </Sidebar>
       </div>
 
-      <SiteHeader
-        className="app-hide-from-laptop"
-        logo={logoImg}
-        title="Icon library"
-        chipSlot={versionChip}
-        searchQuery={searchQuery}
-        onSearchChange={setSearchQuery}
-        searchPlaceholder="Search icons..."
-        searchAriaLabel="Search icons"
-        mobileSearchOpen={mobileSearchOverlayOpen}
-        settingsRowOpen={headerSettingsRowOpen}
-        rightSlot={({ mobileSearchPanelId, settingsRowPanelId }) => (
-          <>
-            <div className="ds-siteHeader__tabletSearch ds-siteHeader-tabletOnly">
-              <InputField
-                showLabel={false}
-                className="ds-siteHeader__searchField"
-                contentSlot={
-                  <Input
-                    type="text"
-                    placeholder="Search icons..."
-                    autoComplete="off"
+      <div ref={navChromeRef} className="homepage-navChrome app-hide-from-laptop">
+        <SiteHeader
+          logo={logoImg}
+          title="Icon library"
+          chipSlot={versionChip}
+          searchQuery={searchQuery}
+          onSearchChange={setSearchQuery}
+          searchPlaceholder="Search icons..."
+          searchAriaLabel="Search icons"
+          mobileSearchOpen={mobileSearchOverlayOpen}
+          settingsRowOpen={false}
+          rightSlot={({ mobileSearchPanelId }) => (
+            <>
+              <div className="ds-siteHeader__tabletSearch ds-siteHeader-tabletOnly">
+                <InputField
+                  showLabel={false}
+                  className="ds-siteHeader__searchField"
+                  contentSlot={
+                    <Input
+                      type="text"
+                      placeholder="Search icons..."
+                      autoComplete="off"
+                      aria-label="Search icons"
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      leadingSlot={
+                        <SomeIcon
+                          iconName="search"
+                          iconStyle="outline"
+                          iconSize="md"
+                          padding="2"
+                        />
+                      }
+                      trailingSlot={
+                        searchQuery.length > 0 ? (
+                          <button
+                            type="button"
+                            className="ds-input__trailingAction"
+                            aria-label="Clear search"
+                            onMouseDown={(e) => {
+                              e.preventDefault()
+                            }}
+                            onClick={() => {
+                              setSearchQuery('')
+                            }}
+                          >
+                            <SomeIcon
+                              iconName="multiply"
+                              iconStyle="outline"
+                              iconSize="sm"
+                              padding="050"
+                              color="var(--color-main-quaternary)"
+                            />
+                          </button>
+                        ) : undefined
+                      }
+                    />
+                  }
+                />
+              </div>
+              <div className="ds-siteHeader__actions">
+                <div className="ds-buttonGroup ds-siteHeader-mobileOnly">
+                  <Button
+                    type="button"
+                    variant="transparent"
+                    size="md"
+                    radius="lg"
                     aria-label="Search icons"
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
+                    aria-expanded={mobileSearchOverlayOpen}
+                    aria-controls={mobileSearchPanelId}
+                    onClick={toggleMobileHeaderSearch}
                     leadingSlot={
                       <SomeIcon
                         iconName="search"
                         iconStyle="outline"
                         iconSize="md"
-                        padding="2"
+                        padding="050"
                       />
                     }
-                    trailingSlot={
-                      searchQuery.length > 0 ? (
-                        <button
-                          type="button"
-                          className="ds-input__trailingAction"
-                          aria-label="Clear search"
-                          onMouseDown={(e) => {
-                            e.preventDefault()
-                          }}
-                          onClick={() => {
-                            setSearchQuery('')
-                          }}
-                        >
-                          <SomeIcon
-                            iconName="multiply"
-                            iconStyle="outline"
-                            iconSize="sm"
-                            padding="050"
-                            color="var(--color-main-quaternary)"
-                          />
-                        </button>
-                      ) : undefined
-                    }
                   />
-                }
-              />
-            </div>
-            <div className="ds-siteHeader__actions">
-              <div className="ds-buttonGroup ds-siteHeader-mobileOnly">
+                </div>
                 <Button
                   type="button"
                   variant="transparent"
                   size="md"
                   radius="lg"
-                  aria-label="Search icons"
-                  aria-expanded={mobileSearchOverlayOpen}
-                  aria-controls={mobileSearchPanelId}
-                  onClick={toggleMobileHeaderSearch}
+                  aria-label="Categories"
+                  aria-expanded={headerCategoryOpen}
+                  aria-controls={categoryPanelId}
+                  onClick={toggleHeaderCategory}
                   leadingSlot={
                     <SomeIcon
-                      iconName="search"
+                      iconName="menu-hamburger"
                       iconStyle="outline"
                       iconSize="md"
                       padding="050"
@@ -404,74 +454,42 @@ export default function HomePage() {
                   }
                 />
               </div>
-              <Button
-                type="button"
-                variant="transparent"
-                size="md"
-                radius="lg"
-                aria-label="Settings"
-                aria-expanded={headerSettingsRowOpen}
-                aria-controls={settingsRowPanelId}
-                onClick={toggleMobileHeaderSettingsRow}
-                leadingSlot={
-                  <SomeIcon
-                    iconName="menu-hamburger"
-                    iconStyle="outline"
-                    iconSize="md"
-                    padding="050"
-                  />
-                }
-              />
-            </div>
-          </>
-        )}
-      />
+            </>
+          )}
+        />
 
-      {filtersBackdrop.mounted ? (
+        <div
+          id={categoryPanelId}
+          className={cn(
+            'homepage-navCategoryPanel',
+            headerCategoryOpen && 'homepage-navCategoryPanel--open',
+          )}
+          role="dialog"
+          aria-label="Categories"
+          aria-hidden={headerCategoryOpen ? undefined : true}
+          {...(!headerCategoryOpen ? { inert: true } : {})}
+        >
+          <InputSection
+            showLabel={false}
+            contentScrollable
+            className="homepage-navCategoryPanelSection"
+            contentSlot={
+              <HomeCategoryList listClassName="homepage-categoryList homepage-categoryList--nav" />
+            }
+          />
+        </div>
+      </div>
+
+      {categoryNavBackdrop.mounted ? (
         <button
           type="button"
           className={cn(
-            'app-backdrop',
-            filtersBackdrop.visible && 'app-backdrop--visible',
+            'app-backdrop homepage-navCategoryBackdrop',
+            categoryNavBackdrop.visible && 'app-backdrop--visible',
           )}
-          aria-label="Dismiss filters"
-          onClick={() => setFiltersSheetOpen(false)}
+          aria-label="Dismiss categories"
+          onClick={() => setHeaderCategoryOpen(false)}
         />
-      ) : null}
-
-      {filtersSheetOpen ? (
-        <div
-          className="app-sheet"
-          role="dialog"
-          aria-modal="true"
-          aria-label="Filters and settings"
-        >
-          <div className="app-sheet__header">
-            <span className="app-sheet__title text-aside-header">
-              Filters
-            </span>
-            <Button
-              type="button"
-              variant="transparent"
-              size="md"
-              radius="md"
-              onClick={() => setFiltersSheetOpen(false)}
-            >
-              Done
-            </Button>
-          </div>
-          <div className="app-sheet__body">
-            <div className="app-sheet__themeRow">
-              <HomeThemeButton />
-            </div>
-            <HomePageFilterStack
-              {...filterStackProps}
-              showSearch={false}
-              categoryListClassName="homepage-categoryList homepage-categoryList--sheet"
-              categorySectionClassName="homepage-sidebarCategorySection homepage-sidebarCategorySection--sheet"
-            />
-          </div>
-        </div>
       ) : null}
 
       <main className="homepage-main">

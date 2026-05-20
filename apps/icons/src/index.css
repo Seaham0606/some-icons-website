@@ -196,6 +196,91 @@ body {
   }
 }
 
+/* Mobile / tablet nav chrome: header + category panel below the top row. */
+.homepage-navChrome {
+  position: relative;
+  z-index: 6;
+  flex-shrink: 0;
+}
+
+.homepage-navCategoryPanel {
+  display: none;
+  box-sizing: border-box;
+  min-width: 0;
+}
+
+.homepage-navCategoryPanel--open {
+  display: flex;
+  flex-direction: column;
+}
+
+.homepage-navCategoryPanelSection.ds-inputSection {
+  flex: 1 1 auto;
+  min-height: 0;
+  width: 100%;
+}
+
+.homepage-navCategoryPanelSection .ds-inputSection__content {
+  flex: 1 1 auto;
+}
+
+.homepage-categoryList--nav.ds-dropdownMenu {
+  flex: 1 1 auto;
+  max-height: 100%;
+}
+
+/* Tablet: 280px panel below nav, inset from the viewport right and below the header. */
+@media (min-width: 720px) and (max-width: 1023px) {
+  .homepage-navCategoryPanel {
+    position: absolute;
+    top: calc(100% + var(--spacing-padding-4));
+    right: var(--spacing-padding-6);
+    z-index: 7;
+    width: 280px;
+    max-height: calc(
+      100dvh - var(--homepage-nav-chrome-height, 72px) - var(--spacing-padding-4)
+    );
+  }
+
+  .homepage-navCategoryBackdrop {
+    top: var(--homepage-nav-chrome-height, 72px);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+  }
+}
+
+/* Mobile: full-width panel fills remaining space below the nav — flush, no card chrome. */
+@media (max-width: 719px) {
+  .homepage-shell--categoryNavOpen .homepage-navChrome {
+    flex: 1 1 auto;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .homepage-shell--categoryNavOpen .homepage-main {
+    flex: 0 0 0;
+    min-height: 0;
+    overflow: hidden;
+  }
+
+  .homepage-navCategoryPanel--open {
+    flex: 1 1 auto;
+    min-height: 0;
+  }
+
+  .homepage-navCategoryPanelSection.ds-inputSection {
+    border: none;
+    border-radius: 0;
+    box-shadow: none;
+    background: var(--color-background-base);
+  }
+
+  .homepage-navCategoryBackdrop {
+    display: none;
+  }
+}
+
 .app-backdrop {
   --ds-dropdown-ease: ease-in-out;
   --ds-dropdown-duration: 360ms;
@@ -385,13 +470,14 @@ body {
   box-sizing: border-box;
   border-radius: var(--radius-2xl);
   border: var(--border-width-base) solid var(--color-border-weak);
-  overflow: hidden;
+  /* Clip lives on `.homepage-iconWireframe`; keep shell visible so overlay chip blur composes. */
+  overflow: visible;
   background: var(--color-background-elevation);
 }
 
 .homepage-infoPanelWireframeShell > .homepage-iconWireframe {
   width: 100%;
-  border-radius: 0;
+  border-radius: var(--radius-2xl);
   border: none;
   background: transparent;
 }
@@ -435,120 +521,44 @@ body {
   gap: var(--spacing-gap-1);
 }
 
-/* Neutral chip surface + blur; segment padding is shared via DS tokens on the root. */
-.homepage-infoPanelWireframeDownloadChip {
-  box-sizing: border-box;
-  display: inline-flex;
-  flex-direction: row;
-  align-items: stretch;
-  flex-shrink: 0;
-  border-radius: var(--radius-full);
-  overflow: hidden;
+/* Download control — sm Button, full radius, frosted weak surface over wireframe. */
+.homepage-infoPanelWireframeDownloadChip.ds-button {
   color: var(--color-main-secondary);
-  background: var(--color-background-weak);
-  border: var(--border-width-base) solid var(--color-border-weak);
+  border-color: var(--color-border-weak);
+  background-color: var(--color-background-weak);
+  background-image: none;
   backdrop-filter: blur(4px);
   -webkit-backdrop-filter: blur(4px);
-  --homepage-downloadChip-pad-block: var(--spacing-padding-1);
-  --homepage-downloadChip-pad-inline-start: var(--spacing-padding-1);
-  --homepage-downloadChip-pad-inline-end: var(--spacing-padding-3);
 }
 
-.homepage-infoPanelWireframeDownloadChip__segment {
-  box-sizing: border-box;
-}
-
-.homepage-infoPanelWireframeDownloadChip__segment--main {
-  margin: 0;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  border: none;
-  background: transparent;
-  cursor: pointer;
-  color: inherit;
-  line-height: 0;
-  padding-block: var(--homepage-downloadChip-pad-block);
-  padding-inline-start: var(--homepage-downloadChip-pad-inline-start);
-  padding-inline-end: var(--homepage-downloadChip-pad-inline-end);
-}
-
-.homepage-infoPanelWireframeDownloadChip__segmentInner {
-  display: inline-flex;
-  flex-direction: row;
-  align-items: center;
-  gap: var(--spacing-gap-1);
-  color: inherit;
-}
-
-.homepage-infoPanelWireframeDownloadChip__format {
-  flex-shrink: 0;
-  font-weight: 600;
-  line-height: 110%;
-  color: inherit;
-}
-
-.homepage-infoPanelWireframeDownloadChip__segment--main:hover:not(:disabled) {
-  background: var(--color-overlay-dark-hover);
-}
-
-.homepage-infoPanelWireframeDownloadChip__segment--main:focus-visible {
-  outline: none;
-  box-shadow: var(--shadow-focus-accent);
-}
-
-.homepage-infoPanelWireframeDownloadChip__segment--main:disabled {
-  opacity: 0.38;
-  cursor: not-allowed;
-}
-
-/* Toggle button for alternate download formats (unused). */
-.homepage-infoPanelWireframeDownloadChip__segment--toggle {
+.homepage-infoPanelWireframeDownloadChip.ds-button::before {
   display: none;
-  align-items: center;
-  justify-content: center;
-  flex: 0 0 auto;
-  align-self: stretch;
-  margin: 0;
-  padding-block: var(--homepage-downloadChip-pad-block);
-  padding-inline-start: var(--homepage-downloadChip-pad-inline-start);
-  padding-inline-end: var(--homepage-downloadChip-pad-inline-end);
-  border: none;
-  border-inline-start: var(--border-width-base) solid var(--color-border-weak);
-  background: transparent;
-  cursor: pointer;
-  color: inherit;
-  line-height: 0;
-  min-inline-size: calc(
-    var(--homepage-downloadChip-pad-inline-start) + var(--homepage-downloadChip-pad-inline-end) +
-      var(--spacing-padding-4)
-  );
 }
 
-.homepage-infoPanelWireframeDownloadChip__segment--toggle:hover:not(:disabled) {
-  background: var(--color-overlay-dark-hover);
+.homepage-infoPanelWireframeDownloadChip.ds-button[data-size='sm'] .ds-button__labelWrap {
+  padding-inline-end: var(--spacing-padding-3);
 }
 
-/* Inset ring avoids clipping by overflow:hidden on the chip container. */
-.homepage-infoPanelWireframeDownloadChip__segment--toggle:focus-visible {
-  outline: none;
-  box-shadow: inset 0 0 0 var(--spacing-050) var(--color-focus-accent);
+.homepage-infoPanelWireframeDownloadChip.ds-button:hover:not(:disabled):not([aria-disabled='true']),
+.homepage-infoPanelWireframeDownloadChip.ds-button:focus-visible:not(:disabled):not([aria-disabled='true']) {
+  border-color: var(--color-border-weak);
+  background-color: var(--color-overlay-dark-hover);
+  background-image: none;
 }
 
-.homepage-infoPanelWireframeDownloadChip__segment--toggle:focus:not(:focus-visible) {
-  box-shadow: none;
+.homepage-infoPanelWireframeDownloadChip.ds-button:active:not(:disabled):not([aria-disabled='true']) {
+  border-color: var(--color-border-weak);
+  background-color: var(--color-overlay-dark-pressed);
+  background-image: none;
+  transform: none;
 }
 
-.homepage-infoPanelWireframeDownloadChip__segment--toggle:disabled {
-  opacity: 0.38;
-  cursor: not-allowed;
-}
-
-/* InfoPanel body: fills remaining rail height and scrolls its content.
+/* InfoPanel body: hugs content until rail space runs out, then fills remaining
+   height and scrolls internally (same flex pattern as .homepage-sidebarCategorySection).
    Scroll, padding, and scrollbar are owned by the InputSection `contentScrollable`
    modifier (see .ds-inputSection--contentScrollable in design-system/components.css). */
 .homepage-infoPanelShellBody.ds-inputSection {
-  flex: 1 1 auto;
+  flex: 0 1 auto;
   min-height: 0;
   min-width: 0;
 }
@@ -1438,6 +1448,19 @@ body {
   padding-inline: var(--spacing-padding-6);
 }
 
+/* Tablet + mobile footers: Figma + GitHub only (match laptop sidebar). */
+@media (max-width: 1023px) {
+  .ds-siteFooter--fixed,
+  .ds-siteFooter--inScroll {
+    border-top: var(--border-width-base) solid var(--color-border-weak);
+  }
+
+  .ds-siteFooter .ds-siteFooter__socialLink[aria-label='Framer'],
+  .ds-siteFooter .ds-siteFooter__npmLink {
+    display: none;
+  }
+}
+
 /*
  * Below laptop: icon card hover/focus affordances on touch / narrow widths.
  */
@@ -1483,6 +1506,11 @@ body {
   .homepage-tablet-only,
   .homepage-mobile-only {
     display: none !important;
+  }
+
+  /* In-flow panel: allow overlay chip backdrop-filter to sample the wireframe sibling. */
+  .homepage-mainRow > .ds-infoPanel[data-open='true'] {
+    overflow: visible;
   }
 }
 
