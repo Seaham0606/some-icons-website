@@ -4,6 +4,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { Toaster as Sonner, type ToasterProps } from 'sonner'
 import { SomeIcon } from 'design-system'
 import { useUIStore } from '@/stores/uiStore'
+import { DocumentHead } from '@/components/seo/DocumentHead'
 import HomePage from '@/pages/HomePage'
 import ChangelogPage from '@/pages/ChangelogPage'
 
@@ -91,6 +92,7 @@ export default function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <BrowserRouter>
+        <DocumentHead />
         <Routes>
           <Route path="/" element={<HomePage />} />
           <Route path="/changelog" element={<ChangelogPage />} />

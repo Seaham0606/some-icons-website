@@ -18,7 +18,7 @@ import {
 import { DEFAULT_ICON_SIZE, SIZE_PRESETS } from '@/lib/constants'
 import { createExportBlobForIcon, exportToZip, downloadBlob } from '@/lib/export-utils'
 import { applyColorToSvg, ensureViewBox, setSvgDimensions } from '@/lib/svg-utils'
-import { trackDownload } from '@/lib/analytics'
+import { trackDownload, trackSnippetCopy } from '@/lib/analytics'
 import { useColorStore } from '@/stores/colorStore'
 import { useExportStore } from '@/stores/exportStore'
 import { useFilterStore } from '@/stores/filterStore'
@@ -233,13 +233,25 @@ export function IconInfoPanelContent({ icon }: IconInfoPanelContentProps) {
     async (text: string, which: 'import' | 'usage' | 'svg') => {
       try {
         await navigator.clipboard.writeText(text)
+        const effectiveSize = exportSize ?? DEFAULT_ICON_SIZE
+        trackSnippetCopy({
+          section:
+            which === 'import'
+              ? 'react_import'
+              : which === 'usage'
+                ? 'react_usage'
+                : 'svg',
+          style,
+          size: effectiveSize,
+          count: selectionCount,
+        })
         flashSnippetCopied(which)
       } catch (error) {
         console.error('Clipboard copy failed:', error)
         toast.error('Could not copy. Check clipboard permissions.')
       }
     },
-    [flashSnippetCopied],
+    [exportSize, flashSnippetCopied, selectionCount, style],
   )
 
   const handleDownload = useCallback(

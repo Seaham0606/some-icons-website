@@ -15,6 +15,7 @@
 
 import { CodeSnippet } from '@/components/info/CodeSnippetGroup'
 import { ReactSnippetLazy } from '@/components/info/ReactSnippetLazy'
+import { trackInstallModalCopy } from '@/lib/analytics'
 import reactLogo from '../../../assets/images/logo-react.svg'
 import { useMemo, useState } from 'react'
 import { ChipButton } from 'design-system'
@@ -138,9 +139,18 @@ export function ReactInstallModal({
   const installCmd = activePm?.cmd(packageName) ?? ''
   const importCode = activeMode?.code({ pkg: packageName, iconName: selectedIconName }) ?? ''
 
-  const handleCopy = async (text: string, setCopied: (v: boolean) => void) => {
+  const handleCopy = async (
+    text: string,
+    setCopied: (v: boolean) => void,
+    section: 'install' | 'import',
+  ) => {
     try {
       await navigator.clipboard.writeText(text)
+      trackInstallModalCopy({
+        section,
+        package_manager: section === 'install' ? activePmId : undefined,
+        import_mode: section === 'import' ? activeModeId : undefined,
+      })
       setCopied(true)
       setTimeout(() => setCopied(false), 1400)
     } catch {
@@ -211,7 +221,7 @@ export function ReactInstallModal({
             <CodeSnippet
               label="install"
               copied={installCopied}
-              onCopy={() => void handleCopy(installCmd, setInstallCopied)}
+              onCopy={() => void handleCopy(installCmd, setInstallCopied, 'install')}
               copyAriaLabel={installCopied ? 'Copied install command' : 'Copy install command'}
               headerTabsSlot={
                 <InlineTabStrip
@@ -234,7 +244,7 @@ export function ReactInstallModal({
             <CodeSnippet
               label="import"
               copied={importCopied}
-              onCopy={() => void handleCopy(importCode, setImportCopied)}
+              onCopy={() => void handleCopy(importCode, setImportCopied, 'import')}
               copyAriaLabel={importCopied ? 'Copied import' : 'Copy import'}
               headerTabsSlot={
                 <InlineTabStrip

@@ -1,10 +1,9 @@
 import logoSymbol from '../../assets/images/logo-some-icons-symbol.svg'
-import figmaIcon from '../../assets/images/logo-figma-icon.svg'
-import githubIcon from '../../assets/images/logo-github-icon.svg'
 import {
   GradientOverlay,
   GRADIENT_OVERLAY_HOME_HEIGHT_PX,
 } from '@/components/overlay/GradientOverlay'
+import { SocialLinks } from '@/components/layout/SocialLinks'
 import { IconGrid } from '@/components/icons/IconGrid'
 import { HomeCategoryList, HomePageFilterStack } from '@/components/home/HomePageFilters'
 import { PageContent } from '@/components/layout'
@@ -308,47 +307,7 @@ export default function HomePage() {
           chipSlot={versionChip}
           logo={logoImg}
           themeButton={<HomeThemeButton />}
-          socialButtons={
-            <div className="ds-sidebar__social">
-              <a
-                href="https://www.figma.com/community/plugin/1581870303104890341/some-icons"
-                target="_blank"
-                rel="noreferrer"
-                className="ds-sidebar__socialLink"
-                aria-label="Figma community plugin"
-              >
-                <img
-                  src={figmaIcon}
-                  alt="Figma"
-                  className="ds-sidebar__socialIconImg"
-                />
-              </a>
-              <a
-                href="https://github.com/Seaham0606/some-icons-cdn"
-                target="_blank"
-                rel="noreferrer"
-                className="ds-sidebar__socialLink"
-                aria-label="GitHub repository"
-              >
-                <span
-                  aria-hidden="true"
-                  className="ds-sidebar__socialIconMask"
-                  style={{
-                    backgroundColor: 'var(--color-main-primary)',
-                    WebkitMaskImage: `url("${githubIcon}")`,
-                    maskImage: `url("${githubIcon}")`,
-                    maskMode: 'alpha',
-                    WebkitMaskRepeat: 'no-repeat',
-                    maskRepeat: 'no-repeat',
-                    WebkitMaskSize: 'contain',
-                    maskSize: 'contain',
-                    WebkitMaskPosition: 'center',
-                    maskPosition: 'center',
-                  }}
-                />
-              </a>
-            </div>
-          }
+          socialButtons={<SocialLinks location="sidebar" variant="sidebar" />}
         >
           <HomePageFilterStack {...filterStackProps} showSearch />
         </Sidebar>
@@ -508,6 +467,7 @@ export default function HomePage() {
               <SiteFooter
                 className="ds-siteFooter--inScroll homepage-mobile-only"
                 copyright={copyrightNode}
+                trailingSlot={<SocialLinks location="footer" />}
               />
             </PageContent>
             <GradientOverlay
@@ -590,6 +550,7 @@ export default function HomePage() {
       <SiteFooter
         className="ds-siteFooter--fixed homepage-tablet-only"
         copyright={copyrightNode}
+        trailingSlot={<SocialLinks location="footer" />}
       />
     </div>
   )
