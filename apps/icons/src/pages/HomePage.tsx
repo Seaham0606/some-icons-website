@@ -270,8 +270,8 @@ export default function HomePage() {
   }, [headerCategoryOpen])
 
   const versionChip = (
-    <Chip variant="accent" aria-label="Version 1.1.3">
-      v1.1.3
+    <Chip variant="accent" aria-label="Version 1.1.6">
+      v1.1.6
     </Chip>
   )
 
