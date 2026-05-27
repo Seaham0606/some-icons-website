@@ -66,17 +66,12 @@ export function IconPreviewCard({
             </Chip>
           </div>
 
-          <div
-            className="homepage-infoPanelWireframeOverlay homepage-infoPanelWireframeOverlay--download"
+          <ActionChip
             data-slot="infoPanel-download-chip"
-            aria-busy={isDownloading}
-          >
-            <ActionChip
-              busy={isDownloading}
-              selectionCount={selectionCount}
-              onDownload={onDownload}
-            />
-          </div>
+            busy={isDownloading}
+            selectionCount={selectionCount}
+            onDownload={onDownload}
+          />
         </div>
       }
     />

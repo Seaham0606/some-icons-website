@@ -365,21 +365,34 @@ body {
   }
 }
 
-/* Filter + Settings: intrinsic height only (category fills remaining sidebar space) */
+/* Filter + Settings: intrinsic height only. */
 .homepage-sidebarSection--hug {
   flex: 0 0 auto;
 }
 
-/* Category: shrinks (not grows) so the list scrolls internally.
-   Scroll, padding, and scrollbar are owned by the InputSection `contentScrollable`
-   modifier (see .ds-inputSection--contentScrollable in design-system/components.css). */
-.homepage-sidebarCategorySection {
+/*
+ * Laptop sidebar: no scroll on `.ds-sidebar__contentSlot` — only the category
+ * InputSection scrolls. Section hugs list height until the rail runs out of space,
+ * then shrinks and scrolls inside `contentScrollable` content.
+ */
+@media (min-width: 1024px) {
+  .homepage-laptop-only .ds-sidebar__contentSlot {
+    overflow-y: hidden;
+  }
+
+  .homepage-laptop-only .ds-sidebar__contentSlot > .homepage-sidebarCategorySection.ds-inputSection {
+    flex-shrink: 1;
+  }
+}
+
+.homepage-sidebarCategorySection.ds-inputSection--contentScrollable {
   flex: 0 1 auto;
   min-height: 0;
 }
 
-.homepage-sidebarCategorySection .ds-inputSection__content {
+.homepage-sidebarCategorySection.ds-inputSection--contentScrollable .ds-inputSection__content {
   flex: 1 1 auto;
+  min-height: 0;
 }
 
 .homepage-categoryList.ds-dropdownMenu {
@@ -491,19 +504,20 @@ body {
   z-index: 2;
   pointer-events: none;
   box-sizing: border-box;
+  display: flex;
+  width: fit-content;
+  max-width: 100%;
 }
 
 .homepage-infoPanelWireframeOverlay--token {
   top: var(--spacing-padding-3);
   left: var(--spacing-padding-3);
-  max-width: calc(50% - var(--spacing-padding-4));
 }
 
 .homepage-infoPanelWireframeOverlay--category {
   top: var(--spacing-padding-3);
   right: var(--spacing-padding-3);
   left: auto;
-  max-width: calc(50% - var(--spacing-padding-4));
 }
 
 .homepage-infoPanelWireframeOverlay--download {
@@ -511,45 +525,24 @@ body {
   right: var(--spacing-padding-3);
   left: auto;
   top: auto;
-  width: auto;
   max-width: calc(100% - 2 * var(--spacing-padding-3));
   z-index: 3;
   pointer-events: auto;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  gap: var(--spacing-gap-1);
 }
 
-/* Download control — sm Button, full radius, frosted weak surface over wireframe. */
-.homepage-infoPanelWireframeDownloadChip.ds-button {
-  color: var(--color-main-secondary);
+.homepage-infoPanelWireframeOverlay--download.ds-button[data-variant='transparent'] {
   border-color: var(--color-border-weak);
-  background-color: var(--color-background-weak);
+  background-color: var(--color-background-base);
   background-image: none;
-  backdrop-filter: blur(4px);
-  -webkit-backdrop-filter: blur(4px);
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
 }
 
-.homepage-infoPanelWireframeDownloadChip.ds-button::before {
-  display: none;
+.homepage-infoPanelWireframeOverlay--download.ds-button[data-size='sm'] .ds-button__labelWrap {
+  padding-inline-end: var(--spacing-padding-2);
 }
 
-.homepage-infoPanelWireframeDownloadChip.ds-button[data-size='sm'] .ds-button__labelWrap {
-  padding-inline-end: var(--spacing-padding-3);
-}
-
-.homepage-infoPanelWireframeDownloadChip.ds-button:hover:not(:disabled):not([aria-disabled='true']),
-.homepage-infoPanelWireframeDownloadChip.ds-button:focus-visible:not(:disabled):not([aria-disabled='true']) {
-  border-color: var(--color-border-weak);
-  background-color: var(--color-overlay-dark-hover);
-  background-image: none;
-}
-
-.homepage-infoPanelWireframeDownloadChip.ds-button:active:not(:disabled):not([aria-disabled='true']) {
-  border-color: var(--color-border-weak);
-  background-color: var(--color-overlay-dark-pressed);
-  background-image: none;
+.homepage-infoPanelWireframeOverlay--download:active:not(:disabled):not([aria-disabled='true']) {
   transform: none;
 }
 
@@ -566,6 +559,23 @@ body {
 .homepage-infoPanelShellBody .ds-inputSection__content {
   flex: 1 1 auto;
   -webkit-overflow-scrolling: touch;
+}
+
+/* Tablet InfoPanel: 50/50 preview + controls; body InputSection hugs content height. */
+@media (min-width: 720px) and (max-width: 1023px) {
+  .homepage-infoPanelShell {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    align-items: start;
+    gap: var(--spacing-gap-6);
+  }
+
+  .homepage-infoPanelShellBody.ds-inputSection {
+    flex: 0 1 auto;
+    min-width: 0;
+    min-height: 0;
+    max-height: 100%;
+  }
 }
 
 .homepage-infoPanelContent {
@@ -1386,9 +1396,13 @@ body {
   box-shadow: inset 0 0 0 var(--border-width-thin) var(--color-border-weak);
 }
 
-/* Hex input row — position:relative anchors the HexColorPicker popover */
+/* Hex input row + inline colour picker below */
 .homepage-bulkColorPicker__hexRow {
-  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-gap-2);
+  width: 100%;
+  min-width: 0;
 }
 
 
