@@ -433,10 +433,11 @@ body {
   padding-right: var(--spacing-padding-4);
 }
 
-/* Laptop+ only: left-padding is the inset between the grid edge and the rail content. */
+/* Laptop+ only: horizontal inset — left gap from grid, right gap from viewport edge. */
 @media (min-width: 1024px) {
   .homepage-mainRow > .ds-infoPanel[data-open='true'] .ds-infoPanel__rail {
     padding-left: var(--spacing-padding-2);
+    padding-right: var(--spacing-padding-6);
   }
 }
 
