@@ -4,12 +4,18 @@ import { useFilterStore } from '@/stores/filterStore'
 import { useSvgFetch } from '@/hooks/useSvgFetch'
 import { IconCard as IconCardUI } from 'design-system'
 import type { Icon } from '@/types/icon'
-import { useEffect, memo } from 'react'
+import { useEffect, memo, type MouseEventHandler } from 'react'
 import { useQueryClient } from '@tanstack/react-query'
 import { fetchSvg } from '@/lib/api'
 
 interface IconCardProps {
   icon: Icon
+  onInfoOpen?: (icon: Icon) => void
+  onInfoPanelClose?: () => void
+  /** True when this card is the one tied to the open info panel. */
+  infoPanelActive?: boolean
+  /** True when the details panel is open (any card). Checkbox selection exits info mode. */
+  infoPanelOpen?: boolean
 }
 
 /** File segment of a path without extension (e.g. CDN SVG path → basename). */
@@ -18,7 +24,13 @@ function basenameWithoutExtension(path: string): string {
   return segment.replace(/\.[^.]+$/, '')
 }
 
-export const IconCard = memo(function IconCard({ icon }: IconCardProps) {
+export const IconCard = memo(function IconCard({
+  icon,
+  onInfoOpen,
+  onInfoPanelClose,
+  infoPanelActive = false,
+  infoPanelOpen = false,
+}: IconCardProps) {
   const style = useFilterStore((state) => state.style)
   const isSelected = useSelectionStore((state) => state.selectedIds.has(icon.id))
   const toggle = useSelectionStore((state) => state.toggle)
@@ -42,10 +54,22 @@ export const IconCard = memo(function IconCard({ icon }: IconCardProps) {
     })
   }, [svg, style, icon.files.filled, icon.files.outline, queryClient])
 
-  const handleCardClick = () => {
+  const handleCardClick: MouseEventHandler<HTMLButtonElement> = () => {
     const sel = useSelectionStore.getState()
     if (sel.count > 0) {
       toggle(icon.id)
+    } else if (infoPanelActive) {
+      onInfoPanelClose?.()
+    } else {
+      onInfoOpen?.(icon)
+    }
+  }
+
+  const handleSelectionToggleClick = () => {
+    const wasSelected = useSelectionStore.getState().selectedIds.has(icon.id)
+    toggle(icon.id)
+    if (!wasSelected && !infoPanelOpen) {
+      onInfoOpen?.(icon)
     }
   }
 
@@ -54,11 +78,12 @@ export const IconCard = memo(function IconCard({ icon }: IconCardProps) {
       aria-label={icon.id}
       hoverFilenameLabel={hoverFilenameLabel}
       selected={isSelected}
+      infoActive={infoPanelActive}
       previewSlot={
         <LazyIconPreview path={icon.files[style]} />
       }
       onPrimaryClick={handleCardClick}
-      onSelectionToggleClick={() => toggle(icon.id)}
+      onSelectionToggleClick={handleSelectionToggleClick}
     />
   )
 })

@@ -75,7 +75,7 @@ export const WithLeadingIcon: Story = {
     label: "Section title",
     leadingSlot: (
       <SomeIcon
-        iconName="formatting-pencil-alt"
+        iconName="pencil-alt"
         iconStyle="outline"
         iconSize="2xs"
       />
@@ -89,7 +89,7 @@ export const LeadingIconFilled: Story = {
     label: "Filled style",
     leadingSlot: (
       <SomeIcon
-        iconName="formatting-pencil-alt"
+        iconName="pencil-alt"
         iconStyle="fill"
         iconSize="2xs"
       />
@@ -103,14 +103,14 @@ export const WithLeadingAndTrailing: Story = {
     label: "Section title",
     leadingSlot: (
       <SomeIcon
-        iconName="formatting-pencil-alt"
+        iconName="pencil-alt"
         iconStyle="outline"
         iconSize="2xs"
       />
     ),
     trailingSlot: (
       <SomeIcon
-        iconName="interface-search"
+        iconName="search"
         iconStyle="outline"
         iconSize="2xs"
       />
@@ -123,7 +123,7 @@ export const WithLeadingColor: Story = {
     label: "Accent leading",
     leadingSlot: (
       <SomeIcon
-        iconName="formatting-pencil-alt"
+        iconName="pencil-alt"
         iconStyle="outline"
         iconSize="2xs"
       />
@@ -145,7 +145,7 @@ export const WithCustomContent: Story = {
     label: "Notes",
     leadingSlot: (
       <SomeIcon
-        iconName="formatting-pencil-alt"
+        iconName="pencil-alt"
         iconStyle="outline"
         iconSize="2xs"
       />
@@ -181,7 +181,7 @@ export const WithoutContentSlot: Story = {
     label: "Header row only",
     leadingSlot: (
       <SomeIcon
-        iconName="formatting-pencil-alt"
+        iconName="pencil-alt"
         iconStyle="outline"
         iconSize="2xs"
       />
@@ -206,7 +206,7 @@ export const Collapsible: Story = {
     defaultExpanded: true,
     leadingSlot: (
       <SomeIcon
-        iconName="formatting-pencil-alt"
+        iconName="pencil-alt"
         iconStyle="outline"
         iconSize="2xs"
       />

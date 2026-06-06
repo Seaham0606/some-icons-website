@@ -52,6 +52,12 @@ export interface InputSectionProps {
   leadingColor?: React.CSSProperties["color"]
   /** Same as `leadingColor` for the trailing wrapper (not applied to the preset collapsible icons). */
   trailingColor?: React.CSSProperties["color"]
+  /**
+   * When true, padding moves from the shell to the content region so the scroll
+   * container sits against the card border. The scrollbar is hidden by default.
+   * Combine with height constraints on the shell to enable internal scrolling.
+   */
+  contentScrollable?: boolean
 }
 
 export function InputSection({
@@ -68,6 +74,7 @@ export function InputSection({
   contentSlot,
   leadingColor,
   trailingColor,
+  contentScrollable = false,
 }: InputSectionProps) {
   const [expandedUncontrolled, setExpandedUncontrolled] =
     React.useState(defaultExpanded)
@@ -151,6 +158,7 @@ export function InputSection({
       className={cn(
         "ds-inputSection",
         collapsible && "ds-inputSection--collapsible",
+        contentScrollable && "ds-inputSection--contentScrollable",
         className,
       )}
       data-component="input-section"

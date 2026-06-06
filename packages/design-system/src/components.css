@@ -32,18 +32,19 @@
   box-sizing: border-box;
   min-width: 0;
   max-width: min(240px, 100%);
-  padding: var(--spacing-padding-1) var(--spacing-padding-2);
+  padding: var(--spacing-padding-1);
   border-radius: var(--radius-full);
   color: var(--color-main-secondary);
-  background: var(--color-background-weak);
+  background: var(--color-overlay-weak);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  line-height: 1.1;
 }
 
 .ds-chip[data-variant="neutral"] {
   color: var(--color-main-secondary);
-  background: var(--color-background-weak);
+  background: var(--color-overlay-weak);
 }
 
 .ds-chip[data-variant="accent"] {
@@ -71,9 +72,151 @@
   background: var(--color-background-inverse);
 }
 
+/* Selected tab chip — dark fill + inverse label (tabs only; not IconCard `inverse`). */
+.ds-chip[data-variant="strong"] {
+  color: var(--color-main-inverse-primary);
+  background: var(--color-background-inverse);
+}
+
+.ds-chip[data-variant="transparent"] {
+  color: var(--color-main-secondary);
+  background: transparent;
+}
+
 .ds-chip[data-backdrop-blur="true"] {
   backdrop-filter: blur(4px);
   -webkit-backdrop-filter: blur(4px);
+}
+
+/* Chip rendered as a control (code snippet tabs, etc.). */
+button.ds-chip,
+.ds-chip--compound {
+  min-height: var(--size-6);
+}
+
+button.ds-chip {
+  appearance: none;
+  margin: 0;
+  border: none;
+  font: inherit;
+  text-align: inherit;
+  letter-spacing: inherit;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+button.ds-chip:disabled {
+  opacity: 0.38;
+  cursor: not-allowed;
+}
+
+button.ds-chip:focus-visible {
+  outline: var(--border-width-thick) solid var(--color-intent-accent);
+  outline-offset: 2px;
+}
+
+button.ds-chip[data-variant="transparent"]:hover:not(:disabled) {
+  color: var(--color-main-primary);
+  background: var(--color-overlay-hover);
+}
+
+/* Chip pill with label segment + optional trailing control (e.g. React tab). */
+.ds-chip--compound {
+  justify-content: flex-start;
+  max-width: none;
+  white-space: nowrap;
+  overflow: visible;
+}
+
+.ds-chip--compound[data-has-trailing="true"] {
+  gap: var(--spacing-gap-050);
+}
+
+.ds-chip--compound[data-disabled="true"] {
+  opacity: 0.38;
+  pointer-events: none;
+}
+
+.ds-chip--compound[data-variant="transparent"]:hover:not([data-disabled="true"]) {
+  color: var(--color-main-primary);
+  background: var(--color-overlay-hover);
+}
+
+/* Text layer — horizontal inset on all chip sizes/variants. */
+.ds-chip__label {
+  min-width: 0;
+  padding-inline: var(--spacing-padding-1);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ds-chip__segment {
+  appearance: none;
+  margin: 0;
+  border: none;
+  padding: 0;
+  min-width: 0;
+  font: inherit;
+  font-weight: inherit;
+  font-size: inherit;
+  line-height: inherit;
+  letter-spacing: inherit;
+  color: inherit;
+  background: none;
+  text-align: inherit;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ds-chip__segment:disabled {
+  cursor: not-allowed;
+}
+
+.ds-chip__segment:focus-visible {
+  outline: var(--border-width-thick) solid var(--color-intent-accent);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
+}
+
+.ds-chipTrailingBtn {
+  appearance: none;
+  margin: 0;
+  border: none;
+  padding: var(--spacing-padding-050);
+  display: grid;
+  place-items: center;
+  color: var(--color-main-quaternary);
+  background: none;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: color 120ms ease, background-color 120ms ease;
+}
+
+.ds-chipTrailingBtn:hover {
+  color: var(--color-main-secondary);
+  background: var(--color-overlay-dark-hover);
+}
+
+.ds-chipTrailingBtn:focus-visible {
+  outline: var(--border-width-thick) solid var(--color-intent-accent);
+  outline-offset: 2px;
+}
+
+/* Compound tab chips — icon slot matches label; no hover fill; spacing on text layer. */
+.ds-chip--compound .ds-chipTrailingBtn {
+  padding: 0;
+  color: inherit;
+  transition: color 120ms ease;
+}
+
+.ds-chip--compound .ds-chipTrailingBtn:hover {
+  color: inherit;
+  background: none;
 }
 
 /* Sidebar — matches icons app homepage-aside (flex column in shell, not position:fixed) */
@@ -100,7 +243,7 @@
   display: flex;
   align-items: center;
   gap: var(--spacing-gap-3);
-  width: 320px;
+  width: var(--spacing-80);
   box-sizing: border-box;
   padding-top: var(--spacing-padding-050);
   padding-left: var(--spacing-padding-2);
@@ -148,16 +291,22 @@
   flex: 1 1 auto;
   min-height: 0;
   min-width: 0;
-  width: 320px;
+  width: var(--spacing-80);
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
   gap: var(--spacing-gap-3);
   overflow-x: hidden;
   overflow-y: auto;
-  /* Reduce width snap when scrollbars appear/disappear during sidebar height animations. */
-  scrollbar-gutter: stable;
   padding: 0;
+}
+
+/* Figma rail width — lock every section card to 320px (scroll lives on section content). */
+.ds-sidebar__contentSlot > .ds-inputSection {
+  width: var(--spacing-80);
+  max-width: 100%;
+  flex-shrink: 0;
+  box-sizing: border-box;
 }
 
 .ds-sidebar__asideFooter {
@@ -207,6 +356,127 @@
   border-radius: var(--radius-md);
   border: var(--border-width-base) solid var(--color-border-weak);
   background: var(--color-black-alpha-0);
+}
+
+/*
+ * InfoPanel
+ * Mobile/tablet (below 1024px): full-page fixed overlay with background-base fill.
+ * Laptop+ (1024px): in-flow width transition (0→320px); pushes main column so icon grid reflows.
+ */
+.ds-infoPanel {
+  --ds-infoPanel-ease: ease-in-out;
+  --ds-infoPanel-duration: 360ms;
+  /* narrow: full-page overlay */
+  position: fixed;
+  top: 0;
+  right: 0;
+  height: 100vh;
+  height: 100dvh;
+  z-index: 40;
+  box-sizing: border-box;
+  width: 100%;
+  transform: translateX(100%);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  background: var(--color-background-base);
+  border: none;
+  padding: 0;
+  margin: 0;
+  transition: transform var(--ds-infoPanel-duration) var(--ds-infoPanel-ease);
+  pointer-events: none;
+}
+
+.ds-infoPanel[data-open="true"] {
+  transform: translateX(0);
+  pointer-events: auto;
+}
+
+/* Full-width inner column on mobile/tablet; fixed 320px on laptop+ (outer clips animated width) */
+.ds-infoPanel__rail {
+  box-sizing: border-box;
+  width: 100%;
+  flex: 1 1 auto;
+  min-height: 0;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  padding-top: var(--spacing-padding-6);
+  padding-right: var(--spacing-padding-6);
+  padding-bottom: var(--spacing-padding-6);
+  padding-left: var(--spacing-padding-6);
+  background: transparent;
+  border: none;
+}
+
+.ds-infoPanel__rail:has(.ds-infoPanel__header) {
+  gap: var(--spacing-gap-2);
+}
+
+/* Match `.ds-sidebar__asideHeader` padding (inspector: 2 / 0 / 16 / 8). Column shell so the top row spans full width. */
+.ds-infoPanel__header {
+  flex: 0 0 auto;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  width: 100%;
+  min-width: 0;
+  padding-top: var(--spacing-padding-050);
+  padding-left: var(--spacing-padding-2);
+  padding-bottom: var(--spacing-padding-4);
+  /* Bleed through rail `--spacing-padding-6` so the stripe spans the panel; keep symmetric inset for the close control. */
+}
+
+.ds-infoPanel__header .ds-siteHeader__topSlot {
+  width: 100%;
+  min-width: 0;
+}
+
+.ds-infoPanel__contentSlot {
+  flex: 1 1 auto;
+  min-height: 0;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--spacing-gap-3);
+  padding: 0;
+}
+
+@media (min-width: 1024px) {
+  .ds-infoPanel {
+    position: relative;
+    top: auto;
+    right: auto;
+    height: auto;
+    align-self: stretch;
+    flex: 0 0 auto;
+    width: 0;
+    min-width: 0;
+    max-width: var(--spacing-80);
+    transform: none;
+    transition: width var(--ds-infoPanel-duration) var(--ds-infoPanel-ease);
+    z-index: auto;
+  }
+
+  .ds-infoPanel[data-open="true"] {
+    width: var(--spacing-80);
+    transform: none;
+  }
+
+  /* Inner rail fills animated aside width; horizontal padding 0 so 320px InputSections fit the rail. */
+  .ds-infoPanel__rail {
+    width: 100%;
+    padding-left: 0;
+    padding-right: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ds-infoPanel {
+    transition: none;
+  }
 }
 
 /* SomeIcon — outer = 2×padding + glyph; tokens via --ds-some-icon-pad / --ds-some-icon-glyph */
@@ -392,7 +662,7 @@
   appearance: none;
   font-family: var(--font-family-sans);
   font-size: var(--font-size-input);
-  font-weight: 600;
+  font-weight: 500;
   font-style: normal;
   line-height: var(--line-height-input);
   color: var(--ds-input-content-color, var(--color-main-primary));
@@ -428,7 +698,7 @@
 
 .ds-input__input::placeholder {
   color: var(--ds-input-content-color, var(--color-main-quaternary));
-  font-weight: 600;
+  font-weight: 500;
 }
 
 .ds-input__input::selection {
@@ -471,6 +741,12 @@
 
 .ds-input__trailingAction:hover {
   opacity: 0.7;
+}
+
+.ds-input__trailingAction:focus-visible {
+  outline: none;
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-focus-accent);
 }
 
 /* Optional: tighter line when empty (e.g. color picker “Default”) */
@@ -609,7 +885,7 @@ button.ds-dropdown__trigger.ds-input {
 
 [data-theme="dark"] .ds-dropdown__menuOverlay {
   border-color: var(--color-border-weak);
-  box-shadow: 0 8px 24px color-mix(in srgb, var(--color-black) 40%, transparent);
+  box-shadow: none;
 }
 
 .ds-dropdown__menuOverlayInner {
@@ -720,7 +996,7 @@ button.ds-dropdown__trigger.ds-input {
   font-family: var(--font-family-sans);
   font-size: var(--font-size-input);
   line-height: var(--line-height-input);
-  font-weight: 600;
+  font-weight: 500;
   font-style: normal;
   color: var(--color-main-primary);
   outline: none;
@@ -733,7 +1009,7 @@ button.ds-dropdown__trigger.ds-input {
 
 .ds-nativeInput::placeholder {
   color: var(--color-main-tertiary);
-  font-weight: 600;
+  font-weight: 500;
 }
 
 .ds-nativeInput:hover:not(:disabled) {
@@ -781,7 +1057,7 @@ button.ds-dropdown__trigger.ds-input {
   background: transparent;
   font-family: inherit;
   font-size: 14px;
-  font-weight: 600;
+  font-weight: 500;
   color: var(--color-main-primary);
 }
 
@@ -998,6 +1274,41 @@ button.ds-nativeInput {
   overflow: hidden;
 }
 
+/*
+ * Content-scrollable variant (`contentScrollable` prop on InputSection).
+ *
+ * WHY THE PADDING MOVES:
+ *   .ds-inputSection has `overflow: hidden` to clip decorative overflow (shadows,
+ *   focus rings). When padding lives on the shell and the content div scrolls with
+ *   `overflow-y: auto`, the scroll container is squeezed inside the padding box —
+ *   items at scroll boundaries collide with the shell border, producing a visible
+ *   clip against the padding edge.
+ *
+ *   Moving padding: 0 to the shell and padding: var(--spacing-padding-3) to the
+ *   content div places the scroll container flush with the card border, so
+ *   `overflow: hidden` clips exactly at the border. Scrolled items retain full
+ *   breathing room at both the top and bottom edges.
+ *
+ * SCROLLBAR:
+ *   Hidden by default (scrollbar-width: none / ::-webkit-scrollbar). Combine with
+ *   height constraints on the shell so the content actually scrolls.
+ */
+.ds-inputSection--contentScrollable {
+  padding: 0;
+}
+
+.ds-inputSection--contentScrollable .ds-inputSection__content {
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: var(--spacing-padding-3);
+  scrollbar-width: none;
+}
+
+.ds-inputSection--contentScrollable .ds-inputSection__content::-webkit-scrollbar {
+  display: none;
+}
+
 /* Match `.ds-dropdown` motion tokens so open/close feels consistent. */
 .ds-inputSection--collapsible {
   gap: 0;
@@ -1127,7 +1438,7 @@ button.ds-inputSection__labelRow.ds-inputSection__labelRow--toggle {
   gap: var(--spacing-gap-3);
 }
 
-/* Checkbox — Figma 1089:9020 (Some Icons interface-checkbox-unchecked / interface-checkbox-checked) */
+/* Checkbox — Figma 1089:9020 (Some Icons checkbox-unchecked / checkbox-checked) */
 .ds-checkbox {
   box-sizing: border-box;
   display: inline-flex;
@@ -1246,6 +1557,14 @@ button.ds-inputSection__labelRow.ds-inputSection__labelRow--toggle {
   min-width: 0;
 }
 
+.ds-inputField__labelTrailing {
+  margin-left: auto;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  min-width: 0;
+}
+
 .ds-inputField__content {
   box-sizing: border-box;
   display: flex;
@@ -1301,7 +1620,7 @@ button.ds-inputSection__labelRow.ds-inputSection__labelRow--toggle {
   height: var(--size-10);
   min-width: var(--size-10);
   min-height: var(--size-10);
-  padding: var(--spacing-padding-3);
+  padding: var(--spacing-padding-2);
   flex-shrink: 0;
 }
 
@@ -1415,36 +1734,110 @@ button.ds-inputSection__labelRow.ds-inputSection__labelRow--toggle {
   box-shadow: var(--shadow-focus-accent);
 }
 
-.ds-colorField__pickerPop {
-  position: absolute;
-  bottom: calc(100% + var(--spacing-gap-2, 8px));
-  left: 0;
-  z-index: 100;
+.ds-colorField__pickerTrigger {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0;
+  padding: 0;
+  border: none;
+  background: none;
+  color: var(--color-main-quaternary);
+  cursor: pointer;
+  line-height: 0;
+}
+
+.ds-colorField__pickerTrigger:hover,
+.ds-colorField__pickerTrigger--active {
+  color: var(--color-main-primary);
+}
+
+.ds-colorField__pickerTrigger:focus-visible {
+  outline: none;
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-focus-accent);
+}
+
+/* Inline colour picker — hue/sat square + vertical brightness slider */
+.ds-colorField__pickerInline {
+  width: 100%;
+}
+
+.ds-colorField__pickerColumns {
+  display: flex;
+  flex-direction: row;
+  align-items: stretch;
+  gap: var(--spacing-gap-2);
+  width: 100%;
+  min-width: 0;
+}
+
+.ds-colorField__hueSquare {
+  position: relative;
+  flex: 1 1 0;
+  min-width: 0;
+  aspect-ratio: 1;
   border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-popover, 0 8px 32px rgba(0,0,0,.18));
   overflow: hidden;
+  touch-action: none;
+  cursor: crosshair;
+  user-select: none;
+  border: var(--border-width-base) solid var(--color-border-base);
 }
 
-/* react-colorful overrides — match design-system radius & sizing */
-.ds-colorField__pickerPop .react-colorful {
-  width: 200px;
-  height: 200px;
+.ds-colorField__hueSquareCanvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.ds-colorField__brightnessSlider {
+  position: relative;
+  flex: 0 0 var(--size-12);
+  width: var(--size-12);
+  min-width: var(--size-12);
   border-radius: var(--radius-lg);
+  cursor: ns-resize;
+  touch-action: none;
+  user-select: none;
+  overflow: hidden;
+  border: var(--border-width-base) solid var(--color-border-base);
+  background-color: var(--color-background-input);
 }
 
-.ds-colorField__pickerPop .react-colorful__saturation {
-  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+.ds-colorField__brightnessSliderFill {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
 }
 
-.ds-colorField__pickerPop .react-colorful__hue {
-  height: 14px;
-  border-radius: 0 0 var(--radius-lg) var(--radius-lg);
+.ds-colorField__pickerPointer {
+  position: absolute;
+  box-sizing: border-box;
+  border: 2px solid #fff;
+  border-radius: 50%;
+  box-shadow:
+    0 0 0 1px rgba(0, 0, 0, 0.25),
+    inset 0 0 0 1px rgba(0, 0, 0, 0.1);
+  pointer-events: none;
+  transform: translate(-50%, -50%);
 }
 
-.ds-colorField__pickerPop .react-colorful__pointer {
+.ds-colorField__pickerPointer--square {
   width: 18px;
   height: 18px;
-  border-width: 2px;
+}
+
+.ds-colorField__pickerPointer--slider {
+  z-index: 1;
+  left: 50%;
+  width: calc(100% - var(--spacing-padding-2));
+  height: var(--size-3);
+  border-radius: var(--radius-full);
+  background-color: var(--color-white);
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.25);
+  transform: translate(-50%, -50%);
 }
 
 .ds-colorField__reset {
@@ -1916,9 +2309,7 @@ button.ds-inputSection__labelRow.ds-inputSection__labelRow--toggle {
   flex-direction: column;
   flex-shrink: 0;
   gap: var(--spacing-gap-3);
-  transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-  /* Matches Figma prototype “Gentle” / Material standard curve (soft landing) */
-  will-change: transform;
+  /* Vertical strip motion: GSAP in `ButtonAnimatedStrip` (0.4s, power2.out) */
 }
 
 .ds-button-icon-strip__cell {
@@ -1972,7 +2363,8 @@ button.ds-inputSection__labelRow.ds-inputSection__labelRow--toggle {
     border-color 0.2s ease;
 }
 
-.ds-iconCard__shell:hover:not([data-selected="true"]) .ds-iconCard {
+.ds-iconCard__shell:hover:not([data-selected="true"]):not([data-info-active="true"])
+  .ds-iconCard {
   background: var(--color-background-elevation);
   border-color: var(--color-border-base);
 }
@@ -1983,6 +2375,16 @@ button.ds-inputSection__labelRow.ds-inputSection__labelRow--toggle {
 }
 
 .ds-iconCard__shell[data-selected="true"]:hover .ds-iconCard {
+  background: var(--color-overlay-accent);
+}
+
+/* Info panel target — same accent treatment as selection when not multi-selected */
+.ds-iconCard__shell[data-info-active="true"]:not([data-selected="true"]) .ds-iconCard {
+  border-color: var(--color-intent-accent);
+  background: var(--color-blue-alpha-25);
+}
+
+.ds-iconCard__shell[data-info-active="true"]:not([data-selected="true"]):hover .ds-iconCard {
   background: var(--color-overlay-accent);
 }
 
@@ -2019,8 +2421,8 @@ button.ds-inputSection__labelRow.ds-inputSection__labelRow--toggle {
 
 .ds-iconCard__select {
   position: absolute;
-  top: var(--spacing-1);
-  right: var(--spacing-1);
+  top: calc(var(--spacing-1) + var(--spacing-050));
+  right: calc(var(--spacing-1) + var(--spacing-050));
   z-index: 1;
   display: flex;
   align-items: center;
@@ -2115,6 +2517,56 @@ button.ds-inputSection__labelRow.ds-inputSection__labelRow--toggle {
   gap: var(--spacing-gap-050);
 }
 
+/* Fused row: no gap; outer radius only; overlap borders between segments */
+.ds-buttonGroup.ds-buttonGroup--merged {
+  flex-wrap: nowrap;
+  gap: 0;
+  overflow: hidden;
+}
+
+.ds-buttonGroup.ds-buttonGroup--merged[data-radius="none"] {
+  border-radius: 0;
+}
+.ds-buttonGroup.ds-buttonGroup--merged[data-radius="xs"] {
+  border-radius: var(--radius-xs);
+}
+.ds-buttonGroup.ds-buttonGroup--merged[data-radius="sm"] {
+  border-radius: var(--radius-sm);
+}
+.ds-buttonGroup.ds-buttonGroup--merged[data-radius="md"] {
+  border-radius: var(--radius-md);
+}
+.ds-buttonGroup.ds-buttonGroup--merged[data-radius="lg"] {
+  border-radius: var(--radius-lg);
+}
+.ds-buttonGroup.ds-buttonGroup--merged[data-radius="xl"] {
+  border-radius: var(--radius-xl);
+}
+.ds-buttonGroup.ds-buttonGroup--merged[data-radius="2xl"] {
+  border-radius: var(--radius-2xl);
+}
+.ds-buttonGroup.ds-buttonGroup--merged[data-radius="3xl"] {
+  border-radius: var(--radius-3xl);
+}
+.ds-buttonGroup.ds-buttonGroup--merged[data-radius="full"] {
+  border-radius: var(--radius-full);
+}
+
+.ds-buttonGroup.ds-buttonGroup--merged > .ds-buttonGroup__btn {
+  margin: 0;
+  flex: 0 0 auto;
+  border-radius: 0;
+}
+
+.ds-buttonGroup.ds-buttonGroup--merged > .ds-buttonGroup__btn + .ds-buttonGroup__btn {
+  margin-inline-start: calc(-1 * var(--border-width-base));
+}
+
+.ds-buttonGroup.ds-buttonGroup--merged > .ds-buttonGroup__btn:focus-visible,
+.ds-buttonGroup.ds-buttonGroup--merged > .ds-buttonGroup__btn:hover {
+  z-index: 1;
+}
+
 /* --- Bulk action bar (multi-select summary + actions) --- */
 
 .ds-bulkActionBar {
@@ -2132,6 +2584,10 @@ button.ds-inputSection__labelRow.ds-inputSection__labelRow--toggle {
   background: var(--color-background-strong);
   box-shadow:
     0 var(--spacing-padding-050) var(--spacing-padding-3) var(--color-overlay-weak);
+}
+
+[data-theme="dark"] .ds-bulkActionBar {
+  box-shadow: none;
 }
 
 .ds-bulkActionBar__textWrapper {
@@ -2651,10 +3107,6 @@ button.ds-inputSection__labelRow.ds-inputSection__labelRow--toggle {
 
   .ds-button:active:not(:disabled):not([aria-disabled="true"]) {
     transform: none;
-  }
-
-  .ds-button-icon-strip__track {
-    transition-duration: 0.01ms;
   }
 
   .ds-iconCard,

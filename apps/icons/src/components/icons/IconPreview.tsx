@@ -1,15 +1,16 @@
 import { useSvgFetch } from '@/hooks/useSvgFetch'
-import { useColorStore } from '@/stores/colorStore'
 import { cn } from '@/lib/utils'
 
 interface IconPreviewProps {
   path: string | undefined
   className?: string
+  /** Explicit tint colour for this preview. Defaults to the secondary text colour. */
+  tintColor?: string
 }
 
-export function IconPreview({ path, className }: IconPreviewProps) {
+export function IconPreview({ path, className, tintColor }: IconPreviewProps) {
   const { data: svg, isLoading, error } = useSvgFetch(path)
-  const selectedColor = useColorStore((state) => state.selectedColor)
+  const resolvedTint = tintColor ?? 'var(--color-main-secondary)'
 
   if (isLoading) {
     return (
@@ -46,7 +47,7 @@ export function IconPreview({ path, className }: IconPreviewProps) {
     <div
       className={cn('transition-colors', className)}
       style={{
-        backgroundColor: selectedColor ?? 'var(--color-main-secondary)',
+        backgroundColor: resolvedTint,
         WebkitMaskImage: maskUrl,
         WebkitMaskSize: 'contain',
         WebkitMaskRepeat: 'no-repeat',

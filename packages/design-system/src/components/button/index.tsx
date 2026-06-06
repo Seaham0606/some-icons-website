@@ -1,6 +1,7 @@
 "use client"
 
 import * as React from "react"
+import gsap from "gsap"
 import { cn } from "../../utils"
 import { SomeIcon } from "../some-icon"
 import type { SomeIconIconSize, SomeIconPadding, SomeIconStyle } from "../some-icon"
@@ -28,6 +29,18 @@ export interface ButtonStateIcon {
 
 type ButtonStripPlacement = "start" | "end"
 
+const STRIP_TWEEN_DURATION_S = 0.4
+const STRIP_TWEEN_EASE = "power2.out"
+
+function getStripRowPx(track: HTMLDivElement): number {
+  const cell = track.querySelector(":scope > .ds-button-icon-strip__cell")
+  if (!cell) return 0
+  const style = getComputedStyle(track)
+  const gapRaw = parseFloat(style.rowGap || style.gap || "0")
+  const gap = Number.isFinite(gapRaw) ? gapRaw : 0
+  return cell.getBoundingClientRect().height + gap
+}
+
 function ButtonAnimatedStrip({
   stateIcons,
   activeIndex,
@@ -46,6 +59,8 @@ function ButtonAnimatedStrip({
   className?: string
 }) {
   const [a, b] = stateIcons
+  const trackRef = React.useRef<HTMLDivElement>(null)
+  const prevTweenStepRef = React.useRef<number | null>(null)
   const prevIndexRef = React.useRef(activeIndex)
   const stepRef = React.useRef(0)
   const [step, setStep] = React.useState(() => (activeIndex === 1 ? 1 : 0))
@@ -94,25 +109,59 @@ function ButtonAnimatedStrip({
     prevIndexRef.current = activeIndex
   }, [activeIndex, snap])
 
-  const handleTrackTransitionEnd = (
-    e: React.TransitionEvent<HTMLDivElement>,
-  ) => {
-    if (e.propertyName !== "transform" || e.target !== e.currentTarget) return
-    if (step !== 2) return
+  React.useLayoutEffect(() => {
+    const track = trackRef.current
+    if (!track) return
 
-    setInstant(true)
-    setStep(0)
-    requestAnimationFrame(() => {
-      requestAnimationFrame(() => {
-        setInstant(false)
-      })
+    gsap.killTweensOf(track)
+
+    if (snap) {
+      const s = activeIndex === 1 ? 1 : 0
+      const row = getStripRowPx(track)
+      gsap.set(track, { y: row > 0 ? -s * row : 0 })
+      prevTweenStepRef.current = s
+      return
+    }
+
+    const row = getStripRowPx(track)
+    const y = row > 0 ? -step * row : 0
+
+    if (instant) {
+      gsap.set(track, { y })
+      prevTweenStepRef.current = step
+      return
+    }
+
+    if (prevTweenStepRef.current === null) {
+      gsap.set(track, { y })
+      prevTweenStepRef.current = step
+      return
+    }
+
+    if (prevTweenStepRef.current === step) {
+      gsap.set(track, { y })
+      return
+    }
+
+    gsap.to(track, {
+      y,
+      duration: STRIP_TWEEN_DURATION_S,
+      ease: STRIP_TWEEN_EASE,
+      onComplete: () => {
+        if (step === 2) {
+          gsap.set(track, { y: 0 })
+          setInstant(true)
+          setStep(0)
+          prevTweenStepRef.current = 0
+          requestAnimationFrame(() => {
+            requestAnimationFrame(() => setInstant(false))
+          })
+        } else {
+          prevTweenStepRef.current = step
+        }
+      },
     })
-  }
-
-  const trackStyle: React.CSSProperties = {
-    transform: `translateY(calc(-1 * ${step} * var(--ds-button-icon-strip-row)))`,
-    transition: instant ? "none" : undefined,
-  }
+  }, [step, instant, snap, activeIndex])
 
   const cell = (spec: ButtonStateIcon, key: string) => (
     <div className="ds-button-icon-strip__cell" key={key}>
@@ -128,11 +177,7 @@ function ButtonAnimatedStrip({
 
   return (
     <div className={cn("ds-button-icon-strip__viewport", className)}>
-      <div
-        className="ds-button-icon-strip__track"
-        style={trackStyle}
-        onTransitionEnd={handleTrackTransitionEnd}
-      >
+      <div ref={trackRef} className="ds-button-icon-strip__track">
         {cell(a, "a")}
         {cell(b, "b")}
         {cell(a, "a-end")}

@@ -149,11 +149,34 @@ export function SiteHeader({
                       onChange={(e) => onSearchChange(e.target.value)}
                       leadingSlot={
                         <SomeIcon
-                          iconName="interface-search"
+                          iconName="search"
                           iconStyle="outline"
                           iconSize="md"
                           padding="2"
                         />
+                      }
+                      trailingSlot={
+                        searchQuery.length > 0 ? (
+                          <button
+                            type="button"
+                            className="ds-input__trailingAction"
+                            aria-label="Clear search"
+                            onMouseDown={(e) => {
+                              e.preventDefault()
+                            }}
+                            onClick={() => {
+                              onSearchChange('')
+                            }}
+                          >
+                            <SomeIcon
+                              iconName="multiply"
+                              iconStyle="outline"
+                              iconSize="sm"
+                              padding="050"
+                              color="var(--color-main-quaternary)"
+                            />
+                          </button>
+                        ) : undefined
                       }
                     />
                   }

@@ -18,3 +18,15 @@ export function getCategories(icons: Icon[] | undefined): string[] {
   const categories = [...new Set(icons.map((icon) => icon.category))]
   return categories.sort((a, b) => a.localeCompare(b))
 }
+
+/** Returns a map of category → icon count. The key `"all"` holds the total. */
+export function getCategoryCounts(
+  icons: Icon[] | undefined,
+): Record<string, number> {
+  if (!icons) return {}
+  const counts: Record<string, number> = { all: icons.length }
+  for (const icon of icons) {
+    counts[icon.category] = (counts[icon.category] ?? 0) + 1
+  }
+  return counts
+}

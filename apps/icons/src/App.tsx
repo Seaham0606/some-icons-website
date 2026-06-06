@@ -4,6 +4,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { Toaster as Sonner, type ToasterProps } from 'sonner'
 import { SomeIcon } from 'design-system'
 import { useUIStore } from '@/stores/uiStore'
+import { DocumentHead } from '@/components/seo/DocumentHead'
 import HomePage from '@/pages/HomePage'
 import ChangelogPage from '@/pages/ChangelogPage'
 
@@ -26,7 +27,7 @@ function Toaster(props: ToasterProps) {
       icons={{
         success: (
           <SomeIcon
-            iconName="symbol-check-circle"
+            iconName="check-circle"
             iconStyle="fill"
             iconSize="lg"
             padding="0"
@@ -34,7 +35,7 @@ function Toaster(props: ToasterProps) {
         ),
         info: (
           <SomeIcon
-            iconName="symbol-information-circle"
+            iconName="information-circle"
             iconStyle="outline"
             iconSize="lg"
             padding="0"
@@ -42,7 +43,7 @@ function Toaster(props: ToasterProps) {
         ),
         warning: (
           <SomeIcon
-            iconName="symbol-check-circle"
+            iconName="check-circle"
             iconStyle="fill"
             iconSize="lg"
             padding="0"
@@ -50,7 +51,7 @@ function Toaster(props: ToasterProps) {
         ),
         error: (
           <SomeIcon
-            iconName="symbol-warning-octagon"
+            iconName="warning-octagon"
             iconStyle="outline"
             iconSize="lg"
             padding="0"
@@ -58,7 +59,7 @@ function Toaster(props: ToasterProps) {
         ),
         loading: (
           <SomeIcon
-            iconName="interface-loading"
+            iconName="loading"
             iconStyle="outline"
             iconSize="lg"
             padding="0"
@@ -91,6 +92,7 @@ export default function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <BrowserRouter>
+        <DocumentHead />
         <Routes>
           <Route path="/" element={<HomePage />} />
           <Route path="/changelog" element={<ChangelogPage />} />

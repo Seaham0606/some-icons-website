@@ -1,10 +1,9 @@
 import { getCategoryIcon, getCategoryLabel } from '@/lib/category-icons'
-import { getCategories, useIcons } from '@/hooks/useIcons'
+import { getCategories, getCategoryCounts, useIcons } from '@/hooks/useIcons'
 import { useFilterStore } from '@/stores/filterStore'
 import type { IconStyle } from '@/types/icon'
 import {
   DropdownMenu,
-  DropdownMenuDivider,
   DropdownOption,
   Input,
   InputField,
@@ -12,7 +11,7 @@ import {
   SegmentedControl,
   SomeIcon,
 } from 'design-system'
-import { Fragment, useEffect, useRef } from 'react'
+import { useEffect, useRef } from 'react'
 
 export function HomeCategoryList({
   listClassName,
@@ -21,6 +20,7 @@ export function HomeCategoryList({
 }) {
   const { data: icons } = useIcons()
   const categories = getCategories(icons)
+  const counts = getCategoryCounts(icons)
   const category = useFilterStore((s) => s.category)
   const setCategory = useFilterStore((s) => s.setCategory)
   const selectedRowRef = useRef<HTMLDivElement>(null)
@@ -42,27 +42,29 @@ export function HomeCategoryList({
       role="listbox"
       aria-label="Categories"
     >
-      {allCategories.map((cat, index) => (
-        <Fragment key={cat}>
-          <div ref={category === cat ? selectedRowRef : null}>
-            <DropdownOption
-              role="option"
-              selected={category === cat}
-              leadingSlot={
-                <SomeIcon
-                  iconName={getCategoryIcon(cat)}
-                  iconStyle="outline"
-                  iconSize="sm"
-                  padding="050"
-                />
-              }
-              onClick={() => setCategory(cat)}
-            >
-              {getCategoryLabel(cat)}
-            </DropdownOption>
-          </div>
-          {index === 0 ? <DropdownMenuDivider /> : null}
-        </Fragment>
+      {allCategories.map((cat) => (
+        <div key={cat} ref={category === cat ? selectedRowRef : null}>
+          <DropdownOption
+            role="option"
+            selected={category === cat}
+            leadingSlot={
+              <SomeIcon
+                iconName={getCategoryIcon(cat)}
+                iconStyle="outline"
+                iconSize="sm"
+                padding="050"
+              />
+            }
+            trailingSlot={
+              <span className="ds-dropdownOption__iconCount">
+                {icons == null ? '—' : (counts[cat] ?? 0)}
+              </span>
+            }
+            onClick={() => setCategory(cat)}
+          >
+            {getCategoryLabel(cat)}
+          </DropdownOption>
+        </div>
       ))}
     </DropdownMenu>
   )
@@ -112,11 +114,34 @@ export function HomePageFilterStack({
                     onChange={(e) => onSearchChange(e.target.value)}
                     leadingSlot={
                       <SomeIcon
-                        iconName="interface-search"
+                        iconName="search"
                         iconStyle="outline"
                         iconSize="md"
                         padding="2"
                       />
+                    }
+                    trailingSlot={
+                      searchQuery.length > 0 ? (
+                        <button
+                          type="button"
+                          className="ds-input__trailingAction"
+                          aria-label="Clear search"
+                          onMouseDown={(e) => {
+                            e.preventDefault()
+                          }}
+                          onClick={() => {
+                            onSearchChange('')
+                          }}
+                        >
+                          <SomeIcon
+                            iconName="multiply"
+                            iconStyle="outline"
+                            iconSize="sm"
+                            padding="050"
+                            color="var(--color-main-quaternary)"
+                          />
+                        </button>
+                      ) : undefined
                     }
                   />
                 }
@@ -137,6 +162,7 @@ export function HomePageFilterStack({
       />
       <InputSection
         showLabel={false}
+        contentScrollable
         className={
           categorySectionClassName ?? 'homepage-sidebarCategorySection'
         }

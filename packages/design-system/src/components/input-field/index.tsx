@@ -24,6 +24,8 @@ export interface InputFieldProps {
   labelTag?: "span" | "label"
   /** Passed to `htmlFor` when `labelTag` is `"label"`. */
   labelHtmlFor?: string
+  /** Right-aligned content on the label row (e.g. a reset control). */
+  labelTrailingSlot?: React.ReactNode
   showContentSlot?: boolean
   /** Main control area (column 1 when `showCol2`); default empty state matches InputSection slot placeholder (Figma 115:8535). */
   contentSlot?: React.ReactNode
@@ -44,6 +46,7 @@ export function InputField({
   label,
   labelTag = "span",
   labelHtmlFor,
+  labelTrailingSlot,
   showContentSlot = true,
   contentSlot,
   showCol2 = false,
@@ -73,6 +76,14 @@ export function InputField({
           >
             {label}
           </LabelTag>
+          {labelTrailingSlot != null ? (
+            <div
+              className="ds-inputField__labelTrailing"
+              data-part="label-trailing"
+            >
+              {labelTrailingSlot}
+            </div>
+          ) : null}
         </div>
       ) : null}
       {showContentSlot ? (

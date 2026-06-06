@@ -16,7 +16,7 @@ export interface CheckboxProps
 
 /**
  * Checkbox — matches Figma checkbox set (node 1089:9020): unchecked / unchecked hover /
- * checked / checked hover, using Some Icons `interface-checkbox-*` glyphs at 20px + 2px padding.
+ * checked / checked hover, using Some Icons `checkbox-*` glyphs at 20px + 2px padding.
  */
 export const Checkbox = React.forwardRef<HTMLInputElement, CheckboxProps>(
   function Checkbox(
@@ -47,7 +47,7 @@ export const Checkbox = React.forwardRef<HTMLInputElement, CheckboxProps>(
         <span className="ds-checkbox__box" aria-hidden>
           <span className="ds-checkbox__glyph ds-checkbox__glyph--unchecked">
             <SomeIcon
-              iconName="interface-checkbox-unchecked"
+              iconName="checkbox-unchecked"
               iconStyle="outline"
               iconSize="sm"
               padding="050"
@@ -55,7 +55,7 @@ export const Checkbox = React.forwardRef<HTMLInputElement, CheckboxProps>(
           </span>
           <span className="ds-checkbox__glyph ds-checkbox__glyph--checked">
             <SomeIcon
-              iconName="interface-checkbox-checked"
+              iconName="checkbox-checked"
               iconStyle="fill"
               iconSize="sm"
               padding="050"

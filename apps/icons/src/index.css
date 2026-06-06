@@ -104,6 +104,10 @@ body {
   transform: translateX(calc(var(--spacing-050) - 3px));
 }
 
+[data-theme="dark"] .ui-switch__thumb {
+  box-shadow: none;
+}
+
 .ui-switch[data-state="checked"] .ui-switch__thumb {
   transform: translateX(
     calc(var(--size-10) - var(--size-4) - var(--spacing-050) - var(--spacing-050) - 1px)
@@ -192,6 +196,91 @@ body {
   }
 }
 
+/* Mobile / tablet nav chrome: header + category panel below the top row. */
+.homepage-navChrome {
+  position: relative;
+  z-index: 6;
+  flex-shrink: 0;
+}
+
+.homepage-navCategoryPanel {
+  display: none;
+  box-sizing: border-box;
+  min-width: 0;
+}
+
+.homepage-navCategoryPanel--open {
+  display: flex;
+  flex-direction: column;
+}
+
+.homepage-navCategoryPanelSection.ds-inputSection {
+  flex: 1 1 auto;
+  min-height: 0;
+  width: 100%;
+}
+
+.homepage-navCategoryPanelSection .ds-inputSection__content {
+  flex: 1 1 auto;
+}
+
+.homepage-categoryList--nav.ds-dropdownMenu {
+  flex: 1 1 auto;
+  max-height: 100%;
+}
+
+/* Tablet: 280px panel below nav, inset from the viewport right and below the header. */
+@media (min-width: 720px) and (max-width: 1023px) {
+  .homepage-navCategoryPanel {
+    position: absolute;
+    top: calc(100% + var(--spacing-padding-4));
+    right: var(--spacing-padding-6);
+    z-index: 7;
+    width: 280px;
+    max-height: calc(
+      100dvh - var(--homepage-nav-chrome-height, 72px) - var(--spacing-padding-4)
+    );
+  }
+
+  .homepage-navCategoryBackdrop {
+    top: var(--homepage-nav-chrome-height, 72px);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+  }
+}
+
+/* Mobile: full-width panel fills remaining space below the nav — flush, no card chrome. */
+@media (max-width: 719px) {
+  .homepage-shell--categoryNavOpen .homepage-navChrome {
+    flex: 1 1 auto;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .homepage-shell--categoryNavOpen .homepage-main {
+    flex: 0 0 0;
+    min-height: 0;
+    overflow: hidden;
+  }
+
+  .homepage-navCategoryPanel--open {
+    flex: 1 1 auto;
+    min-height: 0;
+  }
+
+  .homepage-navCategoryPanelSection.ds-inputSection {
+    border: none;
+    border-radius: 0;
+    box-shadow: none;
+    background: var(--color-background-base);
+  }
+
+  .homepage-navCategoryBackdrop {
+    display: none;
+  }
+}
+
 .app-backdrop {
   --ds-dropdown-ease: ease-in-out;
   --ds-dropdown-duration: 360ms;
@@ -269,38 +358,41 @@ body {
 }
 
 @media (min-width: 720px) and (max-width: 1023px) {
-  .homepage-pageContent {
+  .homepage-pageContent > .homepage-iconGrid {
     padding-bottom: calc(
       var(--spacing-padding-6) + 80px + var(--spacing-padding-4)
     );
   }
 }
 
-/* Filter + Settings: intrinsic height only (category fills remaining sidebar space) */
+/* Filter + Settings: intrinsic height only. */
 .homepage-sidebarSection--hug {
   flex: 0 0 auto;
 }
 
-/* Category: hugs content height; shrinks (not grows) when space is tight so the list
-   scrolls internally rather than the whole sidebar content slot scrolling.
-   padding:0 moves the breathing room onto the content div so the scroll container
-   starts at the card's inner border — card's overflow:hidden clips there, not at padding. */
-.homepage-sidebarCategorySection {
-  flex: 0 1 auto;
-  min-height: 0;
-  padding: 0;
+/*
+ * Laptop sidebar: no scroll on `.ds-sidebar__contentSlot` — only the category
+ * InputSection scrolls. Section hugs list height until the rail runs out of space,
+ * then shrinks and scrolls inside `contentScrollable` content.
+ */
+@media (min-width: 1024px) {
+  .homepage-laptop-only .ds-sidebar__contentSlot {
+    overflow-y: hidden;
+  }
+
+  .homepage-laptop-only .ds-sidebar__contentSlot > .homepage-sidebarCategorySection.ds-inputSection {
+    flex-shrink: 1;
+  }
 }
 
-.homepage-sidebarCategorySection .ds-inputSection__content {
-  flex: 1 1 auto;
-  min-width: 0;
+.homepage-sidebarCategorySection.ds-inputSection--contentScrollable {
+  flex: 0 1 auto;
   min-height: 0;
-  display: flex;
-  flex-direction: column;
-  overflow-y: auto;
-  overflow-x: hidden;
-  scrollbar-gutter: stable;
-  padding: var(--spacing-padding-3);
+}
+
+.homepage-sidebarCategorySection.ds-inputSection--contentScrollable .ds-inputSection__content {
+  flex: 1 1 auto;
+  min-height: 0;
 }
 
 .homepage-categoryList.ds-dropdownMenu {
@@ -324,15 +416,766 @@ body {
   flex-direction: column;
 }
 
-/**
- * Grid icon previews: when export size is set, the store exposes `gridPreviewPx` and
- * `--icon-preview-user-px` on `.ds-iconGrid`; until then the var is unset (cap-only).
- * Still capped by `--ds-iconGrid-preview-cap`.
+/* Laptop+: row holds scroll column + info panel so the panel pushes the grid (width-driven reflow). */
+.homepage-mainRow {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: row;
+  align-items: stretch;
+  min-height: 0;
+  min-width: 0;
+}
+
+/* Inset lives on the grid/footer so the scrollport isn’t padded (avoids grid vs padding offset). */
+.homepage-mainRow:has(> .ds-infoPanel[data-open='true'])
+  .homepage-pageContent
+  > .homepage-iconGrid {
+  padding-right: var(--spacing-padding-4);
+}
+
+/* Laptop+ only: horizontal inset — left gap from grid, right gap from viewport edge. */
+@media (min-width: 1024px) {
+  .homepage-mainRow > .ds-infoPanel[data-open='true'] .ds-infoPanel__rail {
+    padding-left: var(--spacing-padding-2);
+    padding-right: var(--spacing-padding-6);
+  }
+}
+
+/* Icon info rail: preview card + controls card; body scrolls. */
+.homepage-infoPanelShell {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-gap-3);
+  width: 100%;
+  min-width: 0;
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
+.homepage-infoPanelShellPreview.ds-inputSection {
+  flex: 0 0 auto;
+  width: 100%;
+  min-width: 0;
+  padding: 0;
+  gap: 0;
+  border: none;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  overflow: visible;
+}
+
+.homepage-infoPanelShellPreview .ds-inputSection__content {
+  padding: 0;
+  gap: 0;
+  width: 100%;
+  min-width: 0;
+  min-height: 0;
+  align-self: stretch;
+  align-items: stretch;
+}
+
+/* Preview: wireframe + corner / bottom overlays */
+.homepage-infoPanelWireframeShell {
+  position: relative;
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+  border-radius: var(--radius-2xl);
+  border: var(--border-width-base) solid var(--color-border-weak);
+  /* Clip lives on `.homepage-iconWireframe`; keep shell visible so overlay chip blur composes. */
+  overflow: visible;
+  background: var(--color-background-elevation);
+}
+
+.homepage-infoPanelWireframeShell > .homepage-iconWireframe {
+  width: 100%;
+  border-radius: var(--radius-2xl);
+  border: none;
+  background: transparent;
+}
+
+.homepage-infoPanelWireframeShell > .homepage-iconWireframe.homepage-iconWireframe--multiSelect {
+  background-color: var(--color-background-elevation);
+}
+
+.homepage-infoPanelWireframeOverlay {
+  position: absolute;
+  z-index: 2;
+  pointer-events: none;
+  box-sizing: border-box;
+  display: flex;
+  width: fit-content;
+  max-width: 100%;
+}
+
+.homepage-infoPanelWireframeOverlay--token {
+  top: var(--spacing-padding-3);
+  left: var(--spacing-padding-3);
+}
+
+.homepage-infoPanelWireframeOverlay--category {
+  top: var(--spacing-padding-3);
+  right: var(--spacing-padding-3);
+  left: auto;
+}
+
+.homepage-infoPanelWireframeOverlay--download {
+  bottom: var(--spacing-padding-3);
+  right: var(--spacing-padding-3);
+  left: auto;
+  top: auto;
+  max-width: calc(100% - 2 * var(--spacing-padding-3));
+  z-index: 3;
+  pointer-events: auto;
+}
+
+.homepage-infoPanelWireframeOverlay--download.ds-button[data-variant='transparent'] {
+  border-color: var(--color-border-weak);
+  background-color: var(--color-background-base);
+  background-image: none;
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
+}
+
+.homepage-infoPanelWireframeOverlay--download.ds-button[data-size='sm'] .ds-button__labelWrap {
+  padding-inline-end: var(--spacing-padding-2);
+}
+
+.homepage-infoPanelWireframeOverlay--download:active:not(:disabled):not([aria-disabled='true']) {
+  transform: none;
+}
+
+/* InfoPanel body: hugs content until rail space runs out, then fills remaining
+   height and scrolls internally (same flex pattern as .homepage-sidebarCategorySection).
+   Scroll, padding, and scrollbar are owned by the InputSection `contentScrollable`
+   modifier (see .ds-inputSection--contentScrollable in design-system/components.css). */
+.homepage-infoPanelShellBody.ds-inputSection {
+  flex: 0 1 auto;
+  min-height: 0;
+  min-width: 0;
+}
+
+.homepage-infoPanelShellBody .ds-inputSection__content {
+  flex: 1 1 auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Tablet InfoPanel: 50/50 preview + controls; body InputSection hugs content height. */
+@media (min-width: 720px) and (max-width: 1023px) {
+  .homepage-infoPanelShell {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    align-items: start;
+    gap: var(--spacing-gap-6);
+  }
+
+  .homepage-infoPanelShellBody.ds-inputSection {
+    flex: 0 1 auto;
+    min-width: 0;
+    min-height: 0;
+    max-height: 100%;
+  }
+}
+
+.homepage-infoPanelContent {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: var(--spacing-gap-3);
+  width: 100%;
+  min-width: 0;
+  flex-shrink: 0;
+}
+
+.homepage-infoPanel-labelReset {
+  margin: 0;
+  padding: 0;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  color: var(--color-main-tertiary);
+  transition: color 150ms ease;
+}
+
+.homepage-infoPanel-labelReset:hover {
+  color: var(--color-intent-error);
+}
+
+.homepage-infoPanel-labelReset:focus-visible {
+  outline: none;
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-focus-accent);
+}
+
+/* Icon info panel: 24×24 wireframe; central 16×16 area for the SVG preview */
+.homepage-iconWireframe {
+  position: relative;
+  box-sizing: border-box;
+  aspect-ratio: 1;
+  width: 100%;
+  flex-shrink: 0;
+  overflow: hidden;
+  border-radius: var(--radius-lg);
+  border: var(--border-width-base) solid var(--color-border-weak);
+  background-color: var(--color-background-elevation);
+}
+
+.homepage-iconWireframe__clip {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.homepage-iconWireframe__grid {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+/* Multi-select stacked cards (IconStack) — shared single + multi preview layer */
+.homepage-iconWireframe--multiSelect {
+  background-color: var(--color-background-elevation);
+}
+
+.homepage-iconStack {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+}
+
+.homepage-iconStack__slot {
+  position: relative;
+  width: calc(100% * 16 / 24);
+  aspect-ratio: 1;
+}
+
+.homepage-iconStack__card {
+  --stack-card-chrome: 1;
+  position: absolute;
+  inset: 0;
+  box-sizing: border-box;
+  border-radius: var(--radius-lg);
+  background: color-mix(
+    in srgb,
+    var(--color-background-stack) calc(var(--stack-card-chrome) * 100%),
+    transparent
+  );
+  border: var(--border-width-base) solid color-mix(
+    in srgb,
+    var(--color-border-weak) calc(var(--stack-card-chrome) * 100%),
+    transparent
+  );
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transform-origin: center center;
+}
+
+.homepage-iconStack__card--front {
+  --stack-card-chrome: 0;
+  z-index: 1;
+}
+
+.homepage-iconStack__card:not(.homepage-iconStack__card--front) {
+  z-index: 0;
+}
+
+.homepage-iconStack__icon {
+  width: calc(100% - 40% * var(--stack-card-chrome, 1));
+  height: calc(100% - 40% * var(--stack-card-chrome, 1));
+}
+
+/* Color picker anchor/popup */
+.homepage-infoPanel-colorAnchor {
+  position: relative;
+  display: inline-flex;
+  vertical-align: middle;
+}
+
+.homepage-infoPanel-colorPop {
+  position: absolute;
+  right: 0;
+  left: auto;
+  bottom: calc(100% + var(--spacing-gap-2));
+  z-index: 5;
+  width: max-content;
+}
+
+.homepage-infoPanel-colorHexWrap {
+  box-sizing: border-box;
+  display: flex;
+  align-items: stretch;
+  width: 100%;
+  min-width: 0;
+}
+
+.homepage-infoPanel-colorHexWrap .homepage-bulkColorPicker__hexRow {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.homepage-infoPanel-colorHexWrap .homepage-bulkColorPicker__hexRow .ds-input {
+  flex: 1 1 auto;
+  align-self: stretch;
+  width: 100%;
+  height: auto;
+  min-height: var(--size-12);
+}
+
+.homepage-infoPanelContent__colorField .ds-inputField__col--secondary {
+  display: flex;
+  align-self: stretch;
+}
+
+.homepage-infoPanelContent__colorField .homepage-infoPanel-colorAnchor {
+  display: flex;
+  align-items: stretch;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  align-self: stretch;
+}
+
+/* Swatches trigger — match adjacent hex Input chrome (fill, stroke, radius). */
+.homepage-infoPanelContent__colorField .homepage-infoPanelContent__colorSwatchesBtn.ds-button {
+  flex: 1 1 auto;
+  align-self: stretch;
+  width: 100%;
+  height: var(--size-12);
+  min-height: var(--size-12);
+  border-radius: var(--radius-lg);
+  border: var(--border-width-base) solid var(--color-border-weak);
+  background-color: var(--color-background-input);
+  background-image: none;
+  transition:
+    border-color 300ms ease,
+    box-shadow 200ms ease,
+    background-color 200ms ease;
+}
+
+.homepage-infoPanelContent__colorField
+  .homepage-infoPanelContent__colorSwatchesBtn.ds-button:hover:not(:disabled):not([aria-disabled="true"]),
+.homepage-infoPanelContent__colorField
+  .homepage-infoPanelContent__colorSwatchesBtn.ds-button:focus-visible:not(:disabled):not([aria-disabled="true"]),
+.homepage-infoPanelContent__colorField
+  .homepage-infoPanelContent__colorSwatchesBtn.ds-button[aria-expanded="true"]:not(:disabled):not([aria-disabled="true"]) {
+  border-color: var(--color-border-strong);
+  background-color: var(--color-background-input);
+}
+
+.homepage-infoPanelContent__colorField
+  .homepage-infoPanelContent__colorSwatchesBtn.ds-button:focus-visible:not(:disabled):not([aria-disabled="true"]) {
+  box-shadow: var(--shadow-focus-accent);
+}
+
+.homepage-infoPanelContent__colorField
+  .homepage-infoPanelContent__colorSwatchesBtn.ds-button:active:not(:disabled):not([aria-disabled="true"]) {
+  border-color: var(--color-border-strong);
+  background-color: var(--color-background-input);
+  transform: none;
+}
+
+/* 2×2 preset preview in the swatches trigger (no color selected yet). */
+.homepage-infoPanelContent__colorSwatchMini {
+  display: grid;
+  grid-template-columns: repeat(2, var(--size-3));
+  grid-template-rows: repeat(2, var(--size-3));
+  gap: 2px;
+  flex-shrink: 0;
+}
+
+.homepage-infoPanelContent__colorSwatchMiniCell {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border-radius: var(--radius-xs);
+  box-shadow: inset 0 0 0 var(--border-width-thin) var(--color-border-weak);
+}
+
+/* Settings anchor/popup */
+.homepage-infoPanel-settingsAnchor {
+  position: relative;
+  display: inline-flex;
+  vertical-align: middle;
+  margin-inline-start: auto;
+}
+
+.homepage-infoPanel-settingsPop {
+  position: absolute;
+  right: 0;
+  bottom: calc(100% + var(--spacing-gap-2));
+  z-index: 5;
+  width: max-content;
+}
+
+
+/* Size + color label rows: full width so Reset sits flush right (matches code tabs). */
+.homepage-infoPanelContent__sizeField .ds-inputField__labelRow,
+.homepage-infoPanelContent__colorField .ds-inputField__labelRow {
+  width: 100%;
+}
+
+/* Size + color rows: match secondary column height to primary controls */
+.homepage-infoPanelContent__sizeField .ds-inputField__row,
+.homepage-infoPanelContent__colorField .ds-inputField__row {
+  align-items: stretch;
+}
+
+
+/* Custom size input — fills column height beside SegmentedControl */
+.homepage-infoPanelContent__sizeCustomInput.ds-input {
+  flex: 1 1 auto;
+  align-self: stretch;
+  width: 100%;
+  height: auto;
+  min-height: var(--size-12);
+}
+
+.homepage-infoPanelContent__sizeCustomInput.ds-input .ds-input__input {
+  text-align: center;
+}
+
+.homepage-infoPanelContent__snippetSection {
+  box-sizing: border-box;
+  min-width: 0;
+  flex-shrink: 0;
+  width: 100%;
+}
+
+/* Code label row: caption left, chip tabs flush right. */
+.homepage-infoPanelContent__snippetSection .ds-inputField__labelRow {
+  width: 100%;
+}
+
+.homepage-infoPanelContent__snippetSection .ds-inputField__labelTrailing {
+  flex: 1 1 auto;
+  min-width: 0;
+  justify-content: flex-end;
+}
+
+/* Chip tab list (info panel label row) + cluster (React + install info). */
+.homepage-infoPanelContent__snippetTabBar {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--spacing-gap-1);
+  min-width: 0;
+  margin-left: auto;
+}
+
+/* `ds-chip` caps width; snippet tabs size to label. */
+.homepage-codeSnippetTab {
+  flex-shrink: 0;
+  max-width: none;
+}
+
+/* Tab panel: stacked code frames (each .rii-codeFrame is its own bordered card). */
+.homepage-infoPanelContent__snippetTabPanel {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-gap-3);
+  width: 100%;
+  min-width: 0;
+  flex-shrink: 0;
+}
+
+.homepage-infoPanelContent__snippetBlock {
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  width: 100%;
+  min-width: 0;
+}
+
+.homepage-infoPanelContent__snippetBlockHead {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--spacing-gap-2);
+  box-sizing: border-box;
+  width: 100%;
+  min-width: 0;
+  padding: var(--spacing-padding-050) var(--spacing-padding-050)
+    var(--spacing-padding-050) var(--spacing-padding-2);
+}
+
+.homepage-infoPanelContent__snippetBlockLabel {
+  flex: 1 1 auto;
+  min-width: 0;
+  font-family: var(--font-family-sans);
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1.25;
+  letter-spacing: 0.01em;
+  color: var(--color-main-quaternary);
+}
+
+.homepage-infoPanelContent__snippetBlockCopy {
+  flex: 0 0 auto;
+  align-self: center;
+}
+
+/* Icon-strip copy control: drop sm button padding so the glyph aligns with the label row. */
+.homepage-infoPanelContent__snippetBlockHead
+  .homepage-infoPanelContent__snippetBlockCopy.ds-button {
+  padding: 0;
+}
+
+.homepage-infoPanelContent__snippetHelp {
+  font-family: var(--font-family-sans);
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 1.35;
+}
+
+/* =========================================================================
+   ReactInstallModal (.rii-*)
+   All colors, spacing, and radii use design-system semantic tokens.
+   ========================================================================= */
+
+/* Scrim — full-viewport backdrop */
+.rii-scrim {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  background: var(--color-background-inverse);
+  -webkit-backdrop-filter: blur(2px);
+  backdrop-filter: blur(2px);
+  display: grid;
+  place-items: center;
+  padding: var(--spacing-padding-4);
+  font-family: var(--font-family-sans);
+  animation: rii-scrim-in 160ms ease-out;
+}
+
+@keyframes rii-scrim-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+/* Modal card */
+.rii-modal {
+  position: relative;
+  width: min(520px, 100%);
+  background: var(--color-background-strong);
+  color: var(--color-main-primary);
+  border: var(--border-width-base) solid var(--color-border-weak);
+  border-radius: var(--radius-2xl);
+  box-shadow: var(--shadow-strong);
+  overflow: hidden;
+  animation: rii-modal-in 220ms cubic-bezier(.2,.7,.3,1);
+}
+
+@keyframes rii-modal-in {
+  from { opacity: 0; transform: translateY(8px) scale(.98); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* Hero strip */
+.rii-hero {
+  position: relative;
+  padding: var(--spacing-padding-4) var(--spacing-padding-5) var(--spacing-padding-5);
+  background:
+    radial-gradient(
+      circle at 22% 30%,
+      color-mix(in srgb, var(--color-intent-accent) 12%, transparent),
+      transparent 60%
+    ),
+    radial-gradient(
+      circle at 78% 80%,
+      color-mix(in srgb, var(--color-intent-accent) 7%, transparent),
+      transparent 55%
+    ),
+    var(--color-background-base);
+  border-bottom: var(--border-width-base) solid var(--color-border-extra-weak);
+}
+
+/* Close button */
+.rii-close {
+  position: absolute;
+  top: var(--spacing-3);
+  right: var(--spacing-3);
+  width: 28px;
+  height: 28px;
+  display: grid;
+  place-items: center;
+  background: transparent;
+  border: 0;
+  border-radius: var(--radius-sm);
+  color: var(--color-main-tertiary);
+  cursor: pointer;
+  transition: background 120ms ease, color 120ms ease;
+}
+
+.rii-close:hover {
+  background: var(--color-overlay-dark-hover);
+  color: var(--color-main-primary);
+}
+
+.rii-close:focus-visible {
+  outline: var(--border-width-thick) solid var(--color-intent-accent);
+  outline-offset: 2px;
+}
+
+/* Eyebrow pill */
+.rii-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-gap-2);
+  padding: var(--spacing-padding-1) var(--spacing-padding-3) var(--spacing-padding-1) var(--spacing-padding-2);
+  background: var(--color-background-strong);
+  border: var(--border-width-base) solid var(--color-border-weak);
+  border-radius: var(--radius-full);
+  font-size: 11.5px;
+  font-weight: 600;
+  color: var(--color-main-secondary);
+}
+
+.rii-eyebrow__mark {
+  flex-shrink: 0;
+  display: block;
+  width: 14px;
+  height: 14px;
+}
+
+/* Title */
+.rii-title {
+  margin: var(--spacing-3) 0 0;
+  font-size: 22px;
+  font-weight: 600;
+  line-height: 1.2;
+  max-width: 380px;
+  color: var(--color-main-primary);
+  letter-spacing: -0.005em;
+}
+
+/* Package name (monospace pill) */
+.rii-package {
+  display: block;
+  margin-top: var(--spacing-2);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 13px;
+  color: var(--color-main-tertiary);
+}
+
+/* Body — wraps the two code frames */
+.rii-body {
+  padding: var(--spacing-padding-4);
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-gap-3);
+}
+
+/* Individual code frame — border + background for each section */
+.rii-codeFrame {
+  border-radius: var(--radius-lg);
+  border: var(--border-width-base) solid var(--color-border-weak);
+  background: var(--color-background-code);
+  overflow: hidden;
+}
+
+/* Min height for code row only (single-line snippets stay vertically comfortable). */
+.rii-codeFrame .homepage-infoPanelContent__snippetBlock {
+  --rii-snippet-row-min-height: calc(
+    2 * var(--spacing-padding-2) + 32px
+  );
+}
+
+/*
+ * Header row height follows label / tabs / copy (no fixed min-height).
  */
+.rii-codeFrame .homepage-infoPanelContent__snippetBlockHead {
+  padding: var(--spacing-padding-1) var(--spacing-padding-1)
+    var(--spacing-padding-0) var(--spacing-padding-3);
+}
+
+/* Code pre — optional min-height for short one-line bodies */
+.rii-codeFrame .rii-codeBlock {
+  min-height: var(--rii-snippet-row-min-height);
+}
+
+/*
+ * Prism-react-renderer outputs one <div> per logical line under <pre>.
+ * Column flex + justify center keeps single-line imports vertically centered.
+ *
+ * Install row uses plain <span> siblings ($ + command). Column flex would stack
+ * each span on its own line — use a row instead.
+ */
+.rii-codeFrame .rii-codeBlock:has(> div) {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.rii-codeFrame .rii-codeBlock:not(:has(> div)) {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  flex-wrap: nowrap;
+}
+
+/* Info panel only: cap long snippets: modal install/import stays short. */
+.homepage-infoPanelContent__snippetTabPanel .rii-codeFrame .rii-codeBlock {
+  max-height: 12rem;
+  overflow-y: auto;
+}
+
+.rii-codeBlock {
+  box-sizing: border-box;
+  margin: 0;
+  padding: var(--spacing-padding-2) var(--spacing-padding-3);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', monospace;
+  font-size: 12.5px;
+  font-weight: 500;
+  line-height: 1.55;
+  color: var(--color-main-secondary);
+  overflow-x: auto;
+  background: transparent;
+  border: none;
+  border-radius: 0;
+  tab-size: 2;
+  /* Prism-react-renderer sets background via inline style; we reset it. */
+}
+
+/* Shell command token colors */
+.rii-tok--dim  { color: var(--color-main-quaternary); }
+.rii-tok--cmd  { color: var(--color-main-secondary); }
+
+/* RII modal — install/import header chip tabs */
+.rii-modal__codeTabList {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--spacing-gap-1);
+  min-width: 0;
+}
+
+.rii-modal__codeTabList .homepage-codeSnippetTab {
+  text-transform: lowercase;
+}
+
+/* ── end ReactInstallModal tab styling ─────────────────────────────────── */
+
+/* Grid icon previews: sized by the layout cap only. */
 .icon-grid-preview {
   flex: 0 0 auto;
-  width: min(var(--icon-preview-user-px, 1000px), var(--ds-iconGrid-preview-cap));
-  height: min(var(--icon-preview-user-px, 1000px), var(--ds-iconGrid-preview-cap));
+  width: var(--ds-iconGrid-preview-cap);
+  height: var(--ds-iconGrid-preview-cap);
 }
 
 /* Main column: scroll area + absolutely positioned overlay. */
@@ -366,21 +1209,7 @@ body {
   transition: none;
 }
 
-/* Bars slide up independently on mount via a keyframe animation. */
-@keyframes bulk-bars-enter {
-  from { transform: translateY(40%); }
-  to   { transform: translateY(0); }
-}
-
-.homepage-bulkBarsWrap {
-  animation: bulk-bars-enter 0.45s cubic-bezier(0.22, 1, 0.36, 1) both;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .homepage-bulkBarsWrap {
-    animation: none;
-  }
-}
+/* Bulk bar enter motion is driven by GSAP in HomePage (see bulkBarsWrapRef). */
 
 .gradient-overlay--fullWidth {
   left: 0;
@@ -448,7 +1277,7 @@ body {
 .homepage-bulkOverlay .gradient-overlay__content {
   align-items: flex-end;
   justify-content: center;
-  padding-bottom: calc(var(--spacing-padding-10) + var(--spacing-padding-5));
+  padding-bottom: 40px;
   pointer-events: none;
 }
 
@@ -463,45 +1292,11 @@ body {
   pointer-events: auto;
 }
 
-/* Export format popover: centered on ellipsis trigger, gap-4 above button */
-.homepage-bulkBarSettingsAnchor {
-  position: relative;
-  display: inline-flex;
-  vertical-align: middle;
-}
-
-.homepage-bulkBarSettingsPop {
-  position: absolute;
-  left: 50%;
-  bottom: calc(100% + var(--spacing-gap-4));
-  z-index: 5;
-  box-sizing: border-box;
-  width: calc(2 * var(--size-20));
-  max-width: calc(100vw - 2 * var(--spacing-padding-4));
-  transform: translateX(-50%);
-  pointer-events: auto;
-}
-
 .homepage-bulkOverlay .ds-bulkActionBar {
   position: relative;
   flex: 0 1 auto;
   min-width: 0;
   max-width: 100%;
-}
-
-/* Second shell: single dismiss control, matches main bulk bar chrome */
-.homepage-bulkBarAside {
-  box-sizing: border-box;
-  display: inline-flex;
-  flex: 0 0 auto;
-  align-items: center;
-  justify-content: center;
-  padding: var(--spacing-padding-2);
-  border-radius: var(--radius-xl);
-  border: var(--border-width-base) solid var(--color-border-weak);
-  background: var(--color-background-strong);
-  box-shadow:
-    0 var(--spacing-padding-050) var(--spacing-padding-3) var(--color-overlay-weak);
 }
 
 /* Bulk bar: inverse label chip (IconCard filename pattern: centered, just past the control edge). */
@@ -530,8 +1325,7 @@ body {
 .homepage-bulkAction-hoverWrap:not(:has(.ds-button:disabled)):not(:has(.ds-button[aria-disabled="true"])):hover
   .homepage-bulkAction-hoverMeta,
 .homepage-bulkAction-hoverWrap:has(.ds-button:focus-visible:not(:disabled):not([aria-disabled="true"]))
-  .homepage-bulkAction-hoverMeta,
-.homepage-bulkAction-hoverWrap:has(.homepage-bulkBar-sizeInput):hover .homepage-bulkAction-hoverMeta {
+  .homepage-bulkAction-hoverMeta {
   opacity: 1;
 }
 
@@ -547,23 +1341,8 @@ body {
   flex-shrink: 0;
 }
 
-/* Color picker anchor + popover (mirrors settings panel pattern) */
-.homepage-bulkColorPickerAnchor {
-  position: relative;
-  display: inline-flex;
-  vertical-align: middle;
-}
-
-.homepage-bulkColorPickerPop {
-  position: absolute;
-  left: 50%;
-  bottom: calc(100% + var(--spacing-gap-4));
-  z-index: 5;
-  box-sizing: border-box;
-  width: max-content;
-  max-width: calc(100vw - 2 * var(--spacing-padding-4));
-  transform: translateX(-50%);
-  pointer-events: auto;
+.homepage-bulkColorPicker--presetsOnly {
+  gap: 0;
 }
 
 /* Panel chrome — same as ds-bulkActionBarSettingsPanel */
@@ -618,15 +1397,13 @@ body {
   box-shadow: inset 0 0 0 var(--border-width-thin) var(--color-border-weak);
 }
 
-/* ColorField inside the picker — stretch via flex alignment (not width:100%) to avoid
-   circular max-content dependency with the fit-content panel */
-.homepage-bulkColorPicker__colorField.ds-colorField {
-  width: auto;
-  align-self: stretch;
-}
-
-.homepage-bulkColorPicker__colorField.ds-colorField .ds-inputField {
-  margin: 0;
+/* Hex input row + inline colour picker below */
+.homepage-bulkColorPicker__hexRow {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-gap-2);
+  width: 100%;
+  min-width: 0;
 }
 
 
@@ -636,94 +1413,8 @@ body {
   }
 }
 
-/*
- * Bulk bar: size control — matches Figma (node 1181:9469): frame padding 2, radius md,
- * border/base, label px-2 only; 20px glyphs with p-050 in slots; hug width + height.
- */
-.homepage-bulkBar-sizeInput.ds-input {
-  width: fit-content;
-  max-width: 100%;
-  min-width: 0;
-  min-height: 0;
-  height: auto;
-  align-items: center;
-  border-radius: var(--radius-md);
-  border-color: var(--color-border-base);
-  padding: calc(var(--spacing-padding-2) - var(--border-width-base));
-}
 
-/* Idle: no input fill; hover or focus shows standard input background (error keeps system fill). */
-.homepage-bulkBar-sizeInput.ds-input[data-status="default"] {
-  background: transparent;
-}
-
-.homepage-bulkBar-sizeInput.ds-input[data-status="default"]:hover,
-.homepage-bulkBar-sizeInput.ds-input[data-status="default"]:focus-within {
-  background: var(--ds-input-bg);
-}
-
-.homepage-bulkBar-sizeInput.ds-input .ds-input__slot {
-  flex: 0 0 auto;
-  width: auto;
-  min-width: 0;
-  align-self: center;
-}
-
-.homepage-bulkBar-sizeInput.ds-input .ds-input__field {
-  flex: 0 1 auto;
-  min-width: 0;
-  padding-block: 0;
-  padding-inline: var(--spacing-padding-2);
-}
-
-.homepage-bulkBar-sizeInput.ds-input .ds-input__input {
-  width: auto;
-  min-width: 2.75ch;
-  text-align: center;
-}
-
-@supports (field-sizing: content) {
-  .homepage-bulkBar-sizeInput.ds-input .ds-input__input {
-    field-sizing: content;
-  }
-}
-
-.homepage-bulkBar-sizeStep {
-  box-sizing: border-box;
-  display: flex;
-  width: var(--size-6);
-  height: var(--size-6);
-  flex-shrink: 0;
-  align-items: center;
-  justify-content: center;
-  margin: 0;
-  padding: 0;
-  border: none;
-  border-radius: var(--radius-md);
-  background: transparent;
-  cursor: pointer;
-  color: var(--color-main-quaternary);
-}
-
-.homepage-bulkBar-sizeStep:hover:not(:disabled),
-.homepage-bulkBar-sizeStep:focus-visible:not(:disabled),
-.homepage-bulkBar-sizeStep:active:not(:disabled) {
-  color: var(--color-main-primary);
-}
-
-.homepage-bulkBar-sizeStep:focus-visible {
-  outline: none;
-}
-
-/* More options: quaternary idle → accent icon + accent overlay on hover / focus / press / popover open */
-.homepage-bulkAction-settingsBtn.ds-button[data-variant="transparent"] .ds-button__iconSlot {
-  color: var(--color-main-quaternary);
-}
-
-.homepage-bulkAction-settingsBtn.ds-button[data-variant="transparent"]:hover:not(:disabled):not([aria-disabled="true"]),
-.homepage-bulkAction-settingsBtn.ds-button[data-variant="transparent"]:focus-visible:not(:disabled):not([aria-disabled="true"]),
-.homepage-bulkAction-settingsBtn.ds-button[data-variant="transparent"]:active:not(:disabled):not([aria-disabled="true"]),
-.homepage-bulkAction-settingsBtn.ds-button[data-variant="transparent"][aria-expanded="true"]:not(:disabled):not([aria-disabled="true"]),
+/* Color button: accent overlay on hover / focus / press / popover open */
 .homepage-bulkAction-colorBtn.ds-button[data-variant="transparent"]:hover:not(:disabled):not([aria-disabled="true"]),
 .homepage-bulkAction-colorBtn.ds-button[data-variant="transparent"]:focus-visible:not(:disabled):not([aria-disabled="true"]),
 .homepage-bulkAction-colorBtn.ds-button[data-variant="transparent"]:active:not(:disabled):not([aria-disabled="true"]),
@@ -731,10 +1422,6 @@ body {
   background-color: var(--color-overlay-accent);
 }
 
-.homepage-bulkAction-settingsBtn.ds-button[data-variant="transparent"]:hover:not(:disabled):not([aria-disabled="true"]) .ds-button__iconSlot,
-.homepage-bulkAction-settingsBtn.ds-button[data-variant="transparent"]:focus-visible:not(:disabled):not([aria-disabled="true"]) .ds-button__iconSlot,
-.homepage-bulkAction-settingsBtn.ds-button[data-variant="transparent"]:active:not(:disabled):not([aria-disabled="true"]) .ds-button__iconSlot,
-.homepage-bulkAction-settingsBtn.ds-button[data-variant="transparent"][aria-expanded="true"]:not(:disabled):not([aria-disabled="true"]) .ds-button__iconSlot,
 .homepage-bulkAction-colorBtn.ds-button[data-variant="transparent"]:hover:not(:disabled):not([aria-disabled="true"]) .ds-button__iconSlot,
 .homepage-bulkAction-colorBtn.ds-button[data-variant="transparent"]:focus-visible:not(:disabled):not([aria-disabled="true"]) .ds-button__iconSlot,
 .homepage-bulkAction-colorBtn.ds-button[data-variant="transparent"]:active:not(:disabled):not([aria-disabled="true"]) .ds-button__iconSlot,
@@ -748,7 +1435,7 @@ body {
   }
 }
 
-/* Main column body: fills space beside aside; scrolls when icon grid is taller than viewport. */
+/* Main column body: scroll clip; horizontal inset on grid/footer (not here — avoids scrollbar vs grid misalignment). */
 .homepage-pageContent {
   flex: 1 1 auto;
   min-height: 0;
@@ -757,32 +1444,52 @@ body {
   overflow-y: auto;
   box-sizing: border-box;
   margin: 0;
-  padding: var(--spacing-padding-6);
+  padding: 0;
   border: none;
   background: transparent;
 }
 
+.homepage-pageContent > .homepage-iconGrid {
+  /* `min-width: 0` lets the flex column shrink when the info panel opens (grid min-content otherwise overflows). */
+  min-width: 0;
+  box-sizing: border-box;
+  padding-inline: var(--spacing-padding-6);
+  padding-top: var(--spacing-padding-6);
+  padding-bottom: var(--spacing-padding-6);
+}
+
+/* In-scroll footer (mobile home) — match grid horizontal inset; parent has no horizontal padding. */
+.homepage-pageContent > .ds-siteFooter--inScroll {
+  padding-inline: var(--spacing-padding-6);
+}
+
+/* Tablet + mobile footers: Figma + GitHub only (match laptop sidebar). */
+@media (max-width: 1023px) {
+  .ds-siteFooter--fixed,
+  .ds-siteFooter--inScroll {
+    border-top: var(--border-width-base) solid var(--color-border-weak);
+  }
+
+  .ds-siteFooter .ds-siteFooter__socialLink[aria-label='Framer'],
+  .ds-siteFooter .ds-siteFooter__npmLink {
+    display: none;
+  }
+}
+
 /*
- * Below laptop: top inset from the site header lives on the grid; horizontal padding + scroll stay on
- * `.homepage-pageContent` (scrollbar on the main column, not inside the grid).
+ * Below laptop: icon card hover/focus affordances on touch / narrow widths.
  */
 @media (max-width: 1023px) {
-  .homepage-pageContent {
-    padding-top: 0;
-  }
-
-  .homepage-pageContent > .homepage-iconGrid.ds-iconGrid {
-    padding-top: var(--spacing-padding-6);
-    padding-bottom: var(--spacing-padding-6);
-  }
-
-  /*
-   * Icon cards: disable pointer-hover-only affordances on touch / narrow widths.
-   * Keyboard `:focus-visible` paths stay intact (chip + select + card focus ring).
-   */
-  .homepage-iconGrid .ds-iconCard__shell:hover:not([data-selected="true"]) .ds-iconCard:not(:focus-visible) {
+  .homepage-iconGrid .ds-iconCard__shell:hover:not([data-selected="true"]):not([data-info-active="true"]) .ds-iconCard:not(:focus-visible) {
     background: transparent;
     border-color: var(--color-border-extra-weak);
+  }
+
+  .homepage-iconGrid
+    .ds-iconCard__shell[data-info-active="true"]:not([data-selected="true"])
+    .ds-iconCard:not(:focus-visible) {
+    background: var(--color-blue-alpha-25);
+    border-color: var(--color-intent-accent);
   }
 
   .homepage-iconGrid
@@ -793,7 +1500,7 @@ body {
   }
 
   .homepage-iconGrid
-    .ds-iconCard__shell:hover:not([data-selected="true"])
+    .ds-iconCard__shell:hover:not([data-selected="true"]):not([data-info-active="true"])
     .ds-iconCard__select:not(:focus-visible) {
     opacity: 0;
   }
@@ -814,6 +1521,11 @@ body {
   .homepage-tablet-only,
   .homepage-mobile-only {
     display: none !important;
+  }
+
+  /* In-flow panel: allow overlay chip backdrop-filter to sample the wireframe sibling. */
+  .homepage-mainRow > .ds-infoPanel[data-open='true'] {
+    overflow: visible;
   }
 }
 

@@ -6,7 +6,6 @@ import { cn } from "../../utils"
 export {
   BulkActionBarSettingsPanel,
   type BulkActionBarCopyFormat,
-  type BulkActionBarDownloadFormat,
   type BulkActionBarSettingsPanelProps,
 } from "./settings-panel"
 

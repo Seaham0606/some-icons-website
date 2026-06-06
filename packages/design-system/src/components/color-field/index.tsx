@@ -139,7 +139,7 @@ export function ColorField({
                 onColorChange(normalized)
               }
             }}
-            placeholder="default"
+            placeholder="currentColor"
             autoCapitalize="none"
             autoCorrect="off"
             spellCheck={false}
@@ -184,7 +184,7 @@ export function ColorField({
               placeholder=""
               leadingSlot={
                 <SomeIcon
-                  iconName="formatting-eyedropper"
+                  iconName="eyedropper"
                   iconStyle="fill"
                   iconSize="md"
                   padding="2"
