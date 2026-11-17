@@ -253,6 +253,7 @@ export function IconStack({
             <IconPreview
               path={icon.files[style]}
               tintColor={color}
+              isColor={style === 'color'}
               className="homepage-iconStack__icon"
             />
           </div>
@@ -273,6 +274,7 @@ export function IconStack({
           <IconPreview
             path={frontIcon.files[style]}
             tintColor={color}
+            isColor={style === 'color'}
             className="homepage-iconStack__icon"
           />
         </div>

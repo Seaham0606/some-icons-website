@@ -6,9 +6,11 @@ interface IconPreviewProps {
   className?: string
   /** Explicit tint colour for this preview. Defaults to the secondary text colour. */
   tintColor?: string
+  /** When true, renders the SVG directly without color normalization (for multi-color icons). */
+  isColor?: boolean
 }
 
-export function IconPreview({ path, className, tintColor }: IconPreviewProps) {
+export function IconPreview({ path, className, tintColor, isColor }: IconPreviewProps) {
   const { data: svg, isLoading, error } = useSvgFetch(path)
   const resolvedTint = tintColor ?? 'var(--color-main-secondary)'
 
@@ -28,6 +30,19 @@ export function IconPreview({ path, className, tintColor }: IconPreviewProps) {
       >
         ?
       </div>
+    )
+  }
+
+  if (isColor) {
+    // Render SVG directly — strip fixed dimensions so the container controls the size
+    const displaySvg = svg.replace(/<svg\b([^>]*)>/i, (_, attrs: string) =>
+      `<svg${attrs.replace(/\s+(?:width|height)="[^"]*"/gi, '')} width="100%" height="100%">`,
+    )
+    return (
+      <div
+        className={cn(className)}
+        dangerouslySetInnerHTML={{ __html: displaySvg }}
+      />
     )
   }
 

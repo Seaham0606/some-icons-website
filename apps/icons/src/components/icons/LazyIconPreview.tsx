@@ -5,13 +5,14 @@ import { cn } from '@/lib/utils'
 interface LazyIconPreviewProps {
   path: string | undefined
   className?: string
+  isColor?: boolean
 }
 
 /**
  * Lazy loads IconPreview only when it enters the viewport.
  * This significantly improves performance when rendering many icons.
  */
-export function LazyIconPreview({ path, className }: LazyIconPreviewProps) {
+export function LazyIconPreview({ path, className, isColor }: LazyIconPreviewProps) {
   const [isVisible, setIsVisible] = useState(false)
   const containerRef = useRef<HTMLDivElement>(null)
 
@@ -55,7 +56,7 @@ export function LazyIconPreview({ path, className }: LazyIconPreviewProps) {
       className={cn('flex h-full w-full items-center justify-center', className)}
     >
       {isVisible ? (
-        <IconPreview path={path} className="icon-grid-preview" />
+        <IconPreview path={path} className="icon-grid-preview" isColor={isColor} />
       ) : (
         <div
           className="icon-grid-preview"

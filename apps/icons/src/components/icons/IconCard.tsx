@@ -80,7 +80,7 @@ export const IconCard = memo(function IconCard({
       selected={isSelected}
       infoActive={infoPanelActive}
       previewSlot={
-        <LazyIconPreview path={icon.files[style]} />
+        <LazyIconPreview path={icon.files[style]} isColor={style === 'color'} />
       }
       onPrimaryClick={handleCardClick}
       onSelectionToggleClick={handleSelectionToggleClick}

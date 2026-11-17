@@ -387,39 +387,41 @@ export function IconInfoPanelContent({ icon }: IconInfoPanelContentProps) {
               }
             />
 
-            {/* Row 2: Color */}
-            <InputField
-              className="homepage-infoPanelContent__colorField"
-              label="Color"
-              showCol2={SHOW_COLOR_PRESET_SWATCHES}
-              col2Width="size-12"
-              data-slot="infoPanel-color"
-              labelTrailingSlot={
-                showColorReset ? (
-                  <button
-                    type="button"
-                    className="label-xs homepage-infoPanel-labelReset"
-                    aria-label="Reset color to default"
-                    onClick={handleResetExportColor}
-                  >
-                    Reset
-                  </button>
-                ) : undefined
-              }
-              contentSlot={
-                <div className="homepage-infoPanel-colorHexWrap">
-                  <ColorHexField color={selectedColor} onColorChange={setSelectedColor} />
-                </div>
-              }
-              secondarySlot={
-                SHOW_COLOR_PRESET_SWATCHES ? (
-                  <ColorPresetTrigger
-                    color={selectedColor}
-                    onColorChange={setSelectedColor}
-                  />
-                ) : undefined
-              }
-            />
+            {/* Row 2: Color — hidden for color-style icons (they have baked-in colors) */}
+            {style !== 'color' && (
+              <InputField
+                className="homepage-infoPanelContent__colorField"
+                label="Color"
+                showCol2={SHOW_COLOR_PRESET_SWATCHES}
+                col2Width="size-12"
+                data-slot="infoPanel-color"
+                labelTrailingSlot={
+                  showColorReset ? (
+                    <button
+                      type="button"
+                      className="label-xs homepage-infoPanel-labelReset"
+                      aria-label="Reset color to default"
+                      onClick={handleResetExportColor}
+                    >
+                      Reset
+                    </button>
+                  ) : undefined
+                }
+                contentSlot={
+                  <div className="homepage-infoPanel-colorHexWrap">
+                    <ColorHexField color={selectedColor} onColorChange={setSelectedColor} />
+                  </div>
+                }
+                secondarySlot={
+                  SHOW_COLOR_PRESET_SWATCHES ? (
+                    <ColorPresetTrigger
+                      color={selectedColor}
+                      onColorChange={setSelectedColor}
+                    />
+                  ) : undefined
+                }
+              />
+            )}
 
             {/* Row 3: Code snippets */}
             <CodeSnippetGroup
