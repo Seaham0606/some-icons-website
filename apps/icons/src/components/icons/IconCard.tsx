@@ -44,7 +44,7 @@ export const IconCard = memo(function IconCard({
 
   useEffect(() => {
     if (!svg) return
-    const altPath = style === 'outline' ? icon.files.filled : icon.files.outline
+    const altPath = style === 'outline' ? icon.files.filled : style === 'filled' ? icon.files.outline : undefined
     if (!altPath) return
     void queryClient.prefetchQuery({
       queryKey: ['svg', altPath],
