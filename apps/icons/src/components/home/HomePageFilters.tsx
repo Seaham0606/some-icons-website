@@ -73,6 +73,7 @@ export function HomeCategoryList({
 const STYLE_SEGMENT_OPTIONS = [
   { value: 'outline' as const, label: 'Outline' },
   { value: 'filled' as const, label: 'Filled' },
+  { value: 'color' as const, label: 'Colour' },
 ] satisfies ReadonlyArray<{ value: IconStyle; label: string }>
 
 export interface HomePageFilterStackProps {

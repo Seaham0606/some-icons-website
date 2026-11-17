@@ -1,6 +1,7 @@
 export interface IconFile {
   outline?: string
   filled?: string
+  color?: string
 }
 
 export interface Icon {
@@ -14,4 +15,4 @@ export interface IconIndex {
   icons: Icon[]
 }
 
-export type IconStyle = 'outline' | 'filled'
+export type IconStyle = 'outline' | 'filled' | 'color'
