@@ -38,6 +38,7 @@ export function usePageMeta(meta: PageMeta) {
     document.title = meta.title
 
     setMeta('name', 'description', meta.description)
+    setMeta('name', 'robots', meta.noindex ? 'noindex, nofollow' : 'index, follow')
     setMeta('property', 'og:type', ogType)
     setMeta('property', 'og:site_name', SITE_NAME)
     setMeta('property', 'og:title', meta.title)
@@ -56,5 +57,5 @@ export function usePageMeta(meta: PageMeta) {
     setMeta('name', 'twitter:image:alt', OG_IMAGE_ALT)
 
     setLink('canonical', canonical)
-  }, [meta.description, meta.ogType, meta.path, meta.title])
+  }, [meta.description, meta.noindex, meta.ogType, meta.path, meta.title])
 }

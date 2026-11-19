@@ -7,12 +7,13 @@ import { cn } from '@/lib/utils'
 import { useColorStore } from '@/stores/colorStore'
 import type { Icon } from '@/types/icon'
 import gsap from 'gsap'
+import { EASE_OUT, MOTION_S } from '@/lib/motion'
 import { useLayoutEffect, useMemo, useRef, type ReactElement, type Ref } from 'react'
 
 const GRID_UNITS = 24
 
-const WIREFRAME_TWEEN_DURATION_S = 0.48
-const WIREFRAME_TWEEN_EASE = 'power3.out'
+const WIREFRAME_TWEEN_DURATION_S = MOTION_S.slow
+const WIREFRAME_TWEEN_EASE = EASE_OUT
 
 function IconWireframeGridSvg({ gridRef }: { gridRef: Ref<SVGSVGElement> }) {
   const lines = useMemo(() => {
@@ -59,12 +60,7 @@ function IconWireframeGridSvg({ gridRef }: { gridRef: Ref<SVGSVGElement> }) {
   )
 }
 
-function applyStackMode(
-  slot: HTMLDivElement,
-  frontCard: HTMLDivElement,
-  multi: boolean,
-  displaySize?: number,
-) {
+function applySlotSize(slot: HTMLDivElement, multi: boolean, displaySize?: number) {
   if (displaySize != null) {
     const px = Math.min(displaySize, 200)
     gsap.set(slot, { width: px, height: px })
@@ -74,7 +70,40 @@ function applyStackMode(
       height: 'auto',
     })
   }
+}
+
+function applyStackMode(
+  slot: HTMLDivElement,
+  frontCard: HTMLDivElement,
+  multi: boolean,
+  displaySize?: number,
+) {
+  applySlotSize(slot, multi, displaySize)
   gsap.set(frontCard, { '--stack-card-chrome': multi ? 1 : 0 })
+}
+
+/**
+ * Resize the slot without tweening layout: apply the final size immediately, then play a
+ * transform-only scale from the previous visual size (FLIP). Handles interrupted tweens by
+ * measuring the slot's current visual width.
+ */
+function flipSlotSize(slot: HTMLDivElement, applySize: () => void) {
+  const fromW = slot.offsetWidth * (Number(gsap.getProperty(slot, 'scale')) || 1)
+  gsap.killTweensOf(slot)
+  gsap.set(slot, { scale: 1 })
+  applySize()
+  const toW = slot.offsetWidth
+  if (!fromW || !toW) return
+  gsap.fromTo(
+    slot,
+    { scale: fromW / toW },
+    {
+      scale: 1,
+      duration: WIREFRAME_TWEEN_DURATION_S,
+      ease: WIREFRAME_TWEEN_EASE,
+      clearProps: 'scale',
+    },
+  )
 }
 
 export interface IconWireframeProps {
@@ -136,6 +165,15 @@ export function IconWireframe({
   const prevStackFrontIdRef = useRef<string | null>(null)
 
   useLayoutEffect(() => {
+    const els = [gridRef.current, slotRef.current, frontCardRef.current].filter(
+      (el): el is NonNullable<typeof el> => el != null,
+    )
+    return () => {
+      gsap.killTweensOf(els)
+    }
+  }, [])
+
+  useLayoutEffect(() => {
     const grid = gridRef.current
     const slot = slotRef.current
     const frontCard = frontCardRef.current
@@ -153,13 +191,6 @@ export function IconWireframe({
       '(prefers-reduced-motion: reduce)',
     ).matches
 
-    const singleSlotWidth =
-      displaySize != null
-        ? Math.min(displaySize, 200)
-        : `${SINGLE_STACK_SLOT_PERCENT}%`
-    const multiSlotWidth =
-      displaySize != null ? Math.min(displaySize, 200) : MULTI_STACK_SLOT_PX
-
     // ── Initial mount ──
     if (wasMulti === null) {
       gsap.set(grid, { opacity: isMultiSelect ? 0 : 1 })
@@ -175,22 +206,13 @@ export function IconWireframe({
         return
       }
 
-      gsap.killTweensOf([grid, slot])
-      gsap.timeline()
-        .to(
-          grid,
-          { opacity: 0, duration: WIREFRAME_TWEEN_DURATION_S, ease: WIREFRAME_TWEEN_EASE },
-          0,
-        )
-        .to(
-          slot,
-          {
-            width: multiSlotWidth,
-            duration: WIREFRAME_TWEEN_DURATION_S,
-            ease: WIREFRAME_TWEEN_EASE,
-          },
-          0,
-        )
+      gsap.killTweensOf(grid)
+      gsap.to(grid, {
+        opacity: 0,
+        duration: WIREFRAME_TWEEN_DURATION_S,
+        ease: WIREFRAME_TWEEN_EASE,
+      })
+      flipSlotSize(slot, () => applySlotSize(slot, true, displaySize))
       // Chrome tween runs independently so it doesn't cancel IconStack's entrance animation
       gsap.to(frontCard, {
         '--stack-card-chrome': 1,
@@ -209,22 +231,13 @@ export function IconWireframe({
         return
       }
 
-      gsap.killTweensOf([grid, slot])
-      gsap.timeline()
-        .to(
-          grid,
-          { opacity: 1, duration: WIREFRAME_TWEEN_DURATION_S, ease: WIREFRAME_TWEEN_EASE },
-          0,
-        )
-        .to(
-          slot,
-          {
-            width: singleSlotWidth,
-            duration: WIREFRAME_TWEEN_DURATION_S,
-            ease: WIREFRAME_TWEEN_EASE,
-          },
-          0,
-        )
+      gsap.killTweensOf(grid)
+      gsap.to(grid, {
+        opacity: 1,
+        duration: WIREFRAME_TWEEN_DURATION_S,
+        ease: WIREFRAME_TWEEN_EASE,
+      })
+      flipSlotSize(slot, () => applySlotSize(slot, false, displaySize))
       gsap.to(frontCard, {
         '--stack-card-chrome': 0,
         duration: WIREFRAME_TWEEN_DURATION_S,

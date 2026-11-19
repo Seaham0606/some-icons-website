@@ -40,6 +40,7 @@ import {
   type KeyboardEvent,
 } from 'react'
 import { toast } from 'sonner'
+import { mapWithConcurrency } from '@/lib/utils'
 
 const EXPORT_SIZE_OPTIONS = SIZE_PRESETS.map((size) => ({
   value: size,
@@ -58,10 +59,12 @@ export function IconInfoPanelContent({ icon }: IconInfoPanelContentProps) {
   const validateExport = useExportStore((s) => s.validate)
   const { sizeValid } = validateExport()
   const sizeFieldError = showExportValidation && !sizeValid
-  const selectedColor = useColorStore((s) => s.selectedColor)
+  const storedColor = useColorStore((s) => s.selectedColor)
   const setSelectedColor = useColorStore((s) => s.setColor)
   const resetSelectedColor = useColorStore((s) => s.reset)
   const style = useFilterStore((s) => s.style)
+  /** Color-style icons keep their baked-in colors; the color control is hidden for them. */
+  const selectedColor = style === 'color' ? null : storedColor
   const selectedIds = useSelectionStore((s) => s.selectedIds)
   const selectionCount = useSelectionStore((s) => s.count)
   const { data: allIcons } = useIcons()
@@ -86,11 +89,16 @@ export function IconInfoPanelContent({ icon }: IconInfoPanelContentProps) {
   const [svgSnippetCode, setSvgSnippetCode] = useState<string>('')
   const [svgSnippetLoading, setSvgSnippetLoading] = useState(false)
 
+  // The React package ships outline and filled components only, so Color icons are SVG-only.
+  const reactUnavailable = style === 'color'
+  const svgUnavailable = selectionCount > 1
   useEffect(() => {
-    if (selectionCount > 1 && activeSnippetTab === 'svg') {
+    if (svgUnavailable && !reactUnavailable && activeSnippetTab === 'svg') {
       setActiveSnippetTab('react')
+    } else if (reactUnavailable && !svgUnavailable && activeSnippetTab === 'react') {
+      setActiveSnippetTab('svg')
     }
-  }, [selectionCount, activeSnippetTab])
+  }, [svgUnavailable, reactUnavailable, activeSnippetTab])
 
   useEffect(() => {
     if (activeSnippetTab !== 'svg') return
@@ -165,9 +173,10 @@ export function IconInfoPanelContent({ icon }: IconInfoPanelContentProps) {
   }, [])
 
   const sizePresetValue = useMemo((): (typeof SIZE_PRESETS)[number] | null => {
-    if (exportSize == null) return null
-    return (SIZE_PRESETS as readonly number[]).includes(exportSize)
-      ? (exportSize as (typeof SIZE_PRESETS)[number])
+    // null means "default size" — show it as the selected preset
+    const effective = exportSize ?? DEFAULT_ICON_SIZE
+    return (SIZE_PRESETS as readonly number[]).includes(effective)
+      ? (effective as (typeof SIZE_PRESETS)[number])
       : null
   }, [exportSize])
 
@@ -227,7 +236,7 @@ export function IconInfoPanelContent({ icon }: IconInfoPanelContentProps) {
   }, [resetSelectedColor])
 
   const showSizeReset = exportSize !== null || customExportSize !== ''
-  const showColorReset = selectedColor !== null
+  const showColorReset = storedColor !== null
 
   const handleCopySnippetSection = useCallback(
     async (text: string, which: 'import' | 'usage' | 'svg') => {
@@ -269,16 +278,14 @@ export function IconInfoPanelContent({ icon }: IconInfoPanelContentProps) {
         if (selectionCount > 1 && allIcons != null) {
           const iconsToExport = [...selectedIds]
             .map((id) => allIcons.find((ic) => ic.id === id))
-            .filter((ic): ic is NonNullable<typeof ic> => ic != null)
+            .filter((ic): ic is NonNullable<typeof ic> => ic != null && !!ic.files[style])
 
-          const iconData = await Promise.all(
-            iconsToExport.map(async (ic) => {
-              const path = ic.files[style]
-              if (!path) throw new Error(`No ${style} variant for ${ic.id}`)
-              const svg = await fetchSvg(path)
-              return { id: ic.id, svg }
-            }),
-          )
+          if (iconsToExport.length === 0) throw new Error(`No ${style} variants selected`)
+
+          const iconData = await mapWithConcurrency(iconsToExport, 8, async (ic) => {
+            const svg = await fetchSvg(ic.files[style]!)
+            return { id: ic.id, svg }
+          })
 
           const blob = await exportToZip(iconData, exportOpts)
           downloadBlob(blob, `some-icons-${style}-${effectiveSize}px.zip`)
@@ -429,6 +436,7 @@ export function IconInfoPanelContent({ icon }: IconInfoPanelContentProps) {
                 {
                   id: 'react',
                   label: 'React',
+                  disabled: reactUnavailable,
                   trailingSlot: (
                     <button
                       type="button"
@@ -445,12 +453,16 @@ export function IconInfoPanelContent({ icon }: IconInfoPanelContentProps) {
                     </button>
                   ),
                 },
-                { id: 'svg', label: 'SVG', disabled: selectionCount > 1 },
+                { id: 'svg', label: 'SVG', disabled: svgUnavailable },
               ]}
               activeTab={activeSnippetTab}
               onTabChange={(id) => setActiveSnippetTab(id as 'react' | 'svg')}
               contentSlot={
-                activeSnippetTab === 'react' ? (
+                reactUnavailable && svgUnavailable ? (
+                  <p className="label-xs" style={{ color: 'var(--color-main-tertiary)' }}>
+                    Color icons are available as SVG files only. Use Download to get a ZIP of the selection.
+                  </p>
+                ) : activeSnippetTab === 'react' ? (
                   <>
                     <div className="rii-codeFrame">
                       <CodeSnippet

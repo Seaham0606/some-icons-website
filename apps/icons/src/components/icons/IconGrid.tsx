@@ -2,6 +2,9 @@ import { IconCard } from './IconCard'
 import { useFilteredGridIcons } from '@/hooks/useFilteredGridIcons'
 import { useIcons } from '@/hooks/useIcons'
 import { IconGrid as IconGridUI } from 'design-system'
+import { useGridReveal } from '@/hooks/useGridReveal'
+import { useFilterStore } from '@/stores/filterStore'
+import { useRef } from 'react'
 import type { Icon } from '@/types/icon'
 
 interface IconGridProps {
@@ -23,9 +26,18 @@ export function IconGrid({
 }: IconGridProps) {
   const { isLoading, error } = useIcons()
   const filteredIcons = useFilteredGridIcons()
+  const category = useFilterStore((s) => s.category)
+  const style = useFilterStore((s) => s.style)
+  const gridRef = useRef<HTMLDivElement>(null)
+  useGridReveal(
+    gridRef,
+    `${category}|${style}`,
+    !isLoading && !error && filteredIcons.length > 0,
+  )
 
   return (
     <IconGridUI
+      ref={gridRef}
       className="homepage-iconGrid"
       isLoading={isLoading}
       hasError={!!error}

@@ -5,7 +5,11 @@ import {
 } from '@/components/overlay/GradientOverlay'
 import { SocialLinks } from '@/components/layout/SocialLinks'
 import { IconGrid } from '@/components/icons/IconGrid'
-import { HomeCategoryList, HomePageFilterStack } from '@/components/home/HomePageFilters'
+import {
+  HomeCategoryList,
+  HomePageFilterStack,
+  STYLE_SEGMENT_OPTIONS,
+} from '@/components/home/HomePageFilters'
 import { PageContent } from '@/components/layout'
 import { useSelectionStore } from '@/stores/selectionStore'
 import { useFilterStore } from '@/stores/filterStore'
@@ -15,6 +19,7 @@ import {
   Button,
   Chip,
   cn,
+  SegmentedControl,
   InfoPanel,
   Input,
   InputField,
@@ -31,8 +36,11 @@ import { useBackdropPresence } from '@/hooks/useBackdropPresence'
 import { useFilteredGridIcons } from '@/hooks/useFilteredGridIcons'
 import { useIcons } from '@/hooks/useIcons'
 import { useChangelog } from '@/hooks/useChangelog'
-import type { Icon } from '@/types/icon'
+import type { Icon, IconStyle } from '@/types/icon'
 import gsap from 'gsap'
+import { EASE_OUT, MOTION_S } from '@/lib/motion'
+import { toast } from 'sonner'
+import { ICON_SET_VERSION } from '@/lib/constants'
 import {
   useCallback,
   useEffect,
@@ -86,6 +94,7 @@ export default function HomePage() {
   useChangelog()
   const [headerCategoryOpen, setHeaderCategoryOpen] = useState(false)
   const [mobileSearchOverlayOpen, setMobileSearchOverlayOpen] = useState(false)
+  const [settingsRowOpen, setSettingsRowOpen] = useState(false)
   const navChromeRef = useRef<HTMLDivElement>(null)
   const categoryPanelId = useId()
   const bulkBarsWrapRef = useRef<HTMLDivElement>(null)
@@ -121,8 +130,8 @@ export default function HomePage() {
       { yPercent: 40 },
       {
         yPercent: 0,
-        duration: 0.45,
-        ease: 'power3.out',
+        duration: MOTION_S.slow,
+        ease: EASE_OUT,
       },
     )
   }, [selectionCount])
@@ -163,7 +172,7 @@ export default function HomePage() {
     const observer = new ResizeObserver(syncNavChromeHeight)
     observer.observe(el)
     return () => observer.disconnect()
-  }, [headerCategoryOpen, mobileSearchOverlayOpen])
+  }, [headerCategoryOpen, mobileSearchOverlayOpen, settingsRowOpen])
 
   useEffect(() => {
     if (!scrollLocked) return
@@ -243,11 +252,54 @@ export default function HomePage() {
     }
   }, [selectionCount, infoPanelOpen, handleInfoPanelClose])
 
+  // When the style changes, icons without that variant (e.g. most icons have no Color version)
+  // can't be shown or exported. Drop them from the selection instead of leaving hidden picks
+  // that make the download fail, and close the panel if it is showing an icon with no variant.
+  const handleIconStyleChange = useCallback(
+    (nextStyle: IconStyle) => {
+      setIconStyle(nextStyle)
+      if (!allIcons) return
+      const byId = new Map(allIcons.map((ic) => [ic.id, ic]))
+      const missing = [...useSelectionStore.getState().selectedIds].filter(
+        (id) => !byId.get(id)?.files[nextStyle],
+      )
+      if (missing.length > 0) {
+        deselectMany(missing)
+        toast(
+          `${missing.length} ${missing.length === 1 ? 'icon' : 'icons'} without a ${nextStyle} version ${missing.length === 1 ? 'was' : 'were'} deselected`,
+        )
+      }
+      if (
+        infoPanelOpen &&
+        infoPanelIcon &&
+        !infoPanelIcon.files[nextStyle] &&
+        useSelectionStore.getState().count === 0
+      ) {
+        handleInfoPanelClose()
+      }
+    },
+    [allIcons, deselectMany, handleInfoPanelClose, infoPanelIcon, infoPanelOpen, setIconStyle],
+  )
+
   /** Below laptop, expanded search row and category panel share one strip — only one open at a time. */
   const toggleMobileHeaderSearch = useCallback(() => {
     setMobileSearchOverlayOpen((open) => {
       const next = !open
-      if (next) setHeaderCategoryOpen(false)
+      if (next) {
+        setHeaderCategoryOpen(false)
+        setSettingsRowOpen(false)
+      }
+      return next
+    })
+  }, [])
+
+  const toggleSettingsRow = useCallback(() => {
+    setSettingsRowOpen((open) => {
+      const next = !open
+      if (next) {
+        setHeaderCategoryOpen(false)
+        setMobileSearchOverlayOpen(false)
+      }
       return next
     })
   }, [])
@@ -255,7 +307,10 @@ export default function HomePage() {
   const toggleHeaderCategory = useCallback(() => {
     setHeaderCategoryOpen((open) => {
       const next = !open
-      if (next) setMobileSearchOverlayOpen(false)
+      if (next) {
+        setMobileSearchOverlayOpen(false)
+        setSettingsRowOpen(false)
+      }
       return next
     })
   }, [])
@@ -270,8 +325,8 @@ export default function HomePage() {
   }, [headerCategoryOpen])
 
   const versionChip = (
-    <Chip variant="accent" aria-label="Version 1.1.6">
-      v1.1.6
+    <Chip variant="accent" aria-label={`Version ${ICON_SET_VERSION}`}>
+      v{ICON_SET_VERSION}
     </Chip>
   )
 
@@ -289,7 +344,7 @@ export default function HomePage() {
     searchQuery,
     onSearchChange: setSearchQuery,
     iconStyle,
-    onIconStyleChange: setIconStyle,
+    onIconStyleChange: handleIconStyleChange,
   }
 
   const copyrightNode = <>© {new Date().getFullYear()} Some UI</>
@@ -323,8 +378,18 @@ export default function HomePage() {
           searchPlaceholder="Search icons..."
           searchAriaLabel="Search icons"
           mobileSearchOpen={mobileSearchOverlayOpen}
-          settingsRowOpen={false}
-          rightSlot={({ mobileSearchPanelId }) => (
+          settingsRowOpen={settingsRowOpen}
+          settingsBottomSlot={
+            <div className="homepage-settingsRow">
+              <SegmentedControl<IconStyle>
+                options={STYLE_SEGMENT_OPTIONS}
+                value={iconStyle}
+                onChange={handleIconStyleChange}
+              />
+              <HomeThemeButton />
+            </div>
+          }
+          rightSlot={({ mobileSearchPanelId, settingsRowPanelId }) => (
             <>
               <div className="ds-siteHeader__tabletSearch ds-siteHeader-tabletOnly">
                 <InputField
@@ -394,6 +459,24 @@ export default function HomePage() {
                     }
                   />
                 </div>
+                <Button
+                  type="button"
+                  variant="transparent"
+                  size="md"
+                  radius="lg"
+                  aria-label="Style and theme"
+                  aria-expanded={settingsRowOpen}
+                  aria-controls={settingsRowPanelId}
+                  onClick={toggleSettingsRow}
+                  leadingSlot={
+                    <SomeIcon
+                      iconName="settings-slider"
+                      iconStyle="outline"
+                      iconSize="md"
+                      padding="050"
+                    />
+                  }
+                />
                 <Button
                   type="button"
                   variant="transparent"

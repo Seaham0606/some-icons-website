@@ -48,18 +48,6 @@ body {
   overflow: hidden;
 }
 
-/*
- * Root view-transition styles (unused): `uiStore` no longer calls `startViewTransition`
- * because full-page snapshots lag on the large icon grid. Kept for optional re-enable.
- */
-@media (prefers-reduced-motion: no-preference) {
-  ::view-transition-old(root),
-  ::view-transition-new(root) {
-    animation-duration: 0.4s;
-    animation-timing-function: ease;
-  }
-}
-
 /* Radix Switch + textarea (icons app only) */
 .ui-switch {
   display: inline-flex;
@@ -69,7 +57,7 @@ body {
   width: var(--size-10);
   padding: var(--spacing-050);
   border-radius: var(--radius-full);
-  transition: border-color 150ms ease, background-color 150ms ease, box-shadow 150ms ease;
+  transition: border-color var(--ds-motion-fast) var(--ds-motion-ease), background-color var(--ds-motion-fast) var(--ds-motion-ease), box-shadow var(--ds-motion-fast) var(--ds-motion-ease);
   outline: none;
   cursor: pointer;
 
@@ -100,7 +88,7 @@ body {
 
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.15);
 
-  transition: transform 150ms ease;
+  transition: transform var(--ds-motion-fast) var(--ds-motion-ease);
   transform: translateX(calc(var(--spacing-050) - 3px));
 }
 
@@ -126,7 +114,7 @@ body {
   padding: var(--spacing-2) var(--spacing-3);
   font-size: 16px;
 
-  transition: color 150ms ease, box-shadow 150ms ease, border-color 150ms ease;
+  transition: color var(--ds-motion-fast) var(--ds-motion-ease), box-shadow var(--ds-motion-fast) var(--ds-motion-ease), border-color var(--ds-motion-fast) var(--ds-motion-ease);
 }
 
 .ui-textarea::placeholder {
@@ -282,8 +270,8 @@ body {
 }
 
 .app-backdrop {
-  --ds-dropdown-ease: ease-in-out;
-  --ds-dropdown-duration: 360ms;
+  --ds-dropdown-ease: var(--ds-motion-ease);
+  --ds-dropdown-duration: var(--ds-motion-slow);
   position: fixed;
   inset: 0;
   z-index: 5;
@@ -597,7 +585,7 @@ body {
   background: transparent;
   cursor: pointer;
   color: var(--color-main-tertiary);
-  transition: color 150ms ease;
+  transition: color var(--ds-motion-fast) var(--ds-motion-ease);
 }
 
 .homepage-infoPanel-labelReset:hover {
@@ -621,6 +609,15 @@ body {
   border-radius: var(--radius-lg);
   border: var(--border-width-base) solid var(--color-border-weak);
   background-color: var(--color-background-elevation);
+}
+
+/* Phones/tablets: info panel is a full-screen overlay — cap the square preview so controls stay reachable */
+@media (max-width: 767px) {
+  .homepage-infoPanelWireframeShell {
+    width: min(100%, 260px);
+    align-self: center;
+    margin-inline: auto;
+  }
 }
 
 .homepage-iconWireframe__clip {
@@ -759,9 +756,9 @@ body {
   background-color: var(--color-background-input);
   background-image: none;
   transition:
-    border-color 300ms ease,
-    box-shadow 200ms ease,
-    background-color 200ms ease;
+    border-color var(--ds-motion-base) var(--ds-motion-ease),
+    box-shadow var(--ds-motion-base) var(--ds-motion-ease),
+    background-color var(--ds-motion-base) var(--ds-motion-ease);
 }
 
 .homepage-infoPanelContent__colorField
@@ -1019,7 +1016,7 @@ body {
   border-radius: var(--radius-sm);
   color: var(--color-main-tertiary);
   cursor: pointer;
-  transition: background 120ms ease, color 120ms ease;
+  transition: background var(--ds-motion-fast) var(--ds-motion-ease), color var(--ds-motion-fast) var(--ds-motion-ease);
 }
 
 .rii-close:hover {
@@ -1197,7 +1194,7 @@ body {
   align-items: stretch;
   pointer-events: none;
   opacity: 0;
-  transition: opacity 0.2s ease;
+  transition: opacity var(--ds-motion-base) var(--ds-motion-ease);
 }
 
 .gradient-overlay--visible {
@@ -1315,7 +1312,7 @@ body {
   opacity: 0;
   pointer-events: none;
   white-space: nowrap;
-  transition: opacity 0.1s ease;
+  transition: opacity var(--ds-motion-fast) var(--ds-motion-ease);
 }
 
 /*
@@ -1565,5 +1562,34 @@ body {
 @media (min-width: 960px) and (max-width: 1023px) {
   .homepage-iconGrid.ds-iconGrid {
     grid-template-columns: repeat(8, minmax(0, 1fr));
+  }
+}
+
+/* Style + theme row in the header settings panel (below laptop width). */
+.homepage-settingsRow {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-gap-3);
+  padding-bottom: var(--spacing-gap-3);
+}
+
+.homepage-settingsRow > :first-child {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+/* Loading placeholder fill for icon previews (was referenced but never defined). */
+:root {
+  --item-grid: var(--color-black-alpha-25);
+}
+
+[data-theme="dark"] {
+  --item-grid: var(--color-white-alpha-25);
+}
+
+/* Phones: three header actions leave no room for the version chip next to the title. */
+@media (max-width: 430px) {
+  .ds-siteHeader__leftSlot .ds-chip {
+    display: none;
   }
 }

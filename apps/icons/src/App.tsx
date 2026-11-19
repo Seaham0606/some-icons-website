@@ -7,6 +7,7 @@ import { useUIStore } from '@/stores/uiStore'
 import { DocumentHead } from '@/components/seo/DocumentHead'
 import HomePage from '@/pages/HomePage'
 import ChangelogPage from '@/pages/ChangelogPage'
+import NotFoundPage from '@/pages/NotFoundPage'
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -73,14 +74,16 @@ function Toaster(props: ToasterProps) {
             '!rounded-[999px] !border-0 !backdrop-blur-[10px] !pl-3 !pr-4 !py-2 !text-[16px] !font-semibold !w-fit !gap-3',
           success:
             '!bg-[var(--color-black-alpha-200)] dark:!bg-[var(--color-white-alpha-200)] !text-black dark:!text-white',
+          default:
+            '!bg-[var(--color-black-alpha-200)] dark:!bg-[var(--color-white-alpha-200)] !text-black dark:!text-white',
         },
       }}
       style={
         {
-          '--normal-bg': 'var(--popover)',
-          '--normal-text': 'var(--popover-foreground)',
-          '--normal-border': 'var(--border)',
-          '--border-radius': 'var(--radius)',
+          '--normal-bg': 'var(--color-background-elevation)',
+          '--normal-text': 'var(--color-main-primary)',
+          '--normal-border': 'var(--color-border-base)',
+          '--border-radius': '999px',
         } as React.CSSProperties
       }
       {...props}
@@ -96,6 +99,7 @@ export default function App() {
         <Routes>
           <Route path="/" element={<HomePage />} />
           <Route path="/changelog" element={<ChangelogPage />} />
+          <Route path="*" element={<NotFoundPage />} />
         </Routes>
         <Toaster position="bottom-center" />
         <Analytics />

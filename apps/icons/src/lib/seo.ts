@@ -19,6 +19,8 @@ export type PageMeta = {
   description: string
   path: string
   ogType?: 'website' | 'article'
+  /** Keep the page out of search indexes (e.g. 404). */
+  noindex?: boolean
 }
 
 const PAGE_META: Record<string, PageMeta> = {
@@ -35,7 +37,14 @@ const PAGE_META: Record<string, PageMeta> = {
 }
 
 export function getPageMeta(pathname: string): PageMeta {
-  return PAGE_META[pathname] ?? PAGE_META['/']
+  return (
+    PAGE_META[pathname] ?? {
+      title: `Page not found — ${SITE_NAME}`,
+      description: DEFAULT_DESCRIPTION,
+      path: pathname,
+      noindex: true,
+    }
+  )
 }
 
 export function getCanonicalUrl(path: string): string {

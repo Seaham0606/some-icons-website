@@ -4,6 +4,8 @@ import * as React from "react"
 import { cn } from "../../utils"
 
 export interface IconGridProps {
+  /** Ref to the grid element (only attached when icons are rendered). */
+  ref?: React.Ref<HTMLDivElement>
   className?: string
   style?: React.CSSProperties
   isLoading?: boolean
@@ -19,6 +21,7 @@ export interface IconGridProps {
 }
 
 export function IconGrid({
+  ref,
   className,
   style,
   isLoading = false,
@@ -78,7 +81,7 @@ export function IconGrid({
   }
 
   return (
-    <div className={cn("ds-iconGrid", className)} style={mergedStyle}>
+    <div ref={ref} className={cn("ds-iconGrid", className)} style={mergedStyle}>
       {children}
     </div>
   )

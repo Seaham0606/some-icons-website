@@ -194,7 +194,7 @@ button.ds-chip[data-variant="transparent"]:hover:not(:disabled) {
   border-radius: var(--radius-sm);
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
-  transition: color 120ms ease, background-color 120ms ease;
+  transition: color var(--ds-motion-fast) var(--ds-motion-ease), background-color var(--ds-motion-fast) var(--ds-motion-ease);
 }
 
 .ds-chipTrailingBtn:hover {
@@ -211,7 +211,7 @@ button.ds-chip[data-variant="transparent"]:hover:not(:disabled) {
 .ds-chip--compound .ds-chipTrailingBtn {
   padding: 0;
   color: inherit;
-  transition: color 120ms ease;
+  transition: color var(--ds-motion-fast) var(--ds-motion-ease);
 }
 
 .ds-chip--compound .ds-chipTrailingBtn:hover {
@@ -364,8 +364,8 @@ button.ds-chip[data-variant="transparent"]:hover:not(:disabled) {
  * Laptop+ (1024px): in-flow width transition (0→320px); pushes main column so icon grid reflows.
  */
 .ds-infoPanel {
-  --ds-infoPanel-ease: ease-in-out;
-  --ds-infoPanel-duration: 360ms;
+  --ds-infoPanel-ease: var(--ds-motion-ease);
+  --ds-infoPanel-duration: var(--ds-motion-slow);
   /* narrow: full-page overlay */
   position: fixed;
   top: 0;
@@ -527,9 +527,9 @@ button.ds-chip[data-variant="transparent"]:hover:not(:disabled) {
   /* Figma frame padding is inside the stroke; subtract border so outer size matches. */
   padding: calc(var(--spacing-padding-1) - var(--border-width-base));
   transition:
-    border-color 300ms ease,
-    box-shadow 200ms ease,
-    background 200ms ease;
+    border-color var(--ds-motion-base) var(--ds-motion-ease),
+    box-shadow var(--ds-motion-base) var(--ds-motion-ease),
+    background var(--ds-motion-base) var(--ds-motion-ease);
 }
 
 .ds-input[data-frame="borderless"] {
@@ -736,7 +736,7 @@ button.ds-chip[data-variant="transparent"]:hover:not(:disabled) {
   background: transparent;
   cursor: pointer;
   color: inherit;
-  transition: opacity 200ms ease;
+  transition: opacity var(--ds-motion-base) var(--ds-motion-ease);
 }
 
 .ds-input__trailingAction:hover {
@@ -756,8 +756,8 @@ button.ds-chip[data-variant="transparent"]:hover:not(:disabled) {
 
 /* Dropdown — `.ds-input` trigger + `.ds-dropdown__menu` region. */
 .ds-dropdown {
-  --ds-dropdown-ease: ease-in-out;
-  --ds-dropdown-duration: 360ms;
+  --ds-dropdown-ease: var(--ds-motion-ease);
+  --ds-dropdown-duration: var(--ds-motion-slow);
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
@@ -1002,9 +1002,9 @@ button.ds-dropdown__trigger.ds-input {
   outline: none;
   appearance: none;
   transition:
-    border-color 200ms ease,
-    box-shadow 200ms ease,
-    background-color 200ms ease;
+    border-color var(--ds-motion-base) var(--ds-motion-ease),
+    box-shadow var(--ds-motion-base) var(--ds-motion-ease),
+    background-color var(--ds-motion-base) var(--ds-motion-ease);
 }
 
 .ds-nativeInput::placeholder {
@@ -1239,7 +1239,7 @@ button.ds-nativeInput {
 .ds-nativeInput--numeric {
   flex-shrink: 0;
   text-align: center;
-  transition: width 300ms ease;
+  transition: width var(--ds-motion-base) var(--ds-motion-ease);
   appearance: textfield;
 }
 
@@ -1312,8 +1312,8 @@ button.ds-nativeInput {
 /* Match `.ds-dropdown` motion tokens so open/close feels consistent. */
 .ds-inputSection--collapsible {
   gap: 0;
-  --ds-dropdown-ease: ease-in-out;
-  --ds-dropdown-duration: 360ms;
+  --ds-dropdown-ease: var(--ds-motion-ease);
+  --ds-dropdown-duration: var(--ds-motion-slow);
 }
 
 /*
@@ -1482,8 +1482,8 @@ button.ds-inputSection__labelRow.ds-inputSection__labelRow--toggle {
   border-radius: var(--radius-sm);
   color: var(--color-border-strong);
   transition:
-    color 0.15s ease,
-    filter 0.15s ease;
+    color var(--ds-motion-fast) var(--ds-motion-ease),
+    filter var(--ds-motion-fast) var(--ds-motion-ease);
 }
 
 @media (hover: hover) {
@@ -1657,7 +1657,7 @@ button.ds-inputSection__labelRow.ds-inputSection__labelRow--toggle {
 }
 
 .ds-colorField__hexInput .ds-input__input {
-  transition: color 0.2s ease;
+  transition: color var(--ds-motion-base) var(--ds-motion-ease);
 }
 
 .ds-colorField__pickerBtn {
@@ -1675,7 +1675,7 @@ button.ds-inputSection__labelRow.ds-inputSection__labelRow--toggle {
   color: var(--color-main-primary);
   cursor: pointer;
   line-height: 0;
-  transition: border-color 0.1s ease, color 0.1s ease;
+  transition: border-color var(--ds-motion-fast) var(--ds-motion-ease), color var(--ds-motion-fast) var(--ds-motion-ease);
 }
 
 .ds-colorField__pickerBtn:disabled {
@@ -1873,8 +1873,8 @@ button.ds-inputSection__labelRow.ds-inputSection__labelRow--toggle {
 
 .ds-colorField__reset svg {
   transition:
-    transform 0.45s ease,
-    color 0.15s ease;
+    transform var(--ds-motion-slow) var(--ds-motion-ease),
+    color var(--ds-motion-fast) var(--ds-motion-ease);
 }
 
 .ds-colorField__reset:focus-visible {
@@ -1909,7 +1909,7 @@ button.ds-inputSection__labelRow.ds-inputSection__labelRow--toggle {
   border-radius: var(--radius-lg);
   border: var(--border-width-base) solid var(--color-border-weak);
   background: var(--color-background-input);
-  transition: border-color 300ms ease;
+  transition: border-color var(--ds-motion-base) var(--ds-motion-ease);
 }
 
 .ds-segmentedControl:hover {
@@ -2022,11 +2022,11 @@ button.ds-inputSection__labelRow.ds-inputSection__labelRow--toggle {
 
   transform-origin: center;
   transition:
-    transform 300ms ease,
-    box-shadow 300ms ease,
-    background-color 300ms ease,
-    color 300ms ease,
-    opacity 300ms ease;
+    transform var(--ds-motion-base) var(--ds-motion-ease),
+    box-shadow var(--ds-motion-base) var(--ds-motion-ease),
+    background-color var(--ds-motion-base) var(--ds-motion-ease),
+    color var(--ds-motion-base) var(--ds-motion-ease),
+    opacity var(--ds-motion-base) var(--ds-motion-ease);
 }
 
 .ds-button[data-full-width="true"] {
@@ -2082,7 +2082,7 @@ button.ds-inputSection__labelRow.ds-inputSection__labelRow--toggle {
   z-index: 0;
   opacity: 0;
   background-color: transparent;
-  transition: opacity 300ms ease, background-color 300ms ease;
+  transition: opacity var(--ds-motion-base) var(--ds-motion-ease), background-color var(--ds-motion-base) var(--ds-motion-ease);
 }
 
 .ds-button > * {
@@ -2359,8 +2359,8 @@ button.ds-inputSection__labelRow.ds-inputSection__labelRow--toggle {
   font: inherit;
   text-align: left;
   transition:
-    background-color 0.2s ease,
-    border-color 0.2s ease;
+    background-color var(--ds-motion-base) var(--ds-motion-ease),
+    border-color var(--ds-motion-base) var(--ds-motion-ease);
 }
 
 .ds-iconCard__shell:hover:not([data-selected="true"]):not([data-info-active="true"])
@@ -2438,8 +2438,8 @@ button.ds-inputSection__labelRow.ds-inputSection__labelRow--toggle {
   cursor: pointer;
   opacity: 0;
   transition:
-    opacity 0.2s ease,
-    color 0.2s ease;
+    opacity var(--ds-motion-base) var(--ds-motion-ease),
+    color var(--ds-motion-base) var(--ds-motion-ease);
 }
 
 .ds-iconCard__shell:hover .ds-iconCard__select,
@@ -2477,7 +2477,7 @@ button.ds-inputSection__labelRow.ds-inputSection__labelRow--toggle {
   transform: translateX(-50%);
   opacity: 0;
   pointer-events: none;
-  transition: opacity 0.2s ease;
+  transition: opacity var(--ds-motion-base) var(--ds-motion-ease);
   white-space: nowrap;
 }
 
@@ -2821,8 +2821,8 @@ button.ds-inputSection__labelRow.ds-inputSection__labelRow--toggle {
  * Motion tokens match `.ds-inputSection--collapsible` / dropdown menus.
  */
 .ds-siteHeader__bottomSlot {
-  --ds-dropdown-ease: ease-in-out;
-  --ds-dropdown-duration: 360ms;
+  --ds-dropdown-ease: var(--ds-motion-ease);
+  --ds-dropdown-duration: var(--ds-motion-slow);
   display: flex;
   flex-direction: column;
   gap: 0;

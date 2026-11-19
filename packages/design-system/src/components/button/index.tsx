@@ -29,8 +29,9 @@ export interface ButtonStateIcon {
 
 type ButtonStripPlacement = "start" | "end"
 
+/** Matches the app motion scale (`MOTION_S.slow`, `EASE_OUT`). */
 const STRIP_TWEEN_DURATION_S = 0.4
-const STRIP_TWEEN_EASE = "power2.out"
+const STRIP_TWEEN_EASE = "power3.out"
 
 function getStripRowPx(track: HTMLDivElement): number {
   const cell = track.querySelector(":scope > .ds-button-icon-strip__cell")
@@ -60,12 +61,7 @@ function ButtonAnimatedStrip({
 }) {
   const [a, b] = stateIcons
   const trackRef = React.useRef<HTMLDivElement>(null)
-  const prevTweenStepRef = React.useRef<number | null>(null)
-  const prevIndexRef = React.useRef(activeIndex)
-  const stepRef = React.useRef(0)
-  const [step, setStep] = React.useState(() => (activeIndex === 1 ? 1 : 0))
-  stepRef.current = step
-  const [instant, setInstant] = React.useState(false)
+  const prevIndexRef = React.useRef<0 | 1 | null>(null)
   const [systemReduceMotion, setSystemReduceMotion] = React.useState(false)
 
   React.useEffect(() => {
@@ -79,89 +75,46 @@ function ButtonAnimatedStrip({
   const snap =
     !hasFeedback || (respectReducedMotion && systemReduceMotion)
 
-  React.useEffect(() => {
-    if (snap) {
-      setInstant(false)
-      setStep(activeIndex === 1 ? 1 : 0)
-      prevIndexRef.current = activeIndex
-      return
-    }
-
-    const prev = prevIndexRef.current
-    if (prev === activeIndex) return
-
-    if (prev === 0 && activeIndex === 1) {
-      if (stepRef.current === 2) {
-        setInstant(true)
-        setStep(0)
-        requestAnimationFrame(() => {
-          setInstant(false)
-          setStep(1)
-        })
-      } else {
-        setInstant(false)
-        setStep(1)
-      }
-    } else if (prev === 1 && activeIndex === 0) {
-      setInstant(false)
-      setStep(2)
-    }
-    prevIndexRef.current = activeIndex
-  }, [activeIndex, snap])
-
+  // The track holds three rows (A, B, A). Going A→B scrolls to row 1; B→A keeps scrolling forward
+  // to the trailing A row, then snaps back to row 0 (same picture, so the loop is seamless).
+  // All state lives in the GSAP tween, so interrupting mid-way just continues from the current y.
   React.useLayoutEffect(() => {
     const track = trackRef.current
     if (!track) return
 
+    const row = getStripRowPx(track)
+    const rowY = (index: number) => (row > 0 ? -index * row : 0)
+    const prev = prevIndexRef.current
+    prevIndexRef.current = activeIndex
+
+    const currentY = Number(gsap.getProperty(track, "y")) || 0
     gsap.killTweensOf(track)
 
-    if (snap) {
-      const s = activeIndex === 1 ? 1 : 0
-      const row = getStripRowPx(track)
-      gsap.set(track, { y: row > 0 ? -s * row : 0 })
-      prevTweenStepRef.current = s
-      return
+    if (snap || prev === null || prev === activeIndex) {
+      gsap.set(track, { y: rowY(activeIndex) })
+      return () => {
+        gsap.killTweensOf(track)
+      }
     }
 
-    const row = getStripRowPx(track)
-    const y = row > 0 ? -step * row : 0
-
-    if (instant) {
-      gsap.set(track, { y })
-      prevTweenStepRef.current = step
-      return
-    }
-
-    if (prevTweenStepRef.current === null) {
-      gsap.set(track, { y })
-      prevTweenStepRef.current = step
-      return
-    }
-
-    if (prevTweenStepRef.current === step) {
-      gsap.set(track, { y })
-      return
-    }
+    // Heading to A: reverse in place if B hasn't been reached yet, otherwise wrap forward.
+    const wrapsForward = activeIndex === 0 && currentY <= rowY(1) + 0.5
+    const targetY =
+      activeIndex === 1 ? rowY(1) : wrapsForward ? rowY(2) : rowY(0)
 
     gsap.to(track, {
-      y,
+      y: targetY,
       duration: STRIP_TWEEN_DURATION_S,
       ease: STRIP_TWEEN_EASE,
       onComplete: () => {
-        if (step === 2) {
-          gsap.set(track, { y: 0 })
-          setInstant(true)
-          setStep(0)
-          prevTweenStepRef.current = 0
-          requestAnimationFrame(() => {
-            requestAnimationFrame(() => setInstant(false))
-          })
-        } else {
-          prevTweenStepRef.current = step
-        }
+        if (wrapsForward) gsap.set(track, { y: 0 })
       },
     })
-  }, [step, instant, snap, activeIndex])
+
+    return () => {
+      gsap.killTweensOf(track)
+    }
+  }, [activeIndex, snap])
 
   const cell = (spec: ButtonStateIcon, key: string) => (
     <div className="ds-button-icon-strip__cell" key={key}>

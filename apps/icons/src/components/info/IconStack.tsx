@@ -3,7 +3,8 @@ import { cn } from '@/lib/utils'
 import { useFilterStore } from '@/stores/filterStore'
 import type { Icon } from '@/types/icon'
 import gsap from 'gsap'
-import { useLayoutEffect, useMemo, useRef, type Ref } from 'react'
+import { EASE_OUT, MOTION_S } from '@/lib/motion'
+import { useEffect, useLayoutEffect, useMemo, useRef, type Ref } from 'react'
 
 const MAX_STACK_ICONS = 5
 
@@ -13,21 +14,20 @@ const MAX_STACK_ICONS = 5
  * depth 4 = furthest behind (oldest selected, when 5 icons in stack)
  */
 const STACK_CONFIGS = [
-  { scale: 0.9,  ty: 16, blur: 1,   opacity: 0.8  },
-  { scale: 0.8,  ty: 32, blur: 2.5, opacity: 0.6  },
-  { scale: 0.7,  ty: 48, blur: 4,   opacity: 0.42 },
-  { scale: 0.6,  ty: 64, blur: 5.5, opacity: 0.28 },
+  { scale: 0.9,  ty: 16, opacity: 0.8  },
+  { scale: 0.8,  ty: 32, opacity: 0.6  },
+  { scale: 0.7,  ty: 48, opacity: 0.42 },
+  { scale: 0.6,  ty: 64, opacity: 0.28 },
 ] as const
 
 type StackVisual = {
   scale: number
   ty: number
-  blur: number
   opacity: number
 }
 
-const STACK_TWEEN_DURATION_S = 0.48
-const STACK_TWEEN_EASE = 'power3.out'
+const STACK_TWEEN_DURATION_S = MOTION_S.slow
+const STACK_TWEEN_EASE = EASE_OUT
 
 /** Slot width as % of the wireframe when showing a lone icon over the grid. */
 export const SINGLE_STACK_SLOT_PERCENT = (16 / 24) * 100
@@ -52,14 +52,13 @@ function depthFromFrontForBehindIndex(behindIndex: number, behindCount: number):
 function applyCardDepthPose(el: HTMLElement, depthFromFront: number) {
   const visual = stackVisualForDepth(depthFromFront)
   if (visual == null) {
-    gsap.set(el, { clearProps: 'y,scale,opacity,filter' })
+    gsap.set(el, { clearProps: 'y,scale,opacity' })
     return
   }
   gsap.set(el, {
     y: visual.ty,
     scale: visual.scale,
     opacity: visual.opacity,
-    filter: `blur(${visual.blur}px)`,
   })
 }
 
@@ -112,6 +111,11 @@ export function IconStack({
     return { frontIcon: front, behindIcons: behind, displayIcons: capped }
   }, [icons])
 
+  useEffect(() => {
+    const cards = cardRefs.current
+    return () => cards.forEach((el) => gsap.killTweensOf(el))
+  }, [])
+
   useLayoutEffect(() => {
     const currentIds = displayIcons.map((ic) => ic.id)
     const prevIds = prevIconIdsRef.current
@@ -158,7 +162,7 @@ export function IconStack({
       }
       if (frontIcon != null) {
         const frontEl = cardRefs.current.get(frontIcon.id)
-        if (frontEl != null) gsap.set(frontEl, { clearProps: 'y,scale,opacity,filter' })
+        if (frontEl != null) gsap.set(frontEl, { clearProps: 'y,scale,opacity' })
       }
       return
     }
@@ -182,7 +186,6 @@ export function IconStack({
         y: visual?.ty ?? 0,
         scale: visual?.scale ?? 1,
         opacity: visual?.opacity ?? 1,
-        filter: `blur(${visual?.blur ?? 0}px)`,
         duration: STACK_TWEEN_DURATION_S,
         ease: STACK_TWEEN_EASE,
         overwrite: true,
@@ -197,7 +200,7 @@ export function IconStack({
     const isNewFront = addedIds.includes(frontIcon.id)
 
     if (reducedMotion) {
-      gsap.set(frontEl, { clearProps: 'y,scale,opacity,filter' })
+      gsap.set(frontEl, { clearProps: 'y,scale,opacity' })
       return
     }
 
@@ -205,12 +208,11 @@ export function IconStack({
       // Brand-new icon selected — slide in from slightly above
       gsap.fromTo(
         frontEl,
-        { y: -14, opacity: 0, scale: 0.96, filter: 'blur(0px)' },
+        { y: -14, opacity: 0, scale: 0.96 },
         {
           y: 0,
           opacity: 1,
           scale: 1,
-          filter: 'blur(0px)',
           duration: STACK_TWEEN_DURATION_S,
           ease: STACK_TWEEN_EASE,
           overwrite: true,
@@ -223,7 +225,6 @@ export function IconStack({
         y: 0,
         scale: 1,
         opacity: 1,
-        filter: 'blur(0px)',
         duration: STACK_TWEEN_DURATION_S,
         ease: STACK_TWEEN_EASE,
         overwrite: true,
