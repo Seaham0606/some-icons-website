@@ -18,14 +18,6 @@ function matches(icon: Icon, query: string): boolean {
   return q.split(/\s+/).every((term) => searchableText.includes(term))
 }
 
-function getDerivedSortKey(iconId: string): string {
-  const parts = iconId.split('-')
-  if (parts.length > 1) {
-    return parts.slice(1).join('-')
-  }
-  return iconId
-}
-
 /**
  * Icons currently shown in the home grid (same filters + sort as `IconGrid`).
  */
@@ -50,13 +42,7 @@ export function useFilteredGridIcons(): Icon[] {
 
     result = result.filter((icon) => icon.files[style])
 
-    if (category === 'all') {
-      result = [...result].sort((a, b) =>
-        getDerivedSortKey(a.id).localeCompare(getDerivedSortKey(b.id)),
-      )
-    } else {
-      result = [...result].sort((a, b) => a.id.localeCompare(b.id))
-    }
+    result = [...result].sort((a, b) => a.id.localeCompare(b.id))
 
     return result
   }, [icons, searchQuery, category, style])

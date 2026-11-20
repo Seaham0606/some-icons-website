@@ -3,7 +3,7 @@ import type { IconStyle } from '@/types/icon'
 /** Extend when adding Vue, plain HTML, React Native, Svelte, etc. */
 export type CodeFrameworkId = 'react'
 
-const REACT_PACKAGE = '@someicons/icons-react'
+export const REACT_PACKAGE = '@someicons/icons-react'
 
 const COPY_CTA_BY_FRAMEWORK: Record<CodeFrameworkId, string> = {
   react: 'Copy React code',
@@ -44,6 +44,15 @@ function kebabCaseToPascalCase(kebab: string): string {
 export function iconIdToReactExportName(iconId: string, style: IconStyle): string {
   const pascal = kebabCaseToPascalCase(iconId)
   return style === 'filled' ? `${pascal}Filled` : pascal
+}
+
+/**
+ * Selection order used by code snippets, stack preview, and exports (Set insertion order).
+ */
+export function orderedSelectionIconIds(
+  selectedIds: ReadonlySet<string>,
+): string[] {
+  return [...selectedIds]
 }
 
 /** Unique strings, first occurrence wins (stable import specifiers). */

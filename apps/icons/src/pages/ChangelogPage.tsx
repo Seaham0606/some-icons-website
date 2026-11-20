@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom'
 import { useEffect, useState } from 'react'
 import { MainContent, ScrollArea } from '@/components/layout/MainContent'
 import { ChangelogEntry } from '@/components/changelog/ChangelogEntry'
+import { trackExternalLink } from '@/lib/analytics'
 import { useChangelog } from '@/hooks/useChangelog'
 import { useUIStore } from '@/stores/uiStore'
 import { SomeIcon } from 'design-system'
@@ -63,6 +64,7 @@ function ChangelogFooter() {
             rel="noopener noreferrer"
             className="hover:text-[var(--color-main-primary)] transition-colors"
             aria-label="Some Icons Figma plugin"
+            onClick={() => trackExternalLink({ destination: 'figma', location: 'changelog' })}
           >
             <img src={figmaLogo} alt="Figma" className="h-6 w-6" />
           </a>
@@ -72,6 +74,7 @@ function ChangelogFooter() {
             rel="noopener noreferrer"
             className="hover:text-[var(--color-main-primary)] transition-colors"
             aria-label="Some Icons GitHub repository"
+            onClick={() => trackExternalLink({ destination: 'github', location: 'changelog' })}
           >
             <svg
               width="24"

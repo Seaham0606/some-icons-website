@@ -3,8 +3,8 @@ import { useState } from "react"
 import { Button, type ButtonStateIcon } from "design-system"
 
 const demoStripIcons: [ButtonStateIcon, ButtonStateIcon] = [
-  { iconName: "weather-moon", iconStyle: "fill" },
-  { iconName: "weather-sun", iconStyle: "outline" },
+  { iconName: "moon", iconStyle: "fill" },
+  { iconName: "sun", iconStyle: "outline" },
 ]
 
 /** Tiny demo icons — `currentColor` so they follow button text color. */

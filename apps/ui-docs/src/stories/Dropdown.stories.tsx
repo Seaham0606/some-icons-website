@@ -8,7 +8,7 @@ import {
 
 const slotIcon = (
   <SomeIcon
-    iconName="formatting-pencil-alt"
+    iconName="pencil-alt"
     iconStyle="outline"
     iconSize="md"
     padding="2"

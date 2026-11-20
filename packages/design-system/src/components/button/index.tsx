@@ -1,6 +1,7 @@
 "use client"
 
 import * as React from "react"
+import gsap from "gsap"
 import { cn } from "../../utils"
 import { SomeIcon } from "../some-icon"
 import type { SomeIconIconSize, SomeIconPadding, SomeIconStyle } from "../some-icon"
@@ -28,6 +29,19 @@ export interface ButtonStateIcon {
 
 type ButtonStripPlacement = "start" | "end"
 
+/** Matches the app motion scale (`MOTION_S.slow`, `EASE_OUT`). */
+const STRIP_TWEEN_DURATION_S = 0.4
+const STRIP_TWEEN_EASE = "power3.out"
+
+function getStripRowPx(track: HTMLDivElement): number {
+  const cell = track.querySelector(":scope > .ds-button-icon-strip__cell")
+  if (!cell) return 0
+  const style = getComputedStyle(track)
+  const gapRaw = parseFloat(style.rowGap || style.gap || "0")
+  const gap = Number.isFinite(gapRaw) ? gapRaw : 0
+  return cell.getBoundingClientRect().height + gap
+}
+
 function ButtonAnimatedStrip({
   stateIcons,
   activeIndex,
@@ -46,11 +60,8 @@ function ButtonAnimatedStrip({
   className?: string
 }) {
   const [a, b] = stateIcons
-  const prevIndexRef = React.useRef(activeIndex)
-  const stepRef = React.useRef(0)
-  const [step, setStep] = React.useState(() => (activeIndex === 1 ? 1 : 0))
-  stepRef.current = step
-  const [instant, setInstant] = React.useState(false)
+  const trackRef = React.useRef<HTMLDivElement>(null)
+  const prevIndexRef = React.useRef<0 | 1 | null>(null)
   const [systemReduceMotion, setSystemReduceMotion] = React.useState(false)
 
   React.useEffect(() => {
@@ -64,55 +75,46 @@ function ButtonAnimatedStrip({
   const snap =
     !hasFeedback || (respectReducedMotion && systemReduceMotion)
 
-  React.useEffect(() => {
-    if (snap) {
-      setInstant(false)
-      setStep(activeIndex === 1 ? 1 : 0)
-      prevIndexRef.current = activeIndex
-      return
-    }
+  // The track holds three rows (A, B, A). Going A→B scrolls to row 1; B→A keeps scrolling forward
+  // to the trailing A row, then snaps back to row 0 (same picture, so the loop is seamless).
+  // All state lives in the GSAP tween, so interrupting mid-way just continues from the current y.
+  React.useLayoutEffect(() => {
+    const track = trackRef.current
+    if (!track) return
 
+    const row = getStripRowPx(track)
+    const rowY = (index: number) => (row > 0 ? -index * row : 0)
     const prev = prevIndexRef.current
-    if (prev === activeIndex) return
-
-    if (prev === 0 && activeIndex === 1) {
-      if (stepRef.current === 2) {
-        setInstant(true)
-        setStep(0)
-        requestAnimationFrame(() => {
-          setInstant(false)
-          setStep(1)
-        })
-      } else {
-        setInstant(false)
-        setStep(1)
-      }
-    } else if (prev === 1 && activeIndex === 0) {
-      setInstant(false)
-      setStep(2)
-    }
     prevIndexRef.current = activeIndex
-  }, [activeIndex, snap])
 
-  const handleTrackTransitionEnd = (
-    e: React.TransitionEvent<HTMLDivElement>,
-  ) => {
-    if (e.propertyName !== "transform" || e.target !== e.currentTarget) return
-    if (step !== 2) return
+    const currentY = Number(gsap.getProperty(track, "y")) || 0
+    gsap.killTweensOf(track)
 
-    setInstant(true)
-    setStep(0)
-    requestAnimationFrame(() => {
-      requestAnimationFrame(() => {
-        setInstant(false)
-      })
+    if (snap || prev === null || prev === activeIndex) {
+      gsap.set(track, { y: rowY(activeIndex) })
+      return () => {
+        gsap.killTweensOf(track)
+      }
+    }
+
+    // Heading to A: reverse in place if B hasn't been reached yet, otherwise wrap forward.
+    const wrapsForward = activeIndex === 0 && currentY <= rowY(1) + 0.5
+    const targetY =
+      activeIndex === 1 ? rowY(1) : wrapsForward ? rowY(2) : rowY(0)
+
+    gsap.to(track, {
+      y: targetY,
+      duration: STRIP_TWEEN_DURATION_S,
+      ease: STRIP_TWEEN_EASE,
+      onComplete: () => {
+        if (wrapsForward) gsap.set(track, { y: 0 })
+      },
     })
-  }
 
-  const trackStyle: React.CSSProperties = {
-    transform: `translateY(calc(-1 * ${step} * var(--ds-button-icon-strip-row)))`,
-    transition: instant ? "none" : undefined,
-  }
+    return () => {
+      gsap.killTweensOf(track)
+    }
+  }, [activeIndex, snap])
 
   const cell = (spec: ButtonStateIcon, key: string) => (
     <div className="ds-button-icon-strip__cell" key={key}>
@@ -128,11 +130,7 @@ function ButtonAnimatedStrip({
 
   return (
     <div className={cn("ds-button-icon-strip__viewport", className)}>
-      <div
-        className="ds-button-icon-strip__track"
-        style={trackStyle}
-        onTransitionEnd={handleTrackTransitionEnd}
-      >
+      <div ref={trackRef} className="ds-button-icon-strip__track">
         {cell(a, "a")}
         {cell(b, "b")}
         {cell(a, "a-end")}

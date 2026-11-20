@@ -3,7 +3,7 @@ import type { IconIndex } from '@/types/icon'
 import type { ChangelogIndex } from '@/types/changelog'
 
 export async function fetchIconIndex(): Promise<IconIndex> {
-  const response = await fetch(`${CDN_BASE_URL}index.json`, { cache: 'no-store' })
+  const response = await fetch(`${CDN_BASE_URL}index.json`)
   if (!response.ok) {
     throw new Error('Failed to fetch icon index')
   }
@@ -11,7 +11,7 @@ export async function fetchIconIndex(): Promise<IconIndex> {
 }
 
 export async function fetchSvg(path: string): Promise<string> {
-  const response = await fetch(`${CDN_BASE_URL}${path}`, { cache: 'no-store' })
+  const response = await fetch(`${CDN_BASE_URL}${path}`)
   if (!response.ok) {
     throw new Error(`Failed to fetch SVG: ${path}`)
   }

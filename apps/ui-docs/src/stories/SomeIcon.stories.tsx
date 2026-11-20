@@ -81,7 +81,7 @@ export const Default: Story = {
     </IconFrame>
   ),
   args: {
-    iconName: "formatting-pencil-alt",
+    iconName: "pencil-alt",
     iconStyle: "outline",
     iconSize: "md",
     padding: "0",
@@ -95,7 +95,7 @@ export const Filled: Story = {
     </IconFrame>
   ),
   args: {
-    iconName: "formatting-pencil-alt",
+    iconName: "pencil-alt",
     iconStyle: "fill",
     iconSize: "md",
     padding: "0",
@@ -142,7 +142,7 @@ export const InputSlot: Story = {
     </div>
   ),
   args: {
-    iconName: "interface-search",
+    iconName: "search",
     iconStyle: "outline",
     iconSize: "md",
     padding: "2",
@@ -158,7 +158,7 @@ export const InputSectionLeading: Story = {
     </div>
   ),
   args: {
-    iconName: "formatting-pencil-alt",
+    iconName: "pencil-alt",
     iconStyle: "outline",
     iconSize: "2xs",
     padding: "0",

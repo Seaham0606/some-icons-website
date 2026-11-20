@@ -79,7 +79,7 @@ function DefaultThemeButton() {
       variant="transparent"
       size="md"
       aria-label="Theme"
-      iconName="weather-moon"
+      iconName="moon"
       iconStyle="fill"
       contentColor="var(--color-main-tertiary)"
     />
@@ -94,7 +94,7 @@ function DefaultSocialButtons() {
         variant="transparent"
         size="md"
         aria-label="Social placeholder 1"
-        iconName="formatting-pencil-alt"
+        iconName="pencil-alt"
         iconStyle="outline"
         contentColor="var(--color-main-tertiary)"
       />
